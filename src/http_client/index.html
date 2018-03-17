@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=UTF8">
+<html ng-app='fmeApp'>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Gerenciador do software FME para uso centralizado no servidor">
+    <meta name="author" content="Equipe Desenvolvimento 1ªDL">
+
+    <title>Gerenciador FME</title>
+    <link rel='stylesheet' href='stylesheets/normalize.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/bootstrap.min.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/angular-busy.min.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/xeditable.min.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/angular-datatables.min.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/datatables.bootstrap.min.css', type="text/css">
+    <link rel='stylesheet' href='stylesheets/main.css', type="text/css">
+</head>
+<body>
+
+    <div ng-view>
+    </div>
+
+    <script type="text/javascript" src='javascripts/jquery-1.11.3.min.js'></script>
+    <script type="text/javascript" src='javascripts/jquery.dataTables.min.js'></script>
+
+    <script type="text/javascript" src='javascripts/angular.min.js'></script>
+    <script type="text/javascript" src='javascripts/angular-route.min.js'></script>
+    <script type="text/javascript" src='javascripts/angular-datatables.bootstrap.min.js'></script>
+
+    <script type="text/javascript" src='javascripts/bootstrap.min.js'></script>
+    <script type="text/javascript" src='javascripts/ui-bootstrap-tpls-0.14.3.min.js'></script>
+    <script type="text/javascript" src='javascripts/angular-messages.min.js'></script>
+    <script type="text/javascript" src='javascripts/angular-busy.min.js'></script>
+    <script type="text/javascript" src='javascripts/xeditable.min.js'></script>
+    <script type="text/javascript" src='javascripts/angular-datatables.min.js'></script>
+
+    <script type="text/javascript" src='app/app.js'></script>
+    <script type="text/javascript" src='app/services/dataFactory.js'></script>
+    <script type="text/javascript" src='app/directives/filemodel.js'></script>
+    <script type="text/javascript" src='app/controllers/mainCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/atualizarCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/executarCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/inserirCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/logsCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/workspacesCtrl.js'></script>
+    <script type="text/javascript" src='app/controllers/categoriasCtrl.js'></script>
+
+</body>
+</html>

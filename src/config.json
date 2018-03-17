@@ -1,0 +1,6 @@
+{
+	"port": 3006,
+  "connectionString": "postgres://fme_app:fme_app@localhost:5432/gerenciador_fme",
+  "python": "C:\\Python27\\python27\\python.exe",
+  "pythonFME": "D:\\4_Programas\\FME\\fmeobjects\\python27"
+}

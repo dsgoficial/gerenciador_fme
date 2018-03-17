@@ -1,0 +1,9 @@
+
+#Log files
+*.log
+
+# APIDOC
+src/apidoc
+
+# Dependency directories
+node_modules

@@ -1,0 +1,22 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+
+    <div class="modal-body" ng-style="{'background-color': background}">
+
+      <h1>{{alert.header}}</h1>
+      <h3>{{alert.content}}</h3>
+
+      <div ng-show = "alert.header == 'Sucesso'">
+        </br>
+        <h3>Log:</h3>
+        <div class="form-group" ng-repeat="data in log">
+          <label>{{data.camada}}: </label> {{data.valor}}
+        </div>
+        <div class="form-group" ng-if="log.length == 0">
+          <label>Nenhum flag foi gerado</label>
+        </div>        
+      </div>
+
+    </div>
+  </div>
+</div>

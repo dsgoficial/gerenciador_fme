@@ -1,0 +1,30 @@
+<div class="panel panel-default">
+    <div class="panel-heading panel-heading-custom">Logs</div>
+    <div class="panel-body">
+      <table datatable="ng" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="table table-hover table-responsive">
+          <thead>
+          <tr>
+              <th style="width:15%">Data Execução</th>
+              <th style="width:10%">Status</th>
+              <th style="width:10%">Duração</th>
+              <th style="width:25%">Nome</th>
+              <th style="width:10%">Versão</th>
+              <th style="width:15%">Parâmetros</th>              
+              <th style="width:15%">Log</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="log in logs">
+            <td>{{ log.data }}</td>
+            <td>{{ log.status }}</td>
+            <td>{{ log.duracao }}</td>
+            <td>{{ log.nome }}</td>
+            <td>{{ log.versao }}</td>
+            <td>{{ log.parametros }}</td>
+            <td>{{ log.log }}</td>
+          </tr>
+          </tbody>
+      </table>
+    </div>
+    </div>
+</div>

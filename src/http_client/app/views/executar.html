@@ -1,0 +1,34 @@
+<div
+  cg-busy="{promise:promise,message:'Executando...',delay:100,minDuration:1000, templateUrl:'app/views/modal/processing.html'}">
+  <uib-tabset active="activeJustified" justified="true" class="tab-style">
+    <h2 ng-show="categorias.length === 0">Nenhuma categoria cadastrada.</h2>
+    <uib-tab index="{{categoria.id}}" heading="{{categoria.nome}}" ng-repeat="categoria in categorias">
+
+      <h2 ng-if="tabelas.length == 0">Nenhuma tabela cadastrada nesta categoria.</h2>
+      
+      <div class="jumbotron" style="padding-top: 0" ng-repeat="tabela in tabelas | propsFilter: {categoria: categoria.nome}">
+          <h2><strong>{{tabela.nome}}</strong> - Versão {{tabela.versao}}</h2>
+          <h4>{{tabela.descricao}}</h4>
+          <hr>
+          <button type="button" class="btn btn-default" ng-click="collapse($index)">Executar</button>
+          <div uib-collapse="collapsed[$index]">
+            <br/>
+            <div ng-repeat="param in tabela.parametros">
+              <div class="form-group">
+                <label>{{param.descricao}}</label>
+                <input type="text" class="form-control" ng-model="tabela.paramValues[param.nome]">
+              </div>
+
+            </div>
+
+            <div class="pull-right">
+            <button type="button" class="btn btn-default" ng-click="executa(tabela)">
+                Iniciar
+            </button>
+            </div>
+          </div>
+       </div>
+      
+    </uib-tab>
+  </uib-tabset>
+</div>

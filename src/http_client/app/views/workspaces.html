@@ -1,0 +1,100 @@
+<div class="panel panel-default">
+    <div class="panel-heading panel-heading-custom">Workspaces</div>
+    <div class="panel-body">
+      <table datatable="ng" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="table table-hover table-responsive">
+          <thead>
+          <tr>
+              <th style="width:20%">Nome</th>
+              <th style="width:55%">Descrição</th>
+              <th style="width:15%">Categoria</th>
+              <th style="width:10%"><span class="glyphicon glyphicon-cog" style = "padding-left: 15px" aria-hidden="true"></span></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="tabela in tabelas">
+            <td>
+              <span editable-text="tabela.nome" e-name = "nome" e-form = "rowform_work" >{{ tabela.nome }}</span>              
+            </td>
+            <td>
+              <span editable-textarea="tabela.descricao" e-name = "descricao" e-form = "rowform_work" e-rows="4" e-cols="120">
+                {{ tabela.descricao }}
+              </span>
+            </td>
+            <td>
+              <span editable-select="tabela.categoria" e-name = "categoria" e-form = "rowform_work" e-ng-options="s.id as s.nome for s in categorias">
+                {{ showCategoria(tabela.categoria) }}
+              </span>              
+            </td>
+            <td>
+              <form editable-form name="rowform_work" onaftersave="saveWorkspace(tabela)" ng-show="rowform_work.$visible" class="form-buttons form-inline">
+                <button type="submit" ng-disabled="rowform_work.$waiting" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                </button>
+                <button type="button" ng-disabled="rowform_work.$waiting" ng-click="rowform_work.$cancel()" class="btn btn-default">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </form>
+              <div class="buttons" ng-show="!rowform_work.$visible">
+                <button type="button" class="btn btn-primary" ng-click="rowform_work.$show()"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+              </div> 
+            </td>
+          </tr>
+          </tbody>
+      </table>
+    </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading panel-heading-custom">Versões</div>
+    <div class="panel-body">
+      <table datatable="ng" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="table table-hover table-responsive">
+          <thead>
+          <tr>
+              <th style="width:30%">Nome</th>
+              <th style="width:10%">Versão</th>
+              <th style="width:15%">Data</th>
+              <th style="width:10%">Autor</th>
+              <th style="width:10%">Download</th>
+              <th style="width:10%">Acessível</th>
+              <th style="width:15%"><span class="glyphicon glyphicon-cog" style = "padding-left: 15px" aria-hidden="true"></span></th>              
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="versao in versoes">
+            <td>{{ versao.nome }}</td>
+            <td>
+              <span editable-text="versao.versao" e-name = "versao" e-form = "rowform">{{ versao.versao }}</span>                            
+            </td>
+            <td>{{ versao.data | date:'yyyy-MM-dd'}}</td>
+            <td>
+              <span editable-text="versao.autor" e-name = "autor" e-form = "rowform">{{ versao.autor }}</span>                            
+            </td>
+            <td><a ng-href="{{versao.link}}" download>Link</a></td>
+            <td>
+              <span editable-checkbox="versao.acessivel" e-title = "Acessível" e-form = "rowform">{{ versao.acessivel && "Acessível" || "Não acessível" }}</span>
+            </td>
+            <td>
+              <form editable-form name="rowform" onaftersave="saveVersao(versao)" ng-show="rowform.$visible" class="form-buttons form-inline">
+                <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                </button>
+                <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </form>
+              <div class="buttons" ng-show="!rowform.$visible">
+                <button type="button" class="btn btn-primary" ng-click="rowform.$show()"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+              </div>  
+            </td>
+          </tr>
+          </tbody>
+      </table>
+    </div>
+    </div>
+</div>
+
+
+                                 
+
+

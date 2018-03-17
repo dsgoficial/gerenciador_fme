@@ -1,0 +1,179 @@
+/* source-sans-pro-regular - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/source-sans-pro-v9-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'),
+       url('../fonts/source-sans-pro-v9-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/source-sans-pro-v9-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/source-sans-pro-v9-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/source-sans-pro-v9-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/source-sans-pro-v9-latin-regular.svg#SourceSansPro') format('svg'); /* Legacy iOS */
+}
+
+body {
+    background-color: #F5F7FA;
+    font-family: "Source Sans Pro", sans-serif;
+    color: #000000;
+    /* Move down content because we have a fixed navbar that is 50px tall */
+    padding-top: 50px;
+}
+
+
+/* Nome do título */
+.nome_principal{
+  font-weight:bold;
+  color:#FFFFFF;
+  font-size: 22px;
+}
+
+/* Personaliza jumbotron do Bootstrap */
+.jumbotron {
+    color: #000000;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background-color: transparent  !important;
+}
+
+/* Personaliza cores da navbar*/
+.topnavbar {
+  background-color: #1797be;
+  background-image: linear-gradient(to right, #1797be 0%, #23b7e5 100%);
+  background-repeat: repeat-x;
+  border: 0;
+}
+
+.sidebar {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #3A3F51;
+    border-right: 1px solid #eee;
+  }
+
+/* Sidebar navigation */
+
+#side-menu ul,
+#side-menu li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  line-height: 45px;
+  cursor: pointer;
+}
+
+#side-menu ul .active,
+#side-menu li .active {
+  border-left: 6px solid #1C87AB;
+  background-color: #4f5b69;
+}
+
+#side-menu ul .sub-menu li a,
+#side-menu li .sub-menu li a {
+  margin-left: 20px;
+}
+#side-menu ul .sub-menu li,
+#side-menu li .sub-menu li {
+  background-color: #3A3F51;
+  border: none;
+  line-height: 45px;
+  margin-left: 0px;
+}
+#side-menu ul .sub-menu li:hover,
+#side-menu li .sub-menu li:hover {
+  background-color: #4f5b69;
+}
+
+#side-menu li {
+  padding-left: 0px;
+}
+#side-menu li a {
+  display:block;
+  text-decoration: none;
+  color: #D0D1D3;
+  font-size: 16px;
+}
+#side-menu li a i {
+  padding-left: 10px;
+  width: 20px;
+  padding-right: 20px;
+}
+#side-menu li:hover {
+  border-left: 6px solid #1797be;
+  background-color: #4f5b69;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+#side-menu li a:hover,
+#side-menu li a:focus  {
+  color: #1797be;
+}
+
+/* Main content */
+.main {
+  padding: 20px;
+  padding-right: 40px;
+  padding-left: 40px;
+  background-color: #f5f7fa;
+}
+
+/*muda o heading padrão do bootstrap */
+.panel-default > .panel-heading-custom {
+  background-color: #1797be;
+  background-image: linear-gradient(to right, #1797be 0%, #23b7e5 100%);
+  background-repeat: repeat-x;
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* muda o uib-tab padrão*/
+.tab-style .nav-tabs > li > a {
+  background-color: #D8D8D8;
+  color: black;
+  font-size: 20px;
+}
+.tab-style .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover{
+  background-color: #1797be;
+  color: #FFFFFF;
+  font-size: 20px;
+}
+
+
+/* Corrige posição na Datatable*/
+.pagination{
+  width: auto;
+  display: inline-block;
+}
+
+/* Modal de alerta */
+
+.modal  {
+padding-right: 0px;
+background-color: rgba(4, 4, 4, 0.8); 
+}
+   
+.modal-dialog {
+  top: 30%;
+  width: 100%;
+  position: absolute;
+}
+.modal-content {
+  border-radius: 0px;
+  border: none;
+  top: 40%;
+}
+.modal-body {
+  color: white;
+  text-align:center;
+}

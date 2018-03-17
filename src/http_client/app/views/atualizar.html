@@ -1,0 +1,50 @@
+<div cg-busy="{promise:promise,message:'Executando...',delay:100,minDuration:1000, templateUrl:'app/views/modal/processing.html'}">
+  <h2><strong><center>Nova Versão</center></strong></h2>
+  <hr>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Workspace:</label>
+      <div class="col-sm-10">
+        <select ng-model="dados.workspaceid" ng-options="workspace.id as workspace.nome for workspace in workspaces track by workspace.id" required>
+          <option value="" disabled selected>Selecione uma workspace</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Autor:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="dados.autor" placeholder="Nome do autor ou autores da workspace">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Versão:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" ng-model="dados.versao">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Data de criação:</label>
+      <div class="col-sm-10">
+          <div class="input-group">
+          <input type="text" class="form-control" uib-datepicker-popup ng-model="dados.data" is-open="popup.opened"
+            ng-required="true" current-text="Hoje" clear-text="Remover" close-text="Fechar" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+          </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Tabela FME:</label>
+      <div class="col-sm-10">
+        <input type="file" file-model="dados.workspace" accept=".fmw"/>
+      </div>
+    </div>
+    <hr>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="uploadFile()">Enviar</button>
+      </div>
+    </div>
+  </form>
+</div>

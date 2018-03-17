@@ -1,0 +1,50 @@
+<nav class="navbar navbar-fixed-top topnavbar">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand nonSelectableText nome_principal">Gerenciador FME</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+
+  <div class="col-sm-3 col-md-2 sidebar">
+    <div id = "side-menu">
+      <ul>
+        <li data-toggle="collapse" data-target="#execucaomenu" class="collapsed" toggle-class="active">
+          <a><i class="glyphicon glyphicon-random glyphicon-menu"></i> Execução <span class="glyphicon glyphicon-chevron-down" style="margin-left:8px;"></span></a>
+        </li>
+        <ul class="sub-menu collapse" id="execucaomenu">
+            <li ng-click="abaAtiva = 'executar'"><a href="">Executar Workspace</a></li>
+            <li ng-click="abaAtiva = 'inserir'"><a href="">Inserir Workspace</a></li>
+            <li ng-click="abaAtiva = 'atualizar'"><a href="">Atualizar Workspace</a></li>
+        </ul>
+
+        <li data-toggle="collapse" data-target="#gerenciamenu" class="collapsed" toggle-class="active">
+          <a><i class="glyphicon glyphicon-th-list glyphicon-menu"></i> Gerência <span class="glyphicon glyphicon-chevron-down" style="margin-left:8px;"></span></a>
+        </li>
+        <ul class="sub-menu collapse" id="gerenciamenu">
+          <li ng-click="abaAtiva = 'workspaces'"><a href="">Workspaces</a></li>
+          <li ng-click="abaAtiva = 'logs'"><a href="">Logs de execução</a></li>
+          <li ng-click="abaAtiva = 'categorias'"><a href="">Categorias</a></li>
+        </ul>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div ng-switch="abaAtiva">
+      <div ng-switch-when="executar" ng-controller="executarCtrl"><div ng-include src = "'app/views/executar.html'"></div></div>
+       <div ng-switch-when="inserir" ng-controller="inserirCtrl"><div ng-include src = "'app/views/inserir.html'"></div></div>
+       <div ng-switch-when="atualizar" ng-controller="atualizarCtrl"><div ng-include src = "'app/views/atualizar.html'"></div></div>
+       <div ng-switch-when="workspaces" ng-controller="workspacesCtrl"><div ng-include src = "'app/views/workspaces.html'"></div></div>
+       <div ng-switch-when="logs" ng-controller="logsCtrl"><div ng-include src = "'app/views/logs.html'"></div></div>
+       <div ng-switch-when="categorias" ng-controller="categoriasCtrl"><div ng-include src = "'app/views/categorias.html'"></div></div>
+
+    </div>
+  </div>
+
+
+  </div>  
+</div>
