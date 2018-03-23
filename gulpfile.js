@@ -1,10 +1,15 @@
-const gulp = require('gulp')
-const apidoc = require('gulp-apidoc')
+"use strict";
 
-gulp.task('apidoc', done => {
-      apidoc({
-        src: "src/routes/",
-        dest: "src/apidoc/",
-        config: "./"
-      },done)
-})
+const gulp = require("gulp");
+const apidoc = require("gulp-apidoc");
+
+gulp.task("apidoc", done => {
+  apidoc(
+    {
+      src: "src/",
+      dest: "src/apidoc/",
+      config: "./"
+    },
+    done
+  );
+});

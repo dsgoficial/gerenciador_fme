@@ -1,5 +1,5 @@
 {
-  "name": "gerenciador_fme",
+  "name": "fme_manager",
   "version": "1.0.0",
   "description": "A simple implementation of a manager for Safe FME Workbench",
   "main": "src/index.js",
@@ -14,13 +14,10 @@
   "scripts": {
     "apidoc": "gulp apidoc",
     "dev": "nodemon src/index.js",
-    "production": "pm2 start src/index.js --name gerenciador-fme"
+    "production": "pm2 start src/index.js --name gerenciador-fme",
+    "config": "node create_config.js"
   },
-  "keywords": [
-    "FME",
-    "Node",
-    "Express"
-  ],
+  "keywords": ["FME", "Node", "Express"],
   "author": "DSG/1CGEO <diniz.felipe@eb.mil.br>",
   "license": "MIT",
   "bugs": {
@@ -29,25 +26,31 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "chalk": "^2.3.2",
     "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "helmet": "^3.12.0",
+    "inquirer": "^5.1.0",
     "joi": "^13.1.2",
-    "multer": "^1.3.0",
+    "jsonwebtoken": "^8.2.0",
     "pg-promise": "^8.2.2",
     "pm2": "^2.10.1",
-    "python-shell": "^0.5.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "winston": "^3.0.0-rc3",
+    "winston-daily-rotate-file": "^2.0.0-rc.6",
+    "multer": "^1.3.0"
   },
   "devDependencies": {
+    "apidoc": "^0.17.6",
     "gulp": "^3.9.1",
     "gulp-apidoc": "^0.2.7",
     "nodemon": "^1.17.2"
   },
   "apidoc": {
-    "name": "API Gerenciador FME",
+    "name": "FME Manager API",
     "version": "1.0.0",
-    "title": "API Gerenciador FME",
-    "description": "Comunicação com a API REST do Gerenciador FME"
+    "title": "FME Manager API",
+    "description": "FME Manager REST API"
   }
 }

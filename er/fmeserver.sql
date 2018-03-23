@@ -1,63 +1,59 @@
-﻿--Deve ser executado dentro do banco gerenciador_fme
-
-BEGIN;
---Usuário que será utilizado pela API. Substituir senha conforme necessidade.
-CREATE USER fme_app WITH PASSWORD 'fme_app';
+﻿BEGIN;
 
 CREATE SCHEMA fme;
 
-CREATE TABLE fme.categoria(
+CREATE TABLE fme.category(
 	id SERIAL NOT NULL PRIMARY KEY,
-	nome VARCHAR(255) NOT NULL UNIQUE --Categoria em que a tabela do FME pertence (por exemplo uma divisão por fase ou projeto)
+	name VARCHAR(255) NOT NULL UNIQUE --Categoria em que a tabela do FME pertence (por exemplo uma divisão por fase ou projeto)
 );
 
 CREATE TABLE fme.workspace(
 	id SERIAL NOT NULL PRIMARY KEY,
-	nome VARCHAR(255) NOT NULL, --Nome da tabela do FME
-	descricao TEXT NOT NULL, --Descrição do que a tabela do FME faz
-	categoria_id SMALLINT NOT NULL REFERENCES fme.categoria(id) --Uma workspace pertence a uma categoria
+	name VARCHAR(255) NOT NULL, --Nome da tabela do FME
+	description TEXT NOT NULL, --Descrição do que a tabela do FME faz
+	category_id SMALLINT NOT NULL REFERENCES fme.category(id) --Uma workspace pertence a uma categoria
 );
 
-CREATE TABLE fme.versao(
+CREATE TABLE fme.workspace_version(
 	id SERIAL NOT NULL PRIMARY KEY,
 	workspace_id SMALLINT NOT NULL REFERENCES fme.workspace(id),
-	versao VARCHAR(255), --Nome da versão
+	name VARCHAR(255), --Nome da versão
 	data TIMESTAMP WITH TIME ZONE NOT NULL, --Data de upload da tabela, utilizada para definir versão atual
-	autor VARCHAR(255), --Autor da tabela para fins de metadados
+	author VARCHAR(255), --Autor da tabela para fins de metadados
 	path TEXT NOT NULL, --Path onde será armazenada a tabela no servidor
-	acessivel BOOLEAN NOT NULL --Se a tabela está acessível para os usuários ou não
+	accessible BOOLEAN NOT NULL --Se a tabela está acessível para os usuários ou não
 );
 
-CREATE TABLE fme.parametro( --Os valores são extraídos do FME
+CREATE TABLE fme.parameters( --Os valores são extraídos do FME
 	id SERIAL NOT NULL PRIMARY KEY,
-	workspace_version_id SMALLINT NOT NULL REFERENCES fme.versao(id), --Parâmetros de uma versão da tabela do FME
-	nome VARCHAR(255) NOT NULL,
-	descricao VARCHAR(255),
-	opcional BOOLEAN,
-	tipo VARCHAR(255),
-	valores VARCHAR(255),
-	valordefault VARCHAR(255)
+	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id), --Parâmetros de uma versão da tabela do FME
+	name VARCHAR(255) NOT NULL,
+	description VARCHAR(255),
+	optional BOOLEAN,
+	type VARCHAR(255),
+	values VARCHAR(255),
+	default_values VARCHAR(255)
 );
 
 CREATE TABLE fme.status(
-	id SMALLINT NOT NULL PRIMARY KEY,
-	nome VARCHAR(255) NOT NULL UNIQUE
+	code SMALLINT NOT NULL PRIMARY KEY,
+	name VARCHAR(255) NOT NULL UNIQUE
 );
 
-INSERT INTO fme.status (id,nome) VALUES
-(1, 'Recebido'),
-(2, 'Executado'),
-(3, 'Erro');
+INSERT INTO fme.status (code,nome) VALUES
+(1, 'Running'),
+(2, 'Succeeded'),
+(3, 'Failed');
 
 CREATE TABLE fme.job( --Execução de uma tabela do FME
 	id SERIAL NOT NULL PRIMARY KEY,
-	jobid TEXT NOT NULL UNIQUE,
-	status_id SMALLINT NOT NULL REFERENCES fme.status(id),
-	workspace_version_id SMALLINT NOT NULL REFERENCES fme.versao(id),
+	job_uuid TEXT NOT NULL UNIQUE,
+	status SMALLINT NOT NULL REFERENCES fme.status(code),
+	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id),
 	data TIMESTAMP WITH TIME ZONE NOT NULL,
-	duracao REAL,
+	run_time REAL,
 	log TEXT,
-	parametros TEXT
+	parameters TEXT
 );
 
 GRANT USAGE ON SCHEMA fme TO fme_app;
