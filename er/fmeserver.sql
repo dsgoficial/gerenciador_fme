@@ -18,9 +18,9 @@ CREATE TABLE fme.workspace_version(
 	id SERIAL NOT NULL PRIMARY KEY,
 	workspace_id SMALLINT NOT NULL REFERENCES fme.workspace(id),
 	name VARCHAR(255), --Nome da versão
-	data TIMESTAMP WITH TIME ZONE NOT NULL, --Data de upload da tabela, utilizada para definir versão atual
+	version_date TIMESTAMP WITH TIME ZONE NOT NULL, --Data de upload da tabela, utilizada para definir versão atual
 	author VARCHAR(255), --Autor da tabela para fins de metadados
-	path TEXT NOT NULL, --Path onde será armazenada a tabela no servidor
+	workspace_path TEXT NOT NULL, --Path onde será armazenada a tabela no servidor
 	accessible BOOLEAN NOT NULL --Se a tabela está acessível para os usuários ou não
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE fme.status(
 	name VARCHAR(255) NOT NULL UNIQUE
 );
 
-INSERT INTO fme.status (code,nome) VALUES
+INSERT INTO fme.status (code, name) VALUES
 (1, 'Running'),
 (2, 'Succeeded'),
 (3, 'Failed');
@@ -50,7 +50,7 @@ CREATE TABLE fme.job( --Execução de uma tabela do FME
 	job_uuid TEXT NOT NULL UNIQUE,
 	status SMALLINT NOT NULL REFERENCES fme.status(code),
 	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id),
-	data TIMESTAMP WITH TIME ZONE NOT NULL,
+	run_date TIMESTAMP WITH TIME ZONE NOT NULL,
 	run_time REAL,
 	log TEXT,
 	parameters TEXT

@@ -2,10 +2,10 @@
 
 const { loginRoute, loginMiddleware } = require("./login");
 
-const { categoryRoute } = require("./category_route");
-const { jobRoute } = require("./job_route");
-const { workspaceRoute } = require("./workspace_route");
-const { versionRoute } = require("./version_route");
+const { categoryRoute } = require("./category");
+const { jobRoute } = require("./job");
+const { workspaceRoute } = require("./workspace");
+const { versionRoute } = require("./version");
 
 const routes = app => {
   app.use("/login", loginRoute);

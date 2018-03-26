@@ -1,82 +1,127 @@
-const db = require('../utils/database_connection')
-const pythonRunner = require('../utils/python_runner')
-const path = require('path')
+"use strict";
 
-const controller = {}
+const { db } = require("../database");
+const { getParams } = require("./workspace_parse");
 
-controller.get = async (req,res,next) => {
-  let data
+const controller = {};
+
+controller.get = async () => {
   try {
-    data = await db.any('SELECT * from fme.workspace')
-    res.status(200).json({message: "Workspaces retornados com sucesso.", data})
-  } catch (err) {
-    return next(err)
+    let data = await db.any(
+      ```
+      SELECT id, name, description, category_id FROM fme.workspace
+      ```
+    );
+    return { error: null, data: data };
+  } catch (error) {
+    const err = new Error("Error getting all workspaces");
+    err.status = 500;
+    err.context = "workspaces_ctrl";
+    err.information = {};
+    err.information.trace = error;
+    return { error: err, data: null };
   }
-}
+};
 
-controller.put = async (req,res,next,body,id) => {
+controller.update = async (id, name, description, categoryId) => {
   try {
-    await db.any('UPDATE fme.workspace set nome =$1, descricao =$2, categoria_id =$3 WHERE id = $4', [body.nome, body.descricao, body.categoria, id])
-    res.status(200).json({message: "Workspace atualizada com sucesso."})
-  } catch (err) {
-    return next(err)
+    let result = await db.result(
+      ```
+      UPDATE fme.workspace SET name =$1, description =$2, category_id =$3 WHERE id = $4
+      ```,
+      [name, description, categoryId, id]
+    );
+    if (!result.rowCount || result.rowCount < 1) {
+      let error = new Error("Workspace not found.");
+      error.status = 404;
+      error.context = "workspaces_ctrl";
+      error.information = {};
+      error.information.id = id;
+      error.information.name = name;
+      throw error;
+    }
+    return { error: null };
+  } catch (error) {
+    if (error.message === "Workspace not found.") {
+      return { error: error };
+    } else {
+      const err = new Error("Error updating workspace");
+      err.status = 500;
+      err.context = "workspaces_ctrl";
+      err.information = {};
+      err.information.id = id;
+      err.information.name = name;
+      err.information.trace = error;
+      return { error: err };
+    }
   }
-}
+};
 
-controller.saveVersion = async (req,res,next,body,caminhoWorkspace,id) => {
-  caminhoWorkspace = path.resolve(caminhoWorkspace)
-  let params
+controller.saveWorkspace = async (
+  workspacePath,
+  versionName,
+  versionDate,
+  versionAuthor,
+  name,
+  description,
+  categoryId,
+  workspaceId
+) => {
   try {
-    params = await pythonRunner.getParams(caminhoWorkspace)
+    let params = await getParams(workspacePath);
+
     await db.tx(async t => {
-      let data = new Date(body.data).toISOString()
-      let versao = await t.one('INSERT INTO fme.versao(workspace, versao, data, autor, path, acessivel) VALUES($1,$2,$3,$4,$5,TRUE) RETURNING id',
-        [id, body.versao, data, body.autor, caminhoWorkspace])           
+      if (!workspaceId) {
+        let workspace = await t.one(
+          ```
+          INSERT INTO fme.workspace(name, description, category_id) VALUES($1,$2,$3) RETURNING id
+          ```,
+          [name, description, categoryId]
+        );
+        const workspaceId = workspace.id;
+      }
 
-      let queries = []
+      let versionDate = new Date(versionDate).toISOString();
+
+      let version = await t.one(
+        ```
+        INSERT INTO fme.workspace_version(workspace_id, name, version_date, author, workspace_path, accessible)
+        VALUES($1,$2,$3,$4,$5,TRUE) RETURNING id
+        ```,
+        [workspaceId, versionName, versionDate, versionAuthor, workspacePath]
+      );
+
+      let queries = [];
       params.forEach(p => {
         queries.push(
-          t.none('INSERT INTO fme.parametro(workspace_version_id, nome, descricao, opcional, tipo, valores, valordefault) ' + 
-                        'VALUES($1,$2,$3,$4,$5,$6,$7)',
-            [versao.id, p.nome, p.descricao, p.opcional, p.tipo, p.valores, p.valordefault])   
-        )
-      })
-      return await t.batch(queries)
-    })
-    
-    res.status(200).json({message: "Nova versão inserida com sucesso."})
-  } catch (err) {
-    return next(err)
+          t.none(
+            ```
+            INSERT INTO fme.parameters(workspace_version_id, name, description, optional, type, values, default_values)
+            VALUES($1,$2,$3,$4,$5,$6,$7)
+            ```,
+            [
+              version.id,
+              p.name,
+              p.description,
+              p.optional,
+              p.type,
+              p.values,
+              p.default_values
+            ]
+          )
+        );
+      });
+      return await t.batch(queries);
+    });
+    return { error: null };
+  } catch (error) {
+    const err = new Error("Error creating new workspace");
+    err.status = 500;
+    err.context = "workspaces_ctrl";
+    err.information = {};
+    err.information.trace = error;
+    return { error: err };
   }
-}
+};
 
-controller.saveWorkspace = async (req,res,next,body,caminhoWorkspace) => {
-  caminhoWorkspace = path.resolve(caminhoWorkspace)
-  let params
-  try {
-    params = await pythonRunner.getParams(caminhoWorkspace)
-    await db.tx(async t => {
-      let workspace = await t.one('INSERT INTO fme.workspace(nome, descricao, categoria) VALUES($1,$2,$3) RETURNING id',
-      [body.nome, body.descricao, body.categoria])
-      let data = new Date(body.data).toISOString()
-      let versao = await t.one('INSERT INTO fme.versao(workspace, versao, data, autor, path, acessivel) VALUES($1,$2,$3,$4,$5,TRUE) RETURNING id',
-        [workspace.id, body.versao, data, body.autor, caminhoWorkspace])           
-
-      let queries = []
-      params.forEach(p => {
-        queries.push(
-          t.none('INSERT INTO fme.parametro(workspace_version_id, nome, descricao, opcional, tipo, valores, valordefault) ' + 
-                        'VALUES($1,$2,$3,$4,$5,$6,$7)',
-            [versao.id, p.nome, p.descricao, p.opcional, p.tipo, p.valores, p.valordefault])   
-        )
-      })
-      return await t.batch(queries)
-    })
-    
-    res.status(200).json({message: "Nova workspace inserida com sucesso."})
-  } catch (err) {
-    return next(err)
-  }
-}
-
-module.exports = controller
+module.exports = controller;

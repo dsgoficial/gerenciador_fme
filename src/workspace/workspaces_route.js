@@ -1,42 +1,171 @@
-const express = require('express')
+"use strict";
 
-const workspacesCtrl = require('../controllers/workspaces_ctrl')
-const upload = require('../utils/upload_file')
-const validator = require('../utils/model_validation')
+const express = require("express");
+const Joi = require("joi");
 
-const router = express.Router()
+const { sendJsonAndLog } = require("../logger");
 
-//retorna todas as workspaces
-router.get('/', (req, res, next) => {
-  workspacesCtrl.get(req, res, next)
-})
+const workspacesCtrl = require("./workspaces_ctrl");
+const workspacesModel = require("./workspaces_model");
+const uploadFile = require("./upload_file");
 
-//Update nas informações de uma workspace
-router.put('/:id', validator.workspaces, (req, res, next) => {
-  workspacesCtrl.put(req, res, next, req.body, req.params.id)
-})
+const router = express.Router();
 
-//Inserir uma nova versão de uma workspace no servidor
-router.post('/:id/versions', validator.versions, (req, res, next) => {
-  upload(req, res, err => {
-    if (err) {
-      // An error occurred when uploading
-      next(err)
+router.get("/", (req, res, next) => {
+  let { error, data } = await workspacesCtrl.get();
+  if (error) {
+    return next(error);
+  }
+
+  return sendJsonAndLog(
+    true,
+    "Workspaces returned",
+    "workspaces_route",
+    null,
+    res,
+    200,
+    data
+  );
+});
+
+router.put("/:id", (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspacesModel.workspace);
+  if (validationResult.error) {
+    const err = new Error("Update workspace validation error");
+    err.status = 400;
+    err.context = "workspaces_route";
+    err.information = {};
+    err.information.body = req.body;
+    err.information.trace = validationResult.error;
+    return next(err);
+  }
+
+  let { error } = await workspacesCtrl.update(
+      req.params.id,
+      req.body.name,
+      req.body.description,
+      req.body.category_id
+  );
+  if (error) {
+    return next(error);
+  }
+
+  return sendJsonAndLog(
+    true,
+    "Category updated",
+    "category_route",
+    {
+      id: req.params.id,
+      body: req.body
+    },
+    res,
+    200,
+    null
+  );
+});
+
+
+router.post("/:id/versions", (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspacesModel.workspaceVersion);
+  if (validationResult.error) {
+    const err = new Error("Create workspace validation error");
+    err.status = 400;
+    err.context = "workspaces_route";
+    err.information = {};
+    err.information.id = req.params.id;
+    err.information.body = req.body;
+    err.information.trace = validationResult.error;
+    return next(err);
+  }
+
+  uploadFile(req, res, e => {
+    if (e) {
+      const err = new Error("Upload workspace file error");
+      err.status = 400;
+      err.context = "workspaces_route";
+      err.information = {};
+      err.information.id = req.params.id;
+      err.information.body = req.body;
+      err.information.trace = e;
+      return next(err);
     }
-    workspacesCtrl.saveVersion(req, res, next, req.body, req.file.path, req.params.id)
-  })
-  
-})
-
-//Inserir uma nova workspace no servidor
-router.post('/', validator.workspaces, (req, res, next) => {
-  upload(req, res, err => {
-    if (err) {
-      // An error occurred when uploading
-      return next(err)
+    let { error } = await workspacesCtrl.saveWorkspace(
+      req.file.path,
+      req.body.version_name,
+      req.body.version_date,
+      req.body.version_author,
+      null,
+      null,
+      null,
+      req.params.id
+    );
+    if (error) {
+      return next(error);
     }
-    workspacesCtrl.saveWorkspace(req, res, next, req.body, req.file.path)
-  })
-})
 
-module.exports = router
+    return sendJsonAndLog(
+      true,
+      "Workspace created",
+      "workspaces_route",
+      {
+        id: req.params.id,
+        body: req.body
+      },
+      res,
+      201,
+      null
+    );
+  });
+});
+
+
+router.post("/", (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspacesModel.workspaceVersion);
+  if (validationResult.error) {
+    const err = new Error("Create workspace validation error");
+    err.status = 400;
+    err.context = "workspaces_route";
+    err.information = {};
+    err.information.body = req.body;
+    err.information.trace = validationResult.error;
+    return next(err);
+  }
+
+  uploadFile(req, res, e => {
+    if (e) {
+      const err = new Error("Upload workspace file error");
+      err.status = 400;
+      err.context = "workspaces_route";
+      err.information = {};
+      err.information.body = req.body;
+      err.information.trace = e;
+      return next(err);
+    }
+    let { error } = await workspacesCtrl.saveWorkspace(
+      req.file.path,
+      req.body.version_name,
+      req.body.version_date,
+      req.body.version_author,
+      req.body.name,
+      req.body.description,
+      req.body.category_id
+    );
+    if (error) {
+      return next(error);
+    }
+
+    return sendJsonAndLog(
+      true,
+      "Workspace created",
+      "workspaces_route",
+      {
+        body: req.body
+      },
+      res,
+      201,
+      null
+    );
+  });
+});
+
+module.exports = router;

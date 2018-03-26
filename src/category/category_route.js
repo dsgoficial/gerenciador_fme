@@ -13,9 +13,9 @@ const router = express.Router();
 /**
  * @api {get} /categories List all the categories
  * @apiVersion 1.0.0
- * @apiName GetAllCategory
+ * @apiName GetAllCategories
  * @apiGroup Category
- * @apiPermission public
+ * @apiPermission Logged User
  *
  * @apiDescription Used to return a list of categories
  *
@@ -57,7 +57,7 @@ router.get("/", (req, res, next) => {
  * @apiVersion 1.0.0
  * @apiName CreateCategoria
  * @apiGroup Categoria
- * @apiPermission gerente
+ * @apiPermission Manager
  *
  * @apiDescription Utilizado para criar uma nova categoria.
  *
@@ -111,14 +111,13 @@ router.post("/", (req, res, next) => {
     return next(error);
   }
 
-  let information = {
-    name: req.body.name
-  };
   return sendJsonAndLog(
     true,
     "Category created",
     "category_route",
-    information,
+    {
+      body: req.body
+    },
     res,
     201,
     null
@@ -130,7 +129,7 @@ router.post("/", (req, res, next) => {
  * @apiVersion 1.0.0
  * @apiName UpdateCategoria
  * @apiGroup Categoria
- * @apiPermission gerente
+ * @apiPermission Manager
  *
  * @apiDescription Utilizado para atualizar informações de uma categoria.
  *
@@ -183,6 +182,7 @@ router.put("/:id", (req, res, next) => {
     err.status = 400;
     err.context = "category_route";
     err.information = {};
+    err.information.id = req.params.id;
     err.information.body = req.body;
     err.information.trace = validationResult.error;
     return next(err);
@@ -196,21 +196,18 @@ router.put("/:id", (req, res, next) => {
     return next(error);
   }
 
-  let information = {
-    id: req.params.id,
-    name: req.body.name
-  };
   return sendJsonAndLog(
     true,
     "Category updated",
     "category_route",
-    information,
+    {
+      id: req.params.id,
+      body: req.body
+    },
     res,
     200,
     null
   );
-
-
 });
 
 module.exports = router;

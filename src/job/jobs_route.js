@@ -1,42 +1,47 @@
-const express = require('express')
+"use strict";
 
-const jobsCtrl = require('../controllers/jobs_ctrl')
+const express = require("express");
+const Joi = require("joi");
 
-const router = express.Router()
+const { sendJsonAndLog } = require("../logger");
+
+const jobsCtrl = require("./jobs_ctrl");
+
+const router = express.Router();
 
 /**
- * @api {get} /jobs Lista todas as tarefas
+ * @api {get} /jobs List all the jobs
  * @apiVersion 1.0.0
- * @apiName GetAllJob
+ * @apiName GetAllJobs
  * @apiGroup Job
- * @apiPermission gerente
+ * @apiPermission Manager
  *
- * @apiDescription Utilizado para retornar a lista de tarefas 
- * 
- * @apiSuccess {Object[]} jobs  Lista de tarefas.
- * @apiSuccess {UUID} jobs.jobid  UUID que identifica a tarefa.
- * @apiSuccess {String} jobs.status  Status de execução da tarefa.
- * @apiSuccess {String} jobs.workspace  Nome da workspace da tarefa.
- * @apiSuccess {String} jobs.versao  Nome da versão da workspace.
- * @apiSuccess {Timestamp} jobs.data  Data e hora de inicio de execução da tarefa.
- * @apiSuccess {Number} jobs.duracao  Tempo em segundos da execução da tarefa.
- * @apiSuccess {String} jobs.log  Log de execução da tarefa.
- * @apiSuccess {String} jobs.parametros  Parâmetros de entrada da tarefa.
- * 
- * @apiSuccessExample {json} Resposta em caso de Sucesso:
+ * @apiDescription Used to return a list of jobs
+ *
+ * @apiSuccess {Object[]} jobs  List of jobs.
+ * @apiSuccess {UUID} jobs.job_uuid  UUID that identifies the job.
+ * @apiSuccess {String} jobs.status  Execution status.
+ * @apiSuccess {String} jobs.workspace  Workspace name.
+ * @apiSuccess {String} jobs.version  Version name.
+ * @apiSuccess {Timestamp} jobs.run_date  Date and timestamp of the begging of the execution of the job.
+ * @apiSuccess {Number} jobs.run_time  Run time in seconds of the job.
+ * @apiSuccess {String} jobs.log  Log created at job execution.
+ * @apiSuccess {String} jobs.parameters  Parameters for job execution.
+ *
+ * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     [{
- *       "jobid": "3b2c3696-eeb0-4b88-86c5-79cdc7b98d3d",
- *       "status": "Executado",
+ *       "job_uuid": "3b2c3696-eeb0-4b88-86c5-79cdc7b98d3d",
+ *       "status": "Succeeded",
  *       "workspace": "Ponta livre de Vegetação",
- *       "versao": "2",
- *       "data": "2017-10-16T00:38:40.637Z",
- *       "duracao": 58.02,
- *       "log": "public.aux_valida_a:18 | public.aux_valida_p:517",
- *       "parametros": "db_SourceDataset_POSTGIS:mi_2906-1-se"
+ *       "version": "2",
+ *       "run_date": "2017-10-16T00:38:40.637Z",
+ *       "run_time": 58.02,
+ *       "log": "edgv.aux_valida_a:18 | edgv.aux_valida_p:517",
+ *       "parameters": "db_SourceDataset_POSTGIS:mi_2906-1-se"
  *     }]
  *
- * @apiError NoAccessRight Somente Gerentes autenticados podem acessar os dados.
+ * @apiError NoAccessRight Only managers can access the data.
  *
  * @apiErrorExample NoAccessRight:
  *     HTTP/1.1 401 Not Authenticated
@@ -44,41 +49,54 @@ const router = express.Router()
  *       "error": "NoAccessRight"
  *     }
  */
-router.get('/', (req, res, next) => {
-  jobsCtrl.get(req, res, next)
-})
+router.get("/", (req, res, next) => {
+  let { error, data } = await jobsCtrl.get();
+  if (error) {
+    return next(error);
+  }
+
+  return sendJsonAndLog(
+    true,
+    "Jobs returned",
+    "jobs_route",
+    null,
+    res,
+    200,
+    data
+  );
+});
 
 /**
  * @api {get} /jobs/:id Requisição de informação sobre uma tarefa
  * @apiVersion 1.0.0
  * @apiName GetJob
  * @apiGroup Job
- * @apiPermission public
+ * @apiPermission Public
  *
  * @apiDescription Utilizado para verificar o andamento de uma tarefa em execução.
- * 
+ *
  * @apiParam {Number} id UUID que identifica a tarefa.
  *
- * @apiSuccess {UUID} jobid UUID que identifica a tarefa.
- * @apiSuccess {String} status  Status de execução da tarefa.
- * @apiSuccess {String} workspace  Nome da workspace da tarefa.
- * @apiSuccess {String} versao  Nome da versão da workspace.
- * @apiSuccess {Timestamp} data  Data e hora de inicio de execução da tarefa.
- * @apiSuccess {Number} duracao  Tempo em segundos da execução da tarefa.
- * @apiSuccess {String} log  Log de execução da tarefa.
- * @apiSuccess {String} parametros  Parâmetros de entrada da tarefa.
- * 
- * @apiSuccessExample {json} Resposta em caso de Sucesso:
+ * @apiSuccess {UUID} jobs.job_uuid  UUID that identifies the job.
+ * @apiSuccess {String} jobs.status  Execution status.
+ * @apiSuccess {String} jobs.workspace  Workspace name.
+ * @apiSuccess {String} jobs.version  Version name.
+ * @apiSuccess {Timestamp} jobs.run_date  Date and timestamp of the begging of the execution of the job.
+ * @apiSuccess {Number} jobs.run_time  Run time in seconds of the job.
+ * @apiSuccess {String} jobs.log  Log created at job execution.
+ * @apiSuccess {String} jobs.parameters  Parameters for job execution.
+ *
+ * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *       "jobid": "3b2c3696-eeb0-4b88-86c5-79cdc7b98d3d",
- *       "status": "Executado",
+ *       "job_uuid": "3b2c3696-eeb0-4b88-86c5-79cdc7b98d3d",
+ *       "status": "Succeeded",
  *       "workspace": "Ponta livre de Vegetação",
- *       "versao": "2",
- *       "data": "2017-10-16T00:38:40.637Z",
- *       "duracao": 58.02,
- *       "log": "public.aux_valida_a:18 | public.aux_valida_p:517",
- *       "parametros": "db_SourceDataset_POSTGIS:mi_2906-1-se"
+ *       "version": "2",
+ *       "run_date": "2017-10-16T00:38:40.637Z",
+ *       "run_time": 58.02,
+ *       "log": "edgv.aux_valida_a:18 | edgv.aux_valida_p:517",
+ *       "parameters": "db_SourceDataset_POSTGIS:mi_2906-1-se"
  *     }
  *
  * @apiError JobNotFound O Id da tarefa não foi encontrado.
@@ -89,8 +107,21 @@ router.get('/', (req, res, next) => {
  *       "error": "JobNotFound"
  *     }
  */
-router.get('/:id', (req, res, next) => {
-  jobsCtrl.getJobStatus(req, res, next, req.params.id)
-})
+router.get("/:id", (req, res, next) => {
+  let { error, data } = await jobsCtrl.getJobStatus(req.params.id);
+  if (error) {
+    return next(error);
+  }
 
-module.exports = router
+  return sendJsonAndLog(
+    true,
+    "Job information returned",
+    "jobs_route",
+    null,
+    res,
+    200,
+    data
+  );
+});
+
+module.exports = router;

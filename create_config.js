@@ -5,37 +5,37 @@ const inquirer = require("inquirer");
 const chalk = require("chalk");
 
 const createConfig = async () => {
-  console.log(chalk.blue("Sistema de Apoio a Produção"));
-  console.log(chalk.blue("Criação do arquivo de configuração"));
+  console.log(chalk.blue("FME Manager REST API"));
+  console.log(chalk.blue("Create config file"));
 
   var questions = [
     {
       type: "input",
       name: "db_server",
-      message: "Qual o endereço de IP do servidor do banco de dados PostgreSQL?"
+      message: "Enter the IP Address for the PostgreSQL database"
     },
     {
       type: "input",
       name: "db_port",
-      message: "Qual a porta do servidor do banco de dados PostgreSQL?",
+      message: "Enter the port for the PostgreSQL database",
       default: 5432
     },
     {
       type: "input",
       name: "db_user",
       message:
-        "Qual o nome do usuário administrador do SAP (já existente no banco de dados)?",
-      default: "controle_app"
+        "Enter the user name for database administration (should already exist)",
+      default: "fme_app"
     },
     {
       type: "password",
       name: "db_password",
-      message: "Qual a senha do usuário administrador do SAP?"
+      message: "Enter the password for the administration user"
     },
     {
       type: "input",
       name: "db_name",
-      message: "Qual o nome do banco de dados do SAP?",
+      message: "Enter the database name for the FME Manager",
       default: "sap"
     },
     {
@@ -47,13 +47,13 @@ const createConfig = async () => {
     {
       type: "input",
       name: "port",
-      message: "Qual a porta do serviço do SAP?",
-      default: 3013
+      message: "Enter the port for the FME Manager service",
+      default: 3014
     },
     {
       type: "password",
       name: "jwt_secret",
-      message: "Defina um Seed para geração do token de autenticação."
+      message: "Enter the secret for the JWT generation"
     }
   ];
 
