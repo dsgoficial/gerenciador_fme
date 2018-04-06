@@ -27,12 +27,7 @@ CREATE TABLE fme.workspace_version(
 CREATE TABLE fme.parameters( --Os valores são extraídos do FME
 	id SERIAL NOT NULL PRIMARY KEY,
 	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id), --Parâmetros de uma versão da tabela do FME
-	name VARCHAR(255) NOT NULL,
-	description VARCHAR(255),
-	optional BOOLEAN,
-	type VARCHAR(255),
-	values VARCHAR(255),
-	default_values VARCHAR(255)
+	name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE fme.status(

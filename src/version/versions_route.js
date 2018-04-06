@@ -1,9 +1,15 @@
-const express = require('express')
+"use strict";
 
-const versionsCtrl = require('../controllers/versions_ctrl')
-const validator = require('../utils/model_validation')
+const express = require("express");
+const Joi = require("joi");
+const uuid = require("uuid/v4");
 
-const router = express.Router()
+const { sendJsonAndLog } = require("../logger");
+
+const versionsCtrl = require("./versions_ctrl");
+const versionsModel = require("./versions_model");
+
+const router = express.Router();
 
 /**
  * @api {get} /versions Lista todas as versões de workspaces
@@ -12,8 +18,8 @@ const router = express.Router()
  * @apiGroup Version
  * @apiPermission gerente
  *
- * @apiDescription Utilizado para retornar a lista de versões 
- * 
+ * @apiDescription Utilizado para retornar a lista de versões
+ *
  * @apiSuccess {Object[]} jobs  Lista de tarefas.
  * @apiSuccess {UUID} jobs.jobid  UUID que identifica a tarefa.
  * @apiSuccess {String} jobs.status  Status de execução da tarefa.
@@ -23,7 +29,7 @@ const router = express.Router()
  * @apiSuccess {Number} jobs.duracao  Tempo em segundos da execução da tarefa.
  * @apiSuccess {String} jobs.log  Log de execução da tarefa.
  * @apiSuccess {String} jobs.parametros  Parâmetros de entrada da tarefa.
- * 
+ *
  * @apiSuccessExample Resposta em caso de Sucesso:
  *     HTTP/1.1 200 OK
  *     [{
@@ -45,23 +51,94 @@ const router = express.Router()
  *       "error": "NoAccessRight"
  *     }
  */
-router.get('/', (req, res, next) => {
-    versionsCtrl.getWorkspacesVersion(req, res, next)
-})
+router.get("/", async (req, res, next) => {
+  let { error, data } = await versionsCtrl.get(req.query.last === "true");
+  if (error) {
+    return next(error);
+  }
 
-router.get('/last', (req, res, next) => {
-    versionsCtrl.getLastWorkspacesVersion(req, res, next)
-})
+  return sendJsonAndLog(
+    true,
+    "Versions returned",
+    "versions_route",
+    null,
+    res,
+    200,
+    data
+  );
+});
 
+router.put("/:id", async (req, res, next) => {
+  let validationResult = Joi.validate(req.body, versionsModel.version);
+  if (validationResult.error) {
+    const err = new Error("Update versions validation error");
+    err.status = 400;
+    err.context = "versions_route";
+    err.information = {};
+    err.information.id = req.params.id;
+    err.information.body = req.body;
+    err.information.trace = validationResult.error;
+    return next(err);
+  }
 
-router.put('/:id', validator.versions, (req, res, next) => {
-  versionsCtrl.putVersion(req, res, next, req.body, req.params.id)
-})
+  let { error } = await versionsCtrl.update(
+    req.params.id,
+    req.body.name,
+    req.body.author,
+    req.body.version_date,
+    req.body.acessible
+  );
+  if (error) {
+    return next(error);
+  }
 
+  return sendJsonAndLog(
+    true,
+    "Version updated",
+    "versions_route",
+    {
+      id: req.params.id,
+      body: req.body
+    },
+    res,
+    200,
+    null
+  );
+});
 
-//Criar uma nova execução do FME
-router.post('/:id/jobs', validator.jobs, (req, res, next) => {
-  versionsCtrl.createExecuteJob(req, res, next, req.body, req.params.id)
-})
+router.post("/:id/jobs", async (req, res, next) => {
+  let validationResult = Joi.validate(req.body, versionsModel.job);
+  if (validationResult.error) {
+    const err = new Error("Run job validation error");
+    err.status = 400;
+    err.context = "versions_route";
+    err.information = {};
+    err.information.body = req.body;
+    err.information.trace = validationResult.error;
+    return next(err);
+  }
+  let job_uuid = uuid();
+  let { error } = await versionsCtrl.create(
+    req.params.id,
+    job_uuid,
+    req.body.parameters
+  );
+  if (error) {
+    return next(error);
+  }
 
-module.exports = router
+  return sendJsonAndLog(
+    true,
+    "Job created",
+    "versions_route",
+    {
+      id: req.params.id,
+      body: req.body
+    },
+    res,
+    201,
+    { job_uuid }
+  );
+});
+
+module.exports = router;

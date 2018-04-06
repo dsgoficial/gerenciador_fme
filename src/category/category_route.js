@@ -35,7 +35,7 @@ const router = express.Router();
  *     }]
  *
  */
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   let { error, data } = await categoryCtrl.get();
   if (error) {
     return next(error);
@@ -92,7 +92,7 @@ router.get("/", (req, res, next) => {
  *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
  *     }
  */
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
   let validationResult = Joi.validate(req.body, categoryModel.category);
   if (validationResult.error) {
     const err = new Error("Create category validation error");
@@ -175,7 +175,7 @@ router.post("/", (req, res, next) => {
  *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
  * }
  */
-router.put("/:id", (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
   let validationResult = Joi.validate(req.body, categoryModel.category);
   if (validationResult.error) {
     const err = new Error("Update category validation error");

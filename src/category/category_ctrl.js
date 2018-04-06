@@ -16,8 +16,7 @@ controller.get = async () => {
     const err = new Error("Error getting all categories");
     err.status = 500;
     err.context = "category_ctrl";
-    err.information = {};
-    err.information.trace = error;
+    err.information = { trace: error };
     return { error: err, data: null };
   }
 };
@@ -35,8 +34,7 @@ controller.create = async name => {
     const err = new Error("Error creating new category");
     err.status = 500;
     err.context = "category_ctrl";
-    err.information = {};
-    err.information.trace = error;
+    err.information = { name, trace: error };
     return { error: err };
   }
 };
@@ -53,9 +51,7 @@ controller.update = async (id, name) => {
       let error = new Error("Category not found.");
       error.status = 404;
       error.context = "category_ctrl";
-      error.information = {};
-      error.information.id = id;
-      error.information.name = name;
+      error.information = { id, name };
       throw error;
     }
     return { error: null };
@@ -66,10 +62,7 @@ controller.update = async (id, name) => {
       const err = new Error("Error updating category");
       err.status = 500;
       err.context = "category_ctrl";
-      err.information = {};
-      err.information.id = id;
-      err.information.name = name;
-      err.information.trace = error;
+      err.information = { id, name, trace: error };
       return { error: err };
     }
   }

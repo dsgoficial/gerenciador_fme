@@ -1,10 +1,10 @@
-const fs = require('fs')
-const PythonShell = require('python-shell')
-const settings = require('../config.json')
+"use strict";
 
-const pythonRunner = {}
+const path = require("path");
+const fs = require('fs');
 
-//da parse no arquivo log para extrair o sumario de execução
+/*
+
 const getSummary = logPath => {
   return new Promise((resolve, reject) => {
     logPath = logPath.trim()
@@ -42,32 +42,6 @@ const getSummary = logPath => {
   })
 }
 
-/* Esta função recebe como entrada a localização da tabela do FME no servidor
-  e executa o script python fme_params utilizando PythonShell.
-  O script fme_params retorna um JSON contendo informações sobre os parametros desc
-  entrada e saída da tabela do FME.
-*/
-pythonRunner.getParams = caminhoWorkspace => {
-  const options = {
-    mode: 'json',
-    pythonPath: settings.python,
-    args: [settings.pythonFME, caminhoWorkspace]
-  }
-  return new Promise(function(resolve, reject) {
-    PythonShell.run('./src/python/fme_params.py', options, (err, results) => {
-    if (err){
-      reject('Erro na execução do script python fme_params.')
-    }
-    if(results && results.length > 0){
-      resolve(results[0])
-    } else {
-      reject('Erro na execução do script python fme_params.')
-    } 
-    })
-  })
-}
-
-//executa uma workspace do FME dado o caminho para ela e seus parametros
 pythonRunner.runWorkspace = (caminhoWorkspace, parametros) => {
   const options = {
     mode: 'text',
@@ -99,4 +73,9 @@ pythonRunner.runWorkspace = (caminhoWorkspace, parametros) => {
   })
 }
 
-module.exports = pythonRunner
+module.exports = pythonRunner */
+
+const getSummary = logPath => {};
+const fmeRunner = (path, parameters) => {};
+
+module.exports.fmeRunner = fmeRunner;

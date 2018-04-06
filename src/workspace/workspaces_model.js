@@ -36,7 +36,7 @@ const workspaceVersion = Joi.object().keys({
     .min(1)
     .max(255)
     .required(),
-  version_date: joi.date()
+  version_date: Joi.date()
 });
 
 module.exports.workspaceVersion = workspaceVersion;

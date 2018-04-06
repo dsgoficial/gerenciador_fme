@@ -6,12 +6,12 @@ const Joi = require("joi");
 const { sendJsonAndLog } = require("../logger");
 
 const workspacesCtrl = require("./workspaces_ctrl");
-const workspacesModel = require("./workspaces_model");
-const uploadFile = require("./upload_file");
+const { workspaceVersion, workspace } = require("./workspaces_model");
+const upload_workspace = require("./upload_workspace");
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   let { error, data } = await workspacesCtrl.get();
   if (error) {
     return next(error);
@@ -28,8 +28,8 @@ router.get("/", (req, res, next) => {
   );
 });
 
-router.put("/:id", (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspacesModel.workspace);
+router.put("/:id", async (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspace);
   if (validationResult.error) {
     const err = new Error("Update workspace validation error");
     err.status = 400;
@@ -65,8 +65,8 @@ router.put("/:id", (req, res, next) => {
 });
 
 
-router.post("/:id/versions", (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspacesModel.workspaceVersion);
+router.post("/:id/versions", async (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspaceVersion);
   if (validationResult.error) {
     const err = new Error("Create workspace validation error");
     err.status = 400;
@@ -78,7 +78,7 @@ router.post("/:id/versions", (req, res, next) => {
     return next(err);
   }
 
-  uploadFile(req, res, e => {
+  uploadFile(req, res, async e => {
     if (e) {
       const err = new Error("Upload workspace file error");
       err.status = 400;
@@ -119,8 +119,8 @@ router.post("/:id/versions", (req, res, next) => {
 });
 
 
-router.post("/", (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspacesModel.workspaceVersion);
+router.post("/", async (req, res, next) => {
+  let validationResult = Joi.validate(req.body, workspaceVersion);
   if (validationResult.error) {
     const err = new Error("Create workspace validation error");
     err.status = 400;
@@ -131,7 +131,7 @@ router.post("/", (req, res, next) => {
     return next(err);
   }
 
-  uploadFile(req, res, e => {
+  uploadFile(req, res, async e => {
     if (e) {
       const err = new Error("Upload workspace file error");
       err.status = 400;

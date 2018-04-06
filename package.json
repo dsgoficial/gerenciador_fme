@@ -17,7 +17,11 @@
     "production": "pm2 start src/index.js --name gerenciador-fme",
     "config": "node create_config.js"
   },
-  "keywords": ["FME", "Node", "Express"],
+  "keywords": [
+    "FME",
+    "Node",
+    "Express"
+  ],
   "author": "DSG/1CGEO <diniz.felipe@eb.mil.br>",
   "license": "MIT",
   "bugs": {

@@ -1,11 +1,13 @@
 "use strict";
+const express = require("express");
+const path = require("path");
 
 const { loginRoute, loginMiddleware } = require("./login");
 
 const { categoryRoute } = require("./category");
 const { jobRoute } = require("./job");
-const { workspaceRoute } = require("./workspace");
-const { versionRoute } = require("./version");
+const { workspacesRoute } = require("./workspace");
+const { versionsRoute } = require("./version");
 
 const routes = app => {
   app.use("/login", loginRoute);
@@ -21,7 +23,7 @@ const routes = app => {
 
   app.use("/categories", categoryRoute);
   app.use("/jobs", jobRoute);
-  app.use("/workspaces", workspaceRoute);
-  app.use("/versions", versionRoute);
+  app.use("/workspaces", workspacesRoute);
+  app.use("/versions", versionsRoute);
 };
 module.exports = routes;

@@ -49,7 +49,7 @@ const router = express.Router();
  *       "error": "NoAccessRight"
  *     }
  */
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
   let { error, data } = await jobsCtrl.get();
   if (error) {
     return next(error);
@@ -107,7 +107,7 @@ router.get("/", (req, res, next) => {
  *       "error": "JobNotFound"
  *     }
  */
-router.get("/:id", (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   let { error, data } = await jobsCtrl.getJobStatus(req.params.id);
   if (error) {
     return next(error);

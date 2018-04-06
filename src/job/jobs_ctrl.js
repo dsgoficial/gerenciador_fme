@@ -18,8 +18,7 @@ controller.get = async () => {
     const err = new Error("Error getting all jobs");
     err.status = 500;
     err.context = "job_ctrl";
-    err.information = {};
-    err.information.trace = error;
+    err.information = {trace: error};
     return { error: err, data: null };
   }
 };
@@ -38,8 +37,7 @@ controller.getJobStatus = async uuid => {
       let error = new Error("Job not found.");
       error.status = 404;
       error.context = "job_ctrl";
-      error.information = {};
-      error.information.uuid = uuid;
+      error.information = {uuid};
       throw error;
     }
     return { error: null, data: data };
@@ -50,9 +48,7 @@ controller.getJobStatus = async uuid => {
       const err = new Error("Error finding job.");
       err.status = 500;
       err.context = "job_ctrl";
-      err.information = {};
-      err.information.uuid = uuid;
-      err.information.trace = error;
+      err.information = {uuid, trace: error};
       return { error: err, data: null };
     }
   }

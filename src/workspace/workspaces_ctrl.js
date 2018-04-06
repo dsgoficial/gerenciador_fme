@@ -17,8 +17,7 @@ controller.get = async () => {
     const err = new Error("Error getting all workspaces");
     err.status = 500;
     err.context = "workspaces_ctrl";
-    err.information = {};
-    err.information.trace = error;
+    err.information = { trace: error };
     return { error: err, data: null };
   }
 };
@@ -35,9 +34,7 @@ controller.update = async (id, name, description, categoryId) => {
       let error = new Error("Workspace not found.");
       error.status = 404;
       error.context = "workspaces_ctrl";
-      error.information = {};
-      error.information.id = id;
-      error.information.name = name;
+      error.information = { id, name, description, categoryId };
       throw error;
     }
     return { error: null };
@@ -48,10 +45,7 @@ controller.update = async (id, name, description, categoryId) => {
       const err = new Error("Error updating workspace");
       err.status = 500;
       err.context = "workspaces_ctrl";
-      err.information = {};
-      err.information.id = id;
-      err.information.name = name;
-      err.information.trace = error;
+      error.information = { id, name, description, categoryId, trace: error };
       return { error: err };
     }
   }
@@ -96,18 +90,10 @@ controller.saveWorkspace = async (
         queries.push(
           t.none(
             ```
-            INSERT INTO fme.parameters(workspace_version_id, name, description, optional, type, values, default_values)
-            VALUES($1,$2,$3,$4,$5,$6,$7)
+            INSERT INTO fme.parameters(workspace_version_id, name)
+            VALUES($1, $2)
             ```,
-            [
-              version.id,
-              p.name,
-              p.description,
-              p.optional,
-              p.type,
-              p.values,
-              p.default_values
-            ]
+            [version.id, p]
           )
         );
       });
@@ -118,8 +104,17 @@ controller.saveWorkspace = async (
     const err = new Error("Error creating new workspace");
     err.status = 500;
     err.context = "workspaces_ctrl";
-    err.information = {};
-    err.information.trace = error;
+    err.information = {
+      workspacePath,
+      versionName,
+      versionDate,
+      versionAuthor,
+      name,
+      description,
+      categoryId,
+      workspaceId,
+      trace: error
+    };
     return { error: err };
   }
 };
