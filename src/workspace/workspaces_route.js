@@ -34,17 +34,15 @@ router.put("/:id", async (req, res, next) => {
     const err = new Error("Update workspace validation error");
     err.status = 400;
     err.context = "workspaces_route";
-    err.information = {};
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = { body: req.body, trace: validationResult.error };
     return next(err);
   }
 
   let { error } = await workspacesCtrl.update(
-      req.params.id,
-      req.body.name,
-      req.body.description,
-      req.body.category_id
+    req.params.id,
+    req.body.name,
+    req.body.description,
+    req.body.category_id
   );
   if (error) {
     return next(error);
@@ -64,17 +62,17 @@ router.put("/:id", async (req, res, next) => {
   );
 });
 
-
 router.post("/:id/versions", async (req, res, next) => {
   let validationResult = Joi.validate(req.body, workspaceVersion);
   if (validationResult.error) {
     const err = new Error("Create workspace validation error");
     err.status = 400;
     err.context = "workspaces_route";
-    err.information = {};
-    err.information.id = req.params.id;
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = {
+      id: req.params.id,
+      body: req.body,
+      trace: validationResult.error
+    };
     return next(err);
   }
 
@@ -83,10 +81,11 @@ router.post("/:id/versions", async (req, res, next) => {
       const err = new Error("Upload workspace file error");
       err.status = 400;
       err.context = "workspaces_route";
-      err.information = {};
-      err.information.id = req.params.id;
-      err.information.body = req.body;
-      err.information.trace = e;
+      err.information = {
+        id: req.params.id,
+        body: req.body,
+        trace: e
+      };
       return next(err);
     }
     let { error } = await workspacesCtrl.saveWorkspace(
@@ -118,16 +117,13 @@ router.post("/:id/versions", async (req, res, next) => {
   });
 });
 
-
 router.post("/", async (req, res, next) => {
   let validationResult = Joi.validate(req.body, workspaceVersion);
   if (validationResult.error) {
     const err = new Error("Create workspace validation error");
     err.status = 400;
     err.context = "workspaces_route";
-    err.information = {};
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = { body: req.body, trace: validationResult.error };
     return next(err);
   }
 
@@ -136,9 +132,7 @@ router.post("/", async (req, res, next) => {
       const err = new Error("Upload workspace file error");
       err.status = 400;
       err.context = "workspaces_route";
-      err.information = {};
-      err.information.body = req.body;
-      err.information.trace = e;
+      err.information = { body: req.body, trace: e };
       return next(err);
     }
     let { error } = await workspacesCtrl.saveWorkspace(

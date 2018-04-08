@@ -1,15 +1,11 @@
 (function() {
-    'use strict';
+  "use strict";
 
-    var mainCtrl = function($scope, dataFactory) {
+  var mainCtrl = function($scope, dataFactory) {
+    $scope.abaAtiva = "executar";
+  };
 
-      $scope.abaAtiva = 'executar';
+  mainCtrl.$inject = ["$scope", "dataFactory"];
 
-    };
-
-    mainCtrl.$inject = ['$scope', 'dataFactory'];
-
-    angular.module('fmeApp')
-        .controller('mainCtrl', mainCtrl);
-
+  angular.module("fmeApp").controller("mainCtrl", mainCtrl);
 })();

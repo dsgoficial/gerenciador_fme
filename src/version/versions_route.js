@@ -74,10 +74,11 @@ router.put("/:id", async (req, res, next) => {
     const err = new Error("Update versions validation error");
     err.status = 400;
     err.context = "versions_route";
-    err.information = {};
-    err.information.id = req.params.id;
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = {
+      id: req.params.id,
+      body: req.body,
+      trace: validationResult.error
+    };
     return next(err);
   }
 
@@ -112,9 +113,7 @@ router.post("/:id/jobs", async (req, res, next) => {
     const err = new Error("Run job validation error");
     err.status = 400;
     err.context = "versions_route";
-    err.information = {};
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = { body: req.body, trace: validationResult.error };
     return next(err);
   }
   let job_uuid = uuid();

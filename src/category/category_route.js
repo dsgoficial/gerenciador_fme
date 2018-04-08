@@ -98,15 +98,11 @@ router.post("/", async (req, res, next) => {
     const err = new Error("Create category validation error");
     err.status = 400;
     err.context = "category_route";
-    err.information = {};
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = { body: req.body, trace: validationResult.error };
     return next(err);
   }
 
-  let { error } = await categoryCtrl.create(
-      req.body.name
-  );
+  let { error } = await categoryCtrl.create(req.body.name);
   if (error) {
     return next(error);
   }
@@ -181,17 +177,15 @@ router.put("/:id", async (req, res, next) => {
     const err = new Error("Update category validation error");
     err.status = 400;
     err.context = "category_route";
-    err.information = {};
-    err.information.id = req.params.id;
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = {
+      id: req.params.id,
+      body: req.body,
+      trace: validationResult.error
+    };
     return next(err);
   }
 
-  let { error } = await categoryCtrl.update(
-      req.params.id,
-      req.body.name
-  );
+  let { error } = await categoryCtrl.update(req.params.id, req.body.name);
   if (error) {
     return next(error);
   }

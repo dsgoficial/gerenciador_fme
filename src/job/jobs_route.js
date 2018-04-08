@@ -117,7 +117,9 @@ router.get("/:id", async (req, res, next) => {
     true,
     "Job information returned",
     "jobs_route",
-    null,
+    {
+      id: req.params.id
+    },
     res,
     200,
     data
