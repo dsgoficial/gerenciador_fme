@@ -3,11 +3,7 @@
 const Joi = require("joi");
 
 const category = Joi.object().keys({
-  name: Joi.string()
-    .alphanum()
-    .min(1)
-    .max(255)
-    .required()
+  name: Joi.string().required()
 });
 
 module.exports.category = category;

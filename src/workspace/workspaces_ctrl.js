@@ -8,9 +8,9 @@ const controller = {};
 controller.get = async () => {
   try {
     let data = await db.any(
-      ```
+      `
       SELECT id, name, description, category_id FROM fme.workspace
-      ```
+      `
     );
     return { error: null, data: data };
   } catch (error) {
@@ -25,9 +25,9 @@ controller.get = async () => {
 controller.update = async (id, name, description, categoryId) => {
   try {
     let result = await db.result(
-      ```
+      `
       UPDATE fme.workspace SET name =$1, description =$2, category_id =$3 WHERE id = $4
-      ```,
+      `,
       [name, description, categoryId, id]
     );
     if (!result.rowCount || result.rowCount < 1) {
@@ -62,37 +62,35 @@ controller.saveWorkspace = async (
   workspaceId
 ) => {
   try {
-    let params = await getParams(workspacePath);
-
+    let params = getParams(workspacePath);
     await db.tx(async t => {
       if (!workspaceId) {
         let workspace = await t.one(
-          ```
+          `
           INSERT INTO fme.workspace(name, description, category_id) VALUES($1,$2,$3) RETURNING id
-          ```,
+          `,
           [name, description, categoryId]
         );
-        const workspaceId = workspace.id;
+        workspaceId = workspace.id;
       }
 
-      let versionDate = new Date(versionDate).toISOString();
+      versionDate = new Date(versionDate).toISOString();
 
       let version = await t.one(
-        ```
+        `
         INSERT INTO fme.workspace_version(workspace_id, name, version_date, author, workspace_path, accessible)
         VALUES($1,$2,$3,$4,$5,TRUE) RETURNING id
-        ```,
+        `,
         [workspaceId, versionName, versionDate, versionAuthor, workspacePath]
       );
-
       let queries = [];
       params.forEach(p => {
         queries.push(
           t.none(
-            ```
+            `
             INSERT INTO fme.parameters(workspace_version_id, name)
             VALUES($1, $2)
-            ```,
+            `,
             [version.id, p]
           )
         );

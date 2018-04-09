@@ -87,7 +87,7 @@ router.put("/:id", async (req, res, next) => {
     req.body.name,
     req.body.author,
     req.body.version_date,
-    req.body.acessible
+    req.body.accessible
   );
   if (error) {
     return next(error);

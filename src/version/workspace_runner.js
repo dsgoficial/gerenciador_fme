@@ -3,40 +3,6 @@
 const fs = require("fs");
 const exec = require("child_process").exec;
 
-/*
-pythonRunner.runWorkspace = (caminhoWorkspace, parametros) => {
-  const options = {
-    mode: 'text',
-    pythonPath: settings.python,
-    args: [settings.pythonFME, caminhoWorkspace,JSON.stringify(parametros)]
-  }
-  return new Promise((resolve, reject) => {
-    let t0 = new Date()
-    let t1
-    PythonShell.run('./src/python/fme_runner.py', options, async (err, result) => {
-      if (err){
-        reject('Erro na execução do script python fme_runner.')
-      } else {
-        t1 = (new Date() - t0)/1000
-        if(result && result.length > 0 && result[0].search('Failure') == -1){
-          let logfile = result[0]
-          let summary
-          try {
-            summary = await getSummary(logfile)
-            resolve({tempo: t1, summary})
-          } catch (error){
-            reject('Erro na leitura do log.')
-          }
-        } else {
-          reject('Erro de execução na tabela do FME.')
-        }
-      }
-    })
-  })
-}
-
-module.exports = pythonRunner */
-
 const getSummary = logPath => {
   logPath = logPath.trim();
 
@@ -65,7 +31,6 @@ const getSummary = logPath => {
   if (summary.length == 0) {
     summary.push("Sem feições gravadas");
   }
-  console.log(summary);
   return summary;
 };
 

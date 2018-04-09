@@ -22,7 +22,7 @@ const sendJsonAndLog = (
     jsonData = {
       sucess: sucess,
       message: message,
-      dados: dados
+      data: dados
     };
   } else {
     jsonData = {

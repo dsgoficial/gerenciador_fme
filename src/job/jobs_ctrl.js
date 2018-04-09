@@ -7,11 +7,11 @@ const controller = {};
 controller.get = async () => {
   try {
     let data = await db.any(
-      ```
+      `
       SELECT j.job_uuid, j.status, j.run_date, j.run_time, j.log, j.parameters, w.name as workspace, v.name as version
       FROM fme.job as j INNER JOIN fme.workspace_version AS v ON  j.workspace_version_id = v.id
       INNER JOIN fme.workspace AS w ON w.id = v.workspace_id
-      ```
+      `
     );
     return { error: null, data: data };
   } catch (error) {
@@ -25,12 +25,12 @@ controller.get = async () => {
 
 controller.getJobStatus = async uuid => {
   try {
-    let data = await db.result(
-      ```
+    let result = await db.result(
+      `
      SELECT j.job_uuid, j.status, j.run_date, j.run_time, j.log, j.parameters,  w.name as workspace, v.name as version
      FROM fme.job as j INNER JOIN fme.workspace_version AS v ON j.workspace_version_id = v.id
      INNER JOIN fme.workspace AS w ON w.id = v.workspace_id WHERE j.job_uuid = $1
-     ```,
+     `,
       [uuid]
     );
     if (!result.rowCount || result.rowCount < 1) {
@@ -40,7 +40,7 @@ controller.getJobStatus = async uuid => {
       error.information = { uuid };
       throw error;
     }
-    return { error: null, data: data };
+    return { error: null, data: result.rows[0] };
   } catch (error) {
     if (error.message === "Job not found.") {
       return { error: error, data: null };

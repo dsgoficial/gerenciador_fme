@@ -1,18 +1,10 @@
 const Joi = require("joi");
 
 const version = Joi.object().keys({
-  nome: Joi.string()
-    .alphanum()
-    .min(1)
-    .max(255)
-    .required(),
-  author: Joi.string()
-    .alphanum()
-    .min(1)
-    .max(255)
-    .required(),
+  name: Joi.string().required(),
+  author: Joi.string().required(),
   version_date: Joi.date(),
-  acessible: Joi.boolean()
+  accessible: Joi.boolean()
 });
 
 module.exports.version = version;

@@ -107,8 +107,8 @@ router.get("/", async (req, res, next) => {
  *       "error": "JobNotFound"
  *     }
  */
-router.get("/:id", async (req, res, next) => {
-  let { error, data } = await jobsCtrl.getJobStatus(req.params.id);
+router.get("/:uuid", async (req, res, next) => {
+  let { error, data } = await jobsCtrl.getJobStatus(req.params.uuid);
   if (error) {
     return next(error);
   }
@@ -118,7 +118,7 @@ router.get("/:id", async (req, res, next) => {
     "Job information returned",
     "jobs_route",
     {
-      id: req.params.id
+      uuid: req.params.uuid
     },
     res,
     200,

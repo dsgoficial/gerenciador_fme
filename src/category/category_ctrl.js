@@ -7,9 +7,9 @@ const controller = {};
 controller.get = async () => {
   try {
     let data = await db.any(
-      ```
-      SELECT id, name FROM fme.category
-      ```
+      `
+    SELECT id, name FROM fme.category
+    `
     );
     return { error: null, data: data };
   } catch (error) {
@@ -24,9 +24,9 @@ controller.get = async () => {
 controller.create = async name => {
   try {
     await db.any(
-      ```
+      `
       INSERT INTO fme.category(name) VALUES($1)
-      ```,
+      `,
       [name]
     );
     return { error: null };
@@ -42,9 +42,9 @@ controller.create = async name => {
 controller.update = async (id, name) => {
   try {
     let result = await db.result(
-      ```
+      `
       UPDATE fme.category SET name =$1 WHERE id = $2
-      ```,
+      `,
       [name, id]
     );
     if (!result.rowCount || result.rowCount < 1) {

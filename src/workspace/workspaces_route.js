@@ -6,8 +6,8 @@ const Joi = require("joi");
 const { sendJsonAndLog } = require("../logger");
 
 const workspacesCtrl = require("./workspaces_ctrl");
-const { workspaceVersion, workspace } = require("./workspaces_model");
-const upload_workspace = require("./upload_workspace");
+const { workspaceVersion, workspace, version } = require("./workspaces_model");
+const uploadWorkspace = require("./upload_workspace");
 
 const router = express.Router();
 
@@ -63,31 +63,30 @@ router.put("/:id", async (req, res, next) => {
 });
 
 router.post("/:id/versions", async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspaceVersion);
-  if (validationResult.error) {
-    const err = new Error("Create workspace validation error");
-    err.status = 400;
-    err.context = "workspaces_route";
-    err.information = {
-      id: req.params.id,
-      body: req.body,
-      trace: validationResult.error
-    };
-    return next(err);
-  }
-
-  uploadFile(req, res, async e => {
-    if (e) {
+  uploadWorkspace(req, res, async e => {
+    if (e || !req.file) {
       const err = new Error("Upload workspace file error");
+      err.status = 400;
+      err.context = "workspaces_route";
+      err.information = {
+        trace: e
+      };
+      return next(err);
+    }
+
+    let validationResult = Joi.validate(req.body, version);
+    if (validationResult.error) {
+      const err = new Error("Create workspace validation error");
       err.status = 400;
       err.context = "workspaces_route";
       err.information = {
         id: req.params.id,
         body: req.body,
-        trace: e
+        trace: validationResult.error
       };
       return next(err);
     }
+
     let { error } = await workspacesCtrl.saveWorkspace(
       req.file.path,
       req.body.version_name,
@@ -118,21 +117,21 @@ router.post("/:id/versions", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspaceVersion);
-  if (validationResult.error) {
-    const err = new Error("Create workspace validation error");
-    err.status = 400;
-    err.context = "workspaces_route";
-    err.information = { body: req.body, trace: validationResult.error };
-    return next(err);
-  }
-
-  uploadFile(req, res, async e => {
-    if (e) {
+  uploadWorkspace(req, res, async e => {
+    if (e || !req.file) {
       const err = new Error("Upload workspace file error");
       err.status = 400;
       err.context = "workspaces_route";
-      err.information = { body: req.body, trace: e };
+      err.information = { trace: e };
+      return next(err);
+    }
+
+    let validationResult = Joi.validate(req.body, workspaceVersion);
+    if (validationResult.error) {
+      const err = new Error("Create workspace validation error");
+      err.status = 400;
+      err.context = "workspaces_route";
+      err.information = { body: req.body, trace: validationResult.error };
       return next(err);
     }
     let { error } = await workspacesCtrl.saveWorkspace(

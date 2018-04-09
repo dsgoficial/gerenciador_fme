@@ -16,7 +16,7 @@ const routes = app => {
   app.use("/client", express.static(path.join(__dirname, "http_client")));
 
   //Todas as requisições abaixo necessitam Token
-  app.use(loginMiddleware);
+  //app.use(loginMiddleware);
 
   //Serve static files (baixar tabelas do FME carregadas)
   app.use("/fme", express.static(path.join(__dirname, "fme_workspaces")));

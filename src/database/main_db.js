@@ -11,7 +11,7 @@ const initOptions = {
 
 const pgp = require("pg-promise")(initOptions);
 
-const connectionStringMacro =
+const connectionString =
   "postgres://" +
   process.env.DB_USER +
   ":" +
@@ -23,7 +23,7 @@ const connectionStringMacro =
   "/" +
   process.env.DB_NAME;
 
-const db = pgp(connectionStringMacro);
+const db = pgp(connectionString);
 
 db
   .connect()
