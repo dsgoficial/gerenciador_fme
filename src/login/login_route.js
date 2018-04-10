@@ -14,8 +14,8 @@ const router = express.Router();
  * @api {post} /login Autenticação de um usuário
  * @apiGroup Login
  *
- * @apiParam (Request body) {String} usuario Usuário conforme acesso ao banco de dados de produção
- * @apiParam (Request body) {String} senha Senha conforme acesso ao banco de dados de produção
+ * @apiParam (Request body) {String} user Usuário conforme acesso ao banco de dados de produção
+ * @apiParam (Request body) {String} password Senha conforme acesso ao banco de dados de produção
  *
  * @apiSuccess {String} token JWT Token for authentication.
  *
@@ -51,18 +51,16 @@ router.post("/", async (req, res, next) => {
     const err = new Error("Login Post validation error");
     err.status = 400;
     err.context = "login_route";
-    err.information = {};
-    err.information.body = req.body;
-    err.information.trace = validationResult.error;
+    err.information = { body: req.body, trace: validationResult.error };
     return next(err);
   }
 
-  let { loginError, token } = await loginCtrl.login(
-    req.body.usuario,
-    req.body.senha
+  let { error, token } = await loginCtrl.login(
+    req.body.user,
+    req.body.password
   );
-  if (loginError) {
-    return next(loginError);
+  if (error) {
+    return next(error);
   }
 
   return sendJsonAndLog(
@@ -71,7 +69,7 @@ router.post("/", async (req, res, next) => {
     "login_route",
     null,
     res,
-    200,
+    201,
     { token }
   );
 });

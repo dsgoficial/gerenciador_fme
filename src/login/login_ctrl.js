@@ -2,12 +2,12 @@
 
 const jwt = require("jsonwebtoken");
 
-const { db, testdb } = require("../database");
+const { db } = require("../database");
 
 const controller = {};
 
-controller.login = async (usuario, senha) => {
-  let verifycon = await testdb(usuario, senha);
+controller.login = async (user, password) => {
+/*   let verifycon = await testdb(usuario, senha);
   if (!verifycon) {
     const err = new Error("Falha durante autenticação");
     err.status = 401;
@@ -33,7 +33,7 @@ controller.login = async (usuario, senha) => {
     err.information.usuario = usuario;
     err.information.trace = error;
     return { loginError: err, token: null };
-  }
+  } */
 };
 
 module.exports = controller;
