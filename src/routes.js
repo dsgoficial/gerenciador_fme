@@ -2,7 +2,7 @@
 const express = require("express");
 const path = require("path");
 
-const { loginRoute, loginMiddleware } = require("./login");
+const { loginRoute } = require("./login");
 
 const { categoryRoute } = require("./category");
 const { jobRoute } = require("./job");
@@ -14,7 +14,7 @@ const routes = app => {
 
   //Serve HTTP Client
   app.use("/client", express.static(path.join(__dirname, "http_client")));
-  
+
   //Serve static files (baixar tabelas do FME carregadas)
   app.use("/fme", express.static(path.join(__dirname, "fme_workspaces")));
 

@@ -28,6 +28,7 @@
     "url": "https://github.com/dinizime/gerenciador_fme/issues"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "chalk": "^2.3.2",
@@ -38,12 +39,12 @@
     "inquirer": "^5.1.0",
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
+    "multer": "^1.3.0",
     "pg-promise": "^8.2.2",
     "pm2": "^2.10.1",
     "uuid": "^3.2.1",
     "winston": "^3.0.0-rc3",
-    "winston-daily-rotate-file": "^2.0.0-rc.6",
-    "multer": "^1.3.0"
+    "winston-daily-rotate-file": "^2.0.0-rc.6"
   },
   "devDependencies": {
     "apidoc": "^0.17.6",

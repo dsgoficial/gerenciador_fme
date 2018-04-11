@@ -5,6 +5,8 @@ const Joi = require("joi");
 
 const { sendJsonAndLog } = require("../logger");
 
+const { loginMiddleware } = require("../login");
+
 const categoryCtrl = require("./category_ctrl");
 const categoryModel = require("./category_model");
 
@@ -35,7 +37,7 @@ const router = express.Router();
  *     }]
  *
  */
-router.get("/", async (req, res, next) => {
+router.get("/", loginMiddleware, async (req, res, next) => {
   let { error, data } = await categoryCtrl.get();
   if (error) {
     return next(error);
@@ -92,7 +94,7 @@ router.get("/", async (req, res, next) => {
  *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
  *     }
  */
-router.post("/", async (req, res, next) => {
+router.post("/", loginMiddleware, async (req, res, next) => {
   let validationResult = Joi.validate(req.body, categoryModel.category);
   if (validationResult.error) {
     const err = new Error("Create category validation error");
@@ -171,7 +173,7 @@ router.post("/", async (req, res, next) => {
  *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
  * }
  */
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", loginMiddleware, async (req, res, next) => {
   let validationResult = Joi.validate(req.body, categoryModel.category);
   if (validationResult.error) {
     const err = new Error("Update category validation error");

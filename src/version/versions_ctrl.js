@@ -14,10 +14,11 @@ controller.get = async last => {
           t.any(
             `
           SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
-          v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
+          u.name AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY workspace_id ORDER BY version_date DESC) rn FROM fme.workspace_version WHERE accessible = TRUE) AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
           INNER JOIN fme.category AS c ON c.id = w.category_id
+          INNER JOIN fme.user AS u ON u.id = v.author
           WHERE v.rn = 1
           `
           )
@@ -27,10 +28,11 @@ controller.get = async last => {
           t.any(
             `
           SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
-          v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
+          u.name AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM fme.workspace_version AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
           INNER JOIN fme.category AS c ON c.id = w.category_id
+          INNER JOIN fme.user AS u ON u.id = v.author
           `
           )
         );

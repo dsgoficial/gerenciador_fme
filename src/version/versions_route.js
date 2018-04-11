@@ -6,6 +6,8 @@ const uuid = require("uuid/v4");
 
 const { sendJsonAndLog } = require("../logger");
 
+const { loginMiddleware } = require("../login");
+
 const versionsCtrl = require("./versions_ctrl");
 const versionsModel = require("./versions_model");
 
@@ -16,7 +18,7 @@ const router = express.Router();
  * @apiVersion 1.0.0
  * @apiName GetAllVersions
  * @apiGroup Version
- * @apiPermission gerente
+ * @apiPermission Public
  *
  * @apiDescription Utilizado para retornar a lista de versões
  *
@@ -68,7 +70,7 @@ router.get("/", async (req, res, next) => {
   );
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", loginMiddleware, async (req, res, next) => {
   let validationResult = Joi.validate(req.body, versionsModel.version);
   if (validationResult.error) {
     const err = new Error("Update versions validation error");

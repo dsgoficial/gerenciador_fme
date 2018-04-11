@@ -19,7 +19,7 @@ const workspaceVersion = Joi.object().keys({
     .integer()
     .required(),
   version_name: Joi.string().required(),
-  version_author: Joi.string().required(),
+  version_author: Joi.number().integer().required(),
   version_date: Joi.date()
 });
 
@@ -27,7 +27,7 @@ module.exports.workspaceVersion = workspaceVersion;
 
 const version = Joi.object().keys({
   version_name: Joi.string().required(),
-  version_author: Joi.string().required(),
+  version_author: Joi.number().integer().required(),
   version_date: Joi.date()
 });
 

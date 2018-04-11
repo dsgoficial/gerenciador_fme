@@ -2,6 +2,13 @@
 
 CREATE SCHEMA fme;
 
+CREATE TABLE fme.user(
+	id SERIAL NOT NULL PRIMARY KEY,
+	name VARCHAR(255) NOT NULL,
+	login VARCHAR(255) NOT NULL UNIQUE,
+	password VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE fme.category(
 	id SERIAL NOT NULL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL UNIQUE --Categoria em que a tabela do FME pertence (por exemplo uma divisão por fase ou projeto)
@@ -19,7 +26,7 @@ CREATE TABLE fme.workspace_version(
 	workspace_id SMALLINT NOT NULL REFERENCES fme.workspace(id),
 	name VARCHAR(255), --Nome da versão
 	version_date TIMESTAMP WITH TIME ZONE NOT NULL, --Data de upload da tabela, utilizada para definir versão atual
-	author VARCHAR(255), --Autor da tabela para fins de metadados
+	author SMALLINT NOT NULL REFERENCES fme.user(id)
 	workspace_path TEXT NOT NULL, --Path onde será armazenada a tabela no servidor
 	accessible BOOLEAN NOT NULL --Se a tabela está acessível para os usuários ou não
 );

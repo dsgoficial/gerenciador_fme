@@ -5,6 +5,8 @@ const Joi = require("joi");
 
 const { sendJsonAndLog } = require("../logger");
 
+const { loginMiddleware } = require("../login");
+
 const jobsCtrl = require("./jobs_ctrl");
 
 const router = express.Router();
@@ -49,7 +51,7 @@ const router = express.Router();
  *       "error": "NoAccessRight"
  *     }
  */
-router.get("/", async (req, res, next) => {
+router.get("/", loginMiddleware, async (req, res, next) => {
   let { error, data } = await jobsCtrl.get();
   if (error) {
     return next(error);

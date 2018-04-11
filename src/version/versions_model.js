@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const version = Joi.object().keys({
   name: Joi.string().required(),
-  author: Joi.string().required(),
+  author: Joi.number().integer().required(),
   version_date: Joi.date(),
   accessible: Joi.boolean()
 });

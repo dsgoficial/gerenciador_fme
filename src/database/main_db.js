@@ -34,7 +34,7 @@ db
     logger.info("Failed database connection", {
       context: "main_db",
       information: {
-        connectionString: connectionStringMacro
+        connectionString
       }
     });
   });
