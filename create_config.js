@@ -3,6 +3,19 @@
 const fs = require("fs");
 const inquirer = require("inquirer");
 const chalk = require("chalk");
+const pgtools = require("pgtools");
+const path = require("path");
+const bcrypt = require("bcryptjs");
+const promise = require("bluebird");
+
+const initOptions = {
+  promiseLib: promise
+};
+
+const pgp = require("pg-promise")(initOptions);
+
+const QueryFile = pgp.QueryFile;
+fmeserverSQL = new QueryFile( path.resolve("./er/fmeserver.sql"), {minify: true});
 
 const createConfig = async () => {
   console.log(chalk.blue("FME Manager REST API"));
@@ -24,7 +37,7 @@ const createConfig = async () => {
       type: "input",
       name: "db_user",
       message:
-        "Enter the user name for database administration (should already exist)",
+        "Enter the user name for database administration (should already exist in PostgreSQL)",
       default: "fme_app"
     },
     {
@@ -36,13 +49,7 @@ const createConfig = async () => {
       type: "input",
       name: "db_name",
       message: "Enter the database name for the FME Manager",
-      default: "sap"
-    },
-    {
-      type: "confirm",
-      name: "databaseCreation",
-      message: "Deseja criar o banco de dados do SAP?",
-      default: false
+      default: "fme_manager"
     },
     {
       type: "input",
@@ -53,16 +60,67 @@ const createConfig = async () => {
     {
       type: "password",
       name: "jwt_secret",
-      message: "Enter the secret for the JWT generation"
+      message: "Enter the secret for the JSON Web Token"
+    },
+    {
+      type: "input",
+      name: "fme_user",
+      message: "Enter the user name for FME Manager administration",
+      default: "administrator"
+    },
+    {
+      type: "password",
+      name: "fme_password",
+      message: "Enter the password for the FME Manager administration user"
     }
   ];
 
   await inquirer
     .prompt(questions)
     .then(answers => {
-      if (answers.databaseCreation) {
-        //TODO criação do banco de dados
-      }
+      const config = {
+        user: answers.db_user,
+        password: answers.db_password,
+        port: answers.db_port,
+        host: answers.db_server
+      };
+
+      await pgtools.createdb(config, answers.db_name)
+
+      const connectionString =
+      "postgres://" +
+      answers.db_user +
+      ":" +
+     answers.db_password +
+      "@" +
+      answers.db_server +
+      ":" +
+      answers.db_port +
+      "/" +
+      answers.db_name;
+    
+      const db = pgp(connectionString);
+
+      await db.none(fmeserverSQL)
+
+      await db.none(
+        `
+      GRANT USAGE ON SCHEMA fme TO $1;
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1;
+      GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1;
+      `, [answers.db_user]
+      );
+
+
+      let hash = await bcrypt.hash(answers.db_password, 10);
+      await db.none(
+        `
+        INSERT INTO fme.user (name, login, password) VALUES
+        (1, 'Running')
+      `, [answers.fme_user, answers.fme_user, hash]
+      );
+
+      console.log(chalk.blue("FME Manager database created successfully!"));
 
       let env = `PORT=${answers.port}
 DB_SERVER=${answers.db_server}

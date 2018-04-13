@@ -17,7 +17,7 @@ const router = express.Router();
  * @api {get} /versions Lista todas as versões de workspaces
  * @apiVersion 1.0.0
  * @apiName GetAllVersions
- * @apiGroup Version
+ * @apiGroup Workspace Version
  * @apiPermission Public
  *
  * @apiDescription Utilizado para retornar a lista de versões

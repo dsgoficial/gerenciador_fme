@@ -17,7 +17,7 @@ const router = express.Router();
  * @apiVersion 1.0.0
  * @apiName GetAllCategories
  * @apiGroup Category
- * @apiPermission Logged User
+ * @apiPermission Manager
  *
  * @apiDescription Used to return a list of categories
  *
@@ -36,6 +36,23 @@ const router = express.Router();
  *       "name": "Transportation"
  *     }]
  *
+ * @apiError NoAccessRight Invalid token.
+ *
+ * @apiErrorExample NoAccessRight:
+ *     HTTP/1.1 401 Not Authenticated
+ *     {
+ *       "success": false
+ *       "message": "Failed to authenticate token"
+ *     }
+ *
+ * @apiError NoAccessRight No token provided.
+ *
+ * @apiErrorExample NoAccessRight:
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "success": false
+ *       "message": "No token provided"
+ *     }
  */
 router.get("/", loginMiddleware, async (req, res, next) => {
   let { error, data } = await categoryCtrl.get();

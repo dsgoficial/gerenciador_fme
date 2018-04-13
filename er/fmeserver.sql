@@ -58,8 +58,4 @@ CREATE TABLE fme.job( --Execução de uma tabela do FME
 	parameters TEXT
 );
 
-GRANT USAGE ON SCHEMA fme TO fme_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO fme_app;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO fme_app;
-
 COMMIT;
