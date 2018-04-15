@@ -14,10 +14,11 @@ const initOptions = {
 
 const pgp = require("pg-promise")(initOptions);
 
-const QueryFile = pgp.QueryFile;
-fmeserverSQL = new QueryFile( path.resolve("./er/fmeserver.sql"), {minify: true});
+const fmeManagerSQL = fs
+  .readFileSync(path.resolve("./er/fme_manager.sql"), "utf-8")
+  .trim();
 
-const createConfig = async () => {
+const createConfig = () => {
   console.log(chalk.blue("FME Manager REST API"));
   console.log(chalk.blue("Create config file"));
 
@@ -37,7 +38,7 @@ const createConfig = async () => {
       type: "input",
       name: "db_user",
       message:
-        "Enter the user name for database administration (should already exist in PostgreSQL)",
+        "Enter the user name for database administration (should already exist in PostgreSQL and have database creation privilege)",
       default: "fme_app"
     },
     {
@@ -75,49 +76,49 @@ const createConfig = async () => {
     }
   ];
 
-  await inquirer
-    .prompt(questions)
-    .then(answers => {
-      const config = {
-        user: answers.db_user,
-        password: answers.db_password,
-        port: answers.db_port,
-        host: answers.db_server
-      };
+  inquirer.prompt(questions).then(async answers => {
+    const config = {
+      user: answers.db_user,
+      password: answers.db_password,
+      port: answers.db_port,
+      host: answers.db_server
+    };
 
-      await pgtools.createdb(config, answers.db_name)
+    try {
+      await pgtools.createdb(config, answers.db_name);
 
       const connectionString =
-      "postgres://" +
-      answers.db_user +
-      ":" +
-     answers.db_password +
-      "@" +
-      answers.db_server +
-      ":" +
-      answers.db_port +
-      "/" +
-      answers.db_name;
-    
+        "postgres://" +
+        answers.db_user +
+        ":" +
+        answers.db_password +
+        "@" +
+        answers.db_server +
+        ":" +
+        answers.db_port +
+        "/" +
+        answers.db_name;
+
       const db = pgp(connectionString);
 
-      await db.none(fmeserverSQL)
+      await db.none(fmeManagerSQL);
 
       await db.none(
         `
-      GRANT USAGE ON SCHEMA fme TO $1;
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1;
-      GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1;
-      `, [answers.db_user]
+      GRANT USAGE ON SCHEMA fme TO $1:name;
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1:name;
+      GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1:name;
+      `,
+        [answers.db_user]
       );
-
 
       let hash = await bcrypt.hash(answers.db_password, 10);
       await db.none(
         `
         INSERT INTO fme.user (name, login, password) VALUES
-        (1, 'Running')
-      `, [answers.fme_user, answers.fme_user, hash]
+        ($1, $1, $2)
+      `,
+        [answers.fme_user, hash]
       );
 
       console.log(chalk.blue("FME Manager database created successfully!"));
@@ -132,8 +133,41 @@ JWT_SECRET=${answers.jwt_secret}`;
 
       fs.writeFileSync(".env", env);
       console.log(chalk.blue("Config file created successfully!"));
-    })
-    .catch(err => console.log(err));
+    } catch (error) {
+      if (
+        error.message ===
+        "Postgres error. Cause: permission denied to create database"
+      ) {
+        console.log(
+          chalk.red(
+            "The user passed does not have permission to create databases."
+          )
+        );
+      } else if (
+        error.message ===
+        'Attempted to create a duplicate database. Cause: database "' +
+          answers.db_name +
+          '" already exists'
+      ) {
+        console.log(
+          chalk.red("The database " + answers.db_name + " already exists.")
+        );
+      } else if (
+        error.message ===
+        'password authentication failed for user "' + answers.db_user + '"'
+      ) {
+        console.log(
+          chalk.red(
+            "Password authentication failed for the user " + answers.db_user
+          )
+        );
+      } else {
+        console.log(error.message);
+        console.log("-------------------------------------------------");
+        console.log(error);
+      }
+    }
+  });
 };
 
 createConfig();

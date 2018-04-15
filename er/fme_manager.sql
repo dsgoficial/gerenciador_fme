@@ -1,5 +1,4 @@
-﻿BEGIN;
-
+﻿
 CREATE SCHEMA fme;
 
 CREATE TABLE fme.user(
@@ -11,29 +10,29 @@ CREATE TABLE fme.user(
 
 CREATE TABLE fme.category(
 	id SERIAL NOT NULL PRIMARY KEY,
-	name VARCHAR(255) NOT NULL UNIQUE --Categoria em que a tabela do FME pertence (por exemplo uma divisão por fase ou projeto)
+	name VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE fme.workspace(
 	id SERIAL NOT NULL PRIMARY KEY,
-	name VARCHAR(255) NOT NULL, --Nome da tabela do FME
-	description TEXT NOT NULL, --Descrição do que a tabela do FME faz
-	category_id SMALLINT NOT NULL REFERENCES fme.category(id) --Uma workspace pertence a uma categoria
+	name VARCHAR(255) NOT NULL,
+	description TEXT NOT NULL,
+	category_id SMALLINT NOT NULL REFERENCES fme.category(id)
 );
 
 CREATE TABLE fme.workspace_version(
 	id SERIAL NOT NULL PRIMARY KEY,
 	workspace_id SMALLINT NOT NULL REFERENCES fme.workspace(id),
-	name VARCHAR(255), --Nome da versão
-	version_date TIMESTAMP WITH TIME ZONE NOT NULL, --Data de upload da tabela, utilizada para definir versão atual
-	author SMALLINT NOT NULL REFERENCES fme.user(id)
-	workspace_path TEXT NOT NULL, --Path onde será armazenada a tabela no servidor
-	accessible BOOLEAN NOT NULL --Se a tabela está acessível para os usuários ou não
+	name VARCHAR(255),
+	version_date TIMESTAMP WITH TIME ZONE NOT NULL,
+	author SMALLINT NOT NULL REFERENCES fme.user(id),
+	workspace_path TEXT NOT NULL,
+	accessible BOOLEAN NOT NULL
 );
 
-CREATE TABLE fme.parameters( --Os valores são extraídos do FME
+CREATE TABLE fme.parameters(
 	id SERIAL NOT NULL PRIMARY KEY,
-	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id), --Parâmetros de uma versão da tabela do FME
+	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id),
 	name VARCHAR(255) NOT NULL
 );
 
@@ -47,7 +46,7 @@ INSERT INTO fme.status (code, name) VALUES
 (2, 'Succeeded'),
 (3, 'Failed');
 
-CREATE TABLE fme.job( --Execução de uma tabela do FME
+CREATE TABLE fme.job(
 	id SERIAL NOT NULL PRIMARY KEY,
 	job_uuid TEXT NOT NULL UNIQUE,
 	status SMALLINT NOT NULL REFERENCES fme.status(code),
@@ -57,5 +56,3 @@ CREATE TABLE fme.job( --Execução de uma tabela do FME
 	log TEXT,
 	parameters TEXT
 );
-
-COMMIT;
