@@ -95,7 +95,7 @@ router.get("/", loginMiddleware, async (req, res, next) => {
  *     }
  */
 router.post("/", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, categoryModel.category);
+  let validationResult = Joi.validate(req.body, categoryModel.category, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("Create category validation error");
     err.status = 400;
@@ -174,7 +174,7 @@ router.post("/", loginMiddleware, async (req, res, next) => {
  * }
  */
 router.put("/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, categoryModel.category);
+  let validationResult = Joi.validate(req.body, categoryModel.category, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("Update category validation error");
     err.status = 400;

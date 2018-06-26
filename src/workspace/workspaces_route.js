@@ -31,7 +31,7 @@ router.get("/", loginMiddleware, async (req, res, next) => {
 });
 
 router.put("/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspace);
+  let validationResult = Joi.validate(req.body, workspace, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("Update workspace validation error");
     err.status = 400;
@@ -76,7 +76,7 @@ router.post("/:id/versions", loginMiddleware, async (req, res, next) => {
       return next(err);
     }
 
-    let validationResult = Joi.validate(req.body, version);
+    let validationResult = Joi.validate(req.body, version, {stripUnknown: true});
     if (validationResult.error) {
       const err = new Error("Create workspace validation error");
       err.status = 400;
@@ -128,7 +128,7 @@ router.post("/", loginMiddleware, async (req, res, next) => {
       return next(err);
     }
 
-    let validationResult = Joi.validate(req.body, workspaceVersion);
+    let validationResult = Joi.validate(req.body, workspaceVersion, {stripUnknown: true});
     if (validationResult.error) {
       const err = new Error("Create workspace validation error");
       err.status = 400;

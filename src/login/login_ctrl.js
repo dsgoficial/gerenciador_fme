@@ -17,7 +17,7 @@ controller.login = async (login, password) => {
       [login]
     );
     if (user) {
-      const match = await bcrypt.compare(user.password, password);
+      const match = await bcrypt.compare(password, user.password);
       if (match) {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
           expiresIn: "10h"

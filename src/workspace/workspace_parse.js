@@ -9,7 +9,7 @@ const getParams = workspace_path => {
   const parametros = [];
   const data = fs.readFileSync(workspace_path, "utf8");
   let linhas = data.split(/\r?\n/);
-  linhas.slice(8).every(linha => {
+  linhas.slice(4).every(linha => {
     if (linha.indexOf("--") > -1) {
       parametros.push(
         linha

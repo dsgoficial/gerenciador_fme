@@ -77,7 +77,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.post("/user", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, loginModel.user);
+  let validationResult = Joi.validate(req.body, loginModel.user, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("New user validation error");
     err.status = 400;
@@ -109,7 +109,7 @@ router.post("/user", loginMiddleware, async (req, res, next) => {
 });
 
 router.put("/user/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, loginModel.userWithoutPassword);
+  let validationResult = Joi.validate(req.body, loginModel.userWithoutPassword, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("Update user validation error");
     err.status = 400;
@@ -146,7 +146,7 @@ router.put("/user/:id", loginMiddleware, async (req, res, next) => {
 });
 
 router.put("/user/:id/password", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, loginModel.userPassword);
+  let validationResult = Joi.validate(req.body, loginModel.userPassword, {stripUnknown: true});
   if (validationResult.error) {
     const err = new Error("Update user password validation error");
     err.status = 400;
