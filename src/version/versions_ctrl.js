@@ -5,7 +5,7 @@ const { fmeRunner } = require("./workspace_runner");
 
 const controller = {};
 
-controller.get = async last => {
+controller.get = async (last, category) => {
   try {
     let data = await db.task(t => {
       let batch = [];
@@ -55,7 +55,10 @@ controller.get = async last => {
         }
       });
     });
-
+    if(category){
+      data[0] = data[0].filter( e => e.category_id == category)
+    }
+    
     return { error: null, data: data[0] };
   } catch (error) {
     const err = new Error("Error getting all Versions");
