@@ -88,7 +88,10 @@ controller.get = async (last, category) => {
       });
     });
     if(category){
-      data[0] = data[0].filter( e => e.category_id == category)
+      let cats = category.split(',')
+      data[0] = data[0].filter( e => {
+        return cats.some(cat => cat == e.category_id)
+      })
     }
     
     return { error: null, data: data[0] };
