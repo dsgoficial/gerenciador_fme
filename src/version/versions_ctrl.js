@@ -3,6 +3,38 @@
 const { db } = require("../database");
 const { fmeRunner } = require("./workspace_runner");
 
+const Queue = require('better-queue');
+
+const updateJob = async (job_uuid, status, time, summary, parameters) => {
+  let paramtext = [];
+  for (let key in parameters) {
+    paramtext.push(key + ":" + parameters[key]);
+  }
+  paramtext = paramtext.join(" | ");
+
+  summary = summary.join(" | ");
+
+  return db.none(
+    `
+    UPDATE fme.job set status =$1, run_time = $2, log = $3, parameters = $4 WHERE job_uuid = $5
+    `,
+    [status, time, summary, paramtext, job_uuid]
+  );
+};
+
+const jobQueue = new Queue(async (input, cb) => {
+  try {
+    console.log('running')
+    let { time, summary } = await fmeRunner(input.workspace_path, input.parameters);
+    console.log('complete')
+    console.log({time, summary})
+    cb(null, {time, summary});
+  } catch (err) {
+    console.log('catch')
+    cb(err,null);
+  }
+},{ concurrent: 3 })
+
 const controller = {};
 
 controller.get = async (last, category) => {
@@ -106,36 +138,6 @@ controller.update = async (id, name, author, version_date, accessible) => {
   }
 };
 
-const updateJob = async (job_uuid, status, time, summary, parameters) => {
-  let paramtext = [];
-  for (let key in parameters) {
-    paramtext.push(key + ":" + parameters[key]);
-  }
-  paramtext = paramtext.join(" | ");
-
-  summary = summary.join(" | ");
-
-  return db.none(
-    `
-    UPDATE fme.job set status =$1, run_time = $2, log = $3, parameters = $4 WHERE job_uuid = $5
-    `,
-    [status, time, summary, paramtext, job_uuid]
-  );
-};
-
-const executeJob = (job_uuid, workspace_path, parameters) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      let { time, summary } = await fmeRunner(workspace_path, parameters);
-      updateJob(job_uuid, 2, time, summary, parameters);
-      resolve("Job executed with success");
-    } catch (err) {
-      updateJob(job_uuid, 3, null, [err], parameters);
-      reject("Job failed");
-    }
-  });
-};
-
 controller.create = async (id, job_uuid, parameters) => {
   try {
     let version = await db.one(
@@ -150,7 +152,15 @@ controller.create = async (id, job_uuid, parameters) => {
       `,
       [job_uuid, 1, version.id]
     );
-    executeJob(job_uuid, version.workspace_path, parameters);
+    jobQueue.push({workspace_path: version.workspace_path, parameters: parameters})
+      .on('finish', async result => {
+        console.log('finish')
+        await updateJob(job_uuid, 2, result.time, result.summary, parameters);
+      })
+      .on('failed', async err => {
+        console.log('failed')
+        await updateJob(job_uuid, 3, null, [err], parameters);
+      })
     return { error: null };
   } catch (error) {
     let err;
