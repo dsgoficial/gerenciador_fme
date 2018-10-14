@@ -36,6 +36,22 @@ const createConfig = () => {
     },
     {
       type: "input",
+      name: "fme_path",
+      message: "Enter the path for fme execution"
+    },
+    {
+      type: "input",
+      name: "port",
+      message: "Enter the port for the FME Manager service",
+      default: 3014
+    },
+    {
+      type: "password",
+      name: "jwt_secret",
+      message: "Enter the secret for the JSON Web Token"
+    },
+    {
+      type: "input",
       name: "db_user",
       message:
         "Enter the user name for database administration (should already exist in PostgreSQL and have database creation privilege)",
@@ -54,17 +70,6 @@ const createConfig = () => {
     },
     {
       type: "input",
-      name: "port",
-      message: "Enter the port for the FME Manager service",
-      default: 3014
-    },
-    {
-      type: "password",
-      name: "jwt_secret",
-      message: "Enter the secret for the JSON Web Token"
-    },
-    {
-      type: "input",
       name: "fme_user",
       message: "Enter the user name for FME Manager administration",
       default: "administrator"
@@ -75,9 +80,9 @@ const createConfig = () => {
       message: "Enter the password for the FME Manager administration user"
     },
     {
-      type: "input",
-      name: "fme_path",
-      message: "Enter the path for fme execution"
+      type: "confirm",
+      name: "db_created",
+      message: "Does the FME Manager already exists?"
     }
   ];
 
@@ -90,43 +95,45 @@ const createConfig = () => {
     };
 
     try {
-      await pgtools.createdb(config, answers.db_name);
+      if (answers.db_created === "N") {
+        await pgtools.createdb(config, answers.db_name);
 
-      const connectionString =
-        "postgres://" +
-        answers.db_user +
-        ":" +
-        answers.db_password +
-        "@" +
-        answers.db_server +
-        ":" +
-        answers.db_port +
-        "/" +
-        answers.db_name;
+        const connectionString =
+          "postgres://" +
+          answers.db_user +
+          ":" +
+          answers.db_password +
+          "@" +
+          answers.db_server +
+          ":" +
+          answers.db_port +
+          "/" +
+          answers.db_name;
 
-      const db = pgp(connectionString);
+        const db = pgp(connectionString);
 
-      await db.none(fmeManagerSQL);
+        await db.none(fmeManagerSQL);
 
-      await db.none(
-        `
-      GRANT USAGE ON SCHEMA fme TO $1:name;
-      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1:name;
-      GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1:name;
-      `,
-        [answers.db_user]
-      );
+        await db.none(
+          `
+        GRANT USAGE ON SCHEMA fme TO $1:name;
+        GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1:name;
+        GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1:name;
+        `,
+          [answers.db_user]
+        );
 
-      let hash = await bcrypt.hash(answers.db_password, 10);
-      await db.none(
-        `
-        INSERT INTO fme.user (name, login, password) VALUES
-        ($1, $1, $2)
-      `,
-        [answers.fme_user, hash]
-      );
+        let hash = await bcrypt.hash(answers.db_password, 10);
+        await db.none(
+          `
+          INSERT INTO fme.user (name, login, password) VALUES
+          ($1, $1, $2)
+        `,
+          [answers.fme_user, hash]
+        );
 
-      console.log(chalk.blue("FME Manager database created successfully!"));
+        console.log(chalk.blue("FME Manager database created successfully!"));
+      }
 
       let env = `PORT=${answers.port}
 DB_SERVER=${answers.db_server}
@@ -135,7 +142,7 @@ DB_NAME=${answers.db_name}
 DB_USER=${answers.db_user}
 DB_PASSWORD=${answers.db_password}
 JWT_SECRET=${answers.jwt_secret}
-PATH=${answers.fme_path}`;
+FME_PATH=${answers.fme_path}`;
 
       fs.writeFileSync(".env", env);
       console.log(chalk.blue("Config file created successfully!"));

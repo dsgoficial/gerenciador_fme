@@ -59,7 +59,7 @@ const fmeRunner = (workspace_path, parameters) => {
         .split(".")[0] +
       ".log";
 
-    let executeCmd = [process.env.PATH, workspace_path];
+    let executeCmd = [process.env.FME_PATH, workspace_path];
     for (let key in parameters) {
       executeCmd.push(`--${key} "${parameters[key]}"`);
     }
