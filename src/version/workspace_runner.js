@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const exec = require("child_process").exec;
+const path = require("path");
 
 const getSummary = logPath => {
   logPath = logPath.trim();
@@ -41,13 +42,15 @@ const fmeRunner = (workspace_path, parameters) => {
     //build fme log name and path
     parameters["LOG_FILE"] =
       workspace_path
-        .split("\\")
+        .split(path.sep)
         .slice(0, -1)
-        .join("\\") +
-      "\\fme_logs\\" +
+        .join(path.sep) +
+      path.sep +
+      "fme_logs" +
+      path.sep +
       workspace_path
-        .split("\\")
-        [workspace_path.split("\\").length - 1].replace(".fmw", "") +
+        .split(path.sep)
+        [workspace_path.split(path.sep).length - 1].replace(".fmw", "") +
       "_" +
       new Date()
         .toISOString()
@@ -56,7 +59,7 @@ const fmeRunner = (workspace_path, parameters) => {
         .split(".")[0] +
       ".log";
 
-    let executeCmd = ["fme", workspace_path];
+    let executeCmd = [process.env.PATH, workspace_path];
     for (let key in parameters) {
       executeCmd.push(`--${key} "${parameters[key]}"`);
     }

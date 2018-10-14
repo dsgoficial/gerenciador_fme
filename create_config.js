@@ -73,6 +73,11 @@ const createConfig = () => {
       type: "password",
       name: "fme_password",
       message: "Enter the password for the FME Manager administration user"
+    },
+    {
+      type: "input",
+      name: "fme_path",
+      message: "Enter the path for fme execution"
     }
   ];
 
@@ -129,7 +134,8 @@ DB_PORT=${answers.db_port}
 DB_NAME=${answers.db_name}
 DB_USER=${answers.db_user}
 DB_PASSWORD=${answers.db_password}
-JWT_SECRET=${answers.jwt_secret}`;
+JWT_SECRET=${answers.jwt_secret}
+PATH=${answers.fme_path}`;
 
       fs.writeFileSync(".env", env);
       console.log(chalk.blue("Config file created successfully!"));
