@@ -67,6 +67,7 @@ const fmeRunner = (workspace_path, parameters) => {
 
     exec(executeCmd, (err, stdout, stderr) => {
       if (err) {
+        console.log(err)
         reject("Erro na execução da workspace.");
       } else if (stderr.trim() === "Translation was SUCCESSFUL") {
         let t1 = (new Date() - t0) / 1000;
@@ -74,6 +75,7 @@ const fmeRunner = (workspace_path, parameters) => {
           let summary = getSummary(parameters["LOG_FILE"]);
           resolve({ time: t1, summary });
         } catch (error) {
+          console.log(error)
           reject("Erro na leitura do log.");
         }
       } else {

@@ -82,7 +82,7 @@ const createConfig = () => {
     {
       type: "confirm",
       name: "db_created",
-      message: "Does the FME Manager already exists?"
+      message: "Does the FME Manager database already exists?"
     }
   ];
 
@@ -95,7 +95,7 @@ const createConfig = () => {
     };
 
     try {
-      if (answers.db_created === "N") {
+      if (!answers.db_created) {
         await pgtools.createdb(config, answers.db_name);
 
         const connectionString =
@@ -116,14 +116,14 @@ const createConfig = () => {
 
         await db.none(
           `
-        GRANT USAGE ON SCHEMA fme TO $1:name;
+        GRANT ALL ON SCHEMA fme TO $1:name;
         GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA fme TO $1:name;
         GRANT ALL ON ALL SEQUENCES IN SCHEMA fme TO $1:name;
         `,
           [answers.db_user]
         );
 
-        let hash = await bcrypt.hash(answers.db_password, 10);
+        let hash = await bcrypt.hash(answers.fme_password, 10);
         await db.none(
           `
           INSERT INTO fme.user (name, login, password) VALUES
