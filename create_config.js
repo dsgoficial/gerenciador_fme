@@ -36,22 +36,6 @@ const createConfig = () => {
     },
     {
       type: "input",
-      name: "fme_path",
-      message: "Enter the path for fme execution"
-    },
-    {
-      type: "input",
-      name: "port",
-      message: "Enter the port for the FME Manager service",
-      default: 3014
-    },
-    {
-      type: "password",
-      name: "jwt_secret",
-      message: "Enter the secret for the JSON Web Token"
-    },
-    {
-      type: "input",
       name: "db_user",
       message:
         "Enter the user name for database administration (should already exist in PostgreSQL and have database creation privilege)",
@@ -60,7 +44,7 @@ const createConfig = () => {
     {
       type: "password",
       name: "db_password",
-      message: "Enter the password for the administration user"
+      message: "Enter the password for the database administration user"
     },
     {
       type: "input",
@@ -70,8 +54,20 @@ const createConfig = () => {
     },
     {
       type: "input",
+      name: "fme_path",
+      message: "Enter the path for FME Workbench execution"
+    },
+    {
+      type: "input",
+      name: "port",
+      message: "Enter the port for the FME Manager service",
+      default: 3014
+    },
+    {
+      type: "input",
       name: "fme_user",
-      message: "Enter the user name for FME Manager administration",
+      message:
+        "Enter the user name for FME Manager administration user (internal to FME Manager)",
       default: "administrator"
     },
     {
@@ -81,8 +77,8 @@ const createConfig = () => {
     },
     {
       type: "confirm",
-      name: "db_created",
-      message: "Does the FME Manager database already exists?"
+      name: "db_create",
+      message: "Do you need to create the FME Manager database?"
     }
   ];
 
@@ -95,7 +91,25 @@ const createConfig = () => {
     };
 
     try {
-      if (!answers.db_created) {
+      let env = `PORT=${answers.port}
+DB_SERVER=${answers.db_server}
+DB_PORT=${answers.db_port}
+DB_NAME=${answers.db_name}
+DB_USER=${answers.db_user}
+DB_PASSWORD=${answers.db_password}
+JWT_SECRET=tassofragoso
+FME_PATH=${answers.fme_path}`;
+
+      let exists = fs.existsSync(".env");
+      if (exists) {
+        throw Error(
+          ".env file already exists, delete before starting the configuration."
+        );
+      }
+      fs.writeFileSync(".env", env);
+      console.log(chalk.blue("Config file created successfully!"));
+
+      if (answers.db_create) {
         await pgtools.createdb(config, answers.db_name);
 
         const connectionString =
@@ -135,17 +149,7 @@ const createConfig = () => {
         console.log(chalk.blue("FME Manager database created successfully!"));
       }
 
-      let env = `PORT=${answers.port}
-DB_SERVER=${answers.db_server}
-DB_PORT=${answers.db_port}
-DB_NAME=${answers.db_name}
-DB_USER=${answers.db_user}
-DB_PASSWORD=${answers.db_password}
-JWT_SECRET=${answers.jwt_secret}
-FME_PATH=${answers.fme_path}`;
-
-      fs.writeFileSync(".env", env);
-      console.log(chalk.blue("Config file created successfully!"));
+      console.log(chalk.blue("APIDoc created successfully!"));
     } catch (error) {
       if (
         error.message ===
@@ -174,6 +178,11 @@ FME_PATH=${answers.fme_path}`;
             "Password authentication failed for the user " + answers.db_user
           )
         );
+      } else if (
+        error.message ===
+        ".env file already exists, delete before starting the configuration."
+      ) {
+        console.log(chalk.red(error.message));
       } else {
         console.log(error.message);
         console.log("-------------------------------------------------");

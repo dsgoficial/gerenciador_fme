@@ -27,21 +27,25 @@ const router = express.Router();
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *     [{
- *       "id": 1,
- *       "name": "Hidrography"
- *     },
  *     {
- *       "id": 5,
- *       "name": "Transportation"
- *     }]
+ *      "success": true,
+ *      "message": "Categories returned",
+ *      "data":
+ *        [{
+ *          "id": 1,
+ *          "name": "Hidrography"
+ *         },
+ *         {
+ *          "id": 5,
+ *          "name": "Transportation"
+ *        }]
  *
  * @apiError NoAccessRight Invalid token.
  *
  * @apiErrorExample NoAccessRight:
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "success": false
+ *       "success": false,
  *       "message": "Failed to authenticate token"
  *     }
  *
@@ -50,7 +54,7 @@ const router = express.Router();
  * @apiErrorExample NoAccessRight:
  *     HTTP/1.1 403 Forbidden
  *     {
- *       "success": false
+ *       "success": false,
  *       "message": "No token provided"
  *     }
  */
@@ -72,47 +76,60 @@ router.get("/", loginMiddleware, async (req, res, next) => {
 });
 
 /**
- * @api {post} /categorias Cria uma nova categoria
+ * @api {post} /categories Create a new category
  * @apiVersion 1.0.0
- * @apiName CreateCategoria
- * @apiGroup Categoria
+ * @apiName CreateCategory
+ * @apiGroup Category
  * @apiPermission Manager
  *
- * @apiDescription Utilizado para criar uma nova categoria.
+ * @apiDescription Used to create a new category.
  *
- * @apiParam {String} nome  Novo nome para a categoria.
+ * @apiParam {String} name Name for the new category. Must be unique.
  * @apiParamExample {json} Input
  *     {
- *       "nome": "Transportes"
+ *       "name": "Transportation"
  *     }
  *
- * @apiSuccess {String} message  Mensagem de sucesso.
+ * @apiSuccess {String} message Success-Response.
  *
- * @apiSuccessExample {json} Resposta em caso de Sucesso:
+ * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 OK
  *     {
- *       "message": "Categoria inserida com sucesso."
+ *       "success": true,
+ *       "message": "Category created"
  *     }
  *
- * @apiError NoAccessRight Somente Gerentes autenticados podem criar categorias.
+ * @apiError ValidationError Invalid param.
+ *
+ * @apiErrorExample ValidationError:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "success": false,
+ *       "message": "Create category validation error"
+ *     }
+ *
+ * @apiError NoAccessRight Invalid token.
  *
  * @apiErrorExample NoAccessRight:
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "error": "NoAccessRight"
+ *       "success": false,
+ *       "message": "Failed to authenticate token"
  *     }
  *
- * @apiError InvalidInput O objeto enviado como Input não segue o padrão estabelecido.
+ * @apiError NoAccessRight No token provided.
  *
- * @apiErrorExample InvalidInput:
- *     HTTP/1.1 401 Not Authenticated
+ * @apiErrorExample NoAccessRight:
+ *     HTTP/1.1 403 Forbidden
  *     {
- *       "error": "InvalidInput",
- *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
+ *       "success": false,
+ *       "message": "No token provided"
  *     }
  */
 router.post("/", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, categoryModel.category, {stripUnknown: true});
+  let validationResult = Joi.validate(req.body, categoryModel.category, {
+    stripUnknown: true
+  });
   if (validationResult.error) {
     const err = new Error("Create category validation error");
     err.status = 400;
@@ -140,58 +157,63 @@ router.post("/", loginMiddleware, async (req, res, next) => {
 });
 
 /**
- * @api {put} /categorias/:id Atualiza uma categoria
+ * @api {put} /categories/:id Update a category
  * @apiVersion 1.0.0
- * @apiName UpdateCategoria
- * @apiGroup Categoria
+ * @apiName UpdateCategory
+ * @apiGroup Category
  * @apiPermission Manager
  *
- * @apiDescription Utilizado para atualizar informações de uma categoria.
+ * @apiDescription Updates a category.
  *
- * @apiParam {Number} id  Id que identifica a categoria.
+ * @apiParam {Number} id  Id that identifies the category.
  *
- * @apiParam {String} nome  Novo nome para a categoria.
+ * @apiParam {String} name  New name for the category.
  * @apiParamExample {json} Input
  *     {
- *       "nome": "Vegetação"
+ *       "name": "Vegetation"
  *     }
  *
+ * @apiSuccess {String} message Success-Response.
  *
- * @apiSuccess {String} message  Mensagem de sucesso.
- *
- * @apiSuccessExample {json} Resposta em caso de Sucesso:
+ * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 201 OK
  *     {
- *       "message": "Categoria atualizada com sucesso."
+ *       "success": true,
+ *       "message": "Category updated"
  *     }
  *
- * @apiError NoAccessRight Somente Gerentes autenticados podem atualizar categorias.
+ * @apiError ValidationError Invalid param.
+ *
+ * @apiErrorExample ValidationError:
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "success": false,
+ *       "message": "Update category validation error"
+ *     }
+ *
+ *
+ * @apiError NoAccessRight Invalid token.
  *
  * @apiErrorExample NoAccessRight:
  *     HTTP/1.1 401 Not Authenticated
  *     {
- *       "error": "NoAccessRight"
+ *       "success": false,
+ *       "message": "Failed to authenticate token"
  *     }
  *
- * @apiError CategoriaNotFound O Id da categoria não foi encontrado.
+ * @apiError NoAccessRight No token provided.
  *
- * @apiErrorExample CategoriaNotFound:
- *     HTTP/1.1 404 Not Found
+ * @apiErrorExample NoAccessRight:
+ *     HTTP/1.1 403 Forbidden
  *     {
- *       "error": "CategoriaNotFound"
+ *       "success": false,
+ *       "message": "No token provided"
  *     }
- *
- * @apiError InvalidInput O objeto enviado como Input não segue o padrão estabelecido.
- *
- * @apiErrorExample InvalidInput:
- *     HTTP/1.1 401 Not Authenticated
- *     {
- *       "error": "InvalidInput",
- *  	 "message": "O objeto enviado como Input não segue o padrão estabelecido."
- * }
  */
 router.put("/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, categoryModel.category, {stripUnknown: true});
+  let validationResult = Joi.validate(req.body, categoryModel.category, {
+    stripUnknown: true
+  });
   if (validationResult.error) {
     const err = new Error("Update category validation error");
     err.status = 400;
