@@ -1,15 +1,11 @@
 (function() {
   "use strict";
 
-  var workspacesCtrl = function(
-    $scope,
-    $uibModal,
-    dataFactory,
-    DTOptionsBuilder
-  ) {
+  var workspacesCtrl = function($scope, dataFactory, DTOptionsBuilder) {
     $scope.tabelas = [];
     $scope.versoes = [];
     $scope.categorias = [];
+    $scope.usuarios = [];
     $scope.reload = function() {
       dataFactory.getTabelasVersao().then(
         function success(response) {
@@ -35,11 +31,20 @@
           //FIXME
         }
       );
+      dataFactory.getUsuarios().then(
+        function success(response) {
+          $scope.usuarios = response;
+        },
+        function error(response) {
+          //FIXME
+        }
+      );
     };
 
     $scope.reload();
 
     $scope.saveVersao = function(data) {
+      console.log(data);
       dataFactory
         .updateVersao(data)
         .then(function() {
@@ -51,8 +56,8 @@
     };
 
     $scope.saveWorkspace = function(data) {
-      data.descricao = data.descricao.trim();
-      data.nome = data.nome.trim();
+      data.description = data.description.trim();
+      data.name = data.name.trim();
       dataFactory
         .updateWorkspace(data)
         .then(function() {
@@ -67,7 +72,20 @@
       var value = "";
       $scope.categorias.forEach(function(c) {
         if (c.id == categoria) {
-          value = c.nome;
+          value = c.name;
+        }
+      });
+      if (value === "") {
+        return "Erro";
+      }
+      return value;
+    };
+
+    $scope.showUsuario = function(usuario) {
+      var value = "";
+      $scope.usuarios.forEach(function(c) {
+        if (c.id == usuario) {
+          value = c.name;
         }
       });
       if (value === "") {
@@ -100,12 +118,7 @@
       });
   };
 
-  workspacesCtrl.$inject = [
-    "$scope",
-    "$uibModal",
-    "dataFactory",
-    "DTOptionsBuilder"
-  ];
+  workspacesCtrl.$inject = ["$scope", "dataFactory", "DTOptionsBuilder"];
 
   angular.module("fmeApp").controller("workspacesCtrl", workspacesCtrl);
 })();

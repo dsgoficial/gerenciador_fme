@@ -5,17 +5,18 @@
     <div class="form-group">
       <label class="control-label col-sm-2" for="email">Workspace:</label>
       <div class="col-sm-10">
-        <select ng-model="dados.workspaceid" ng-options="workspace.id as workspace.nome for workspace in workspaces track by workspace.id" required>
+        <select ng-model="dados.workspaceid" ng-options="workspace.id as workspace.name for workspace in workspaces track by workspace.id" required>
           <option value="" disabled selected>Selecione uma workspace</option>
         </select>
       </div>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="email">Autor:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" ng-model="dados.autor" placeholder="Nome do autor ou autores da workspace">
-      </div>
-    </div>
+        <label class="control-label col-sm-2" for="email">Autor:</label>
+        <div class="col-sm-10">
+          <select ng-model="dados.autor" ng-options="usuario.id as usuario.name for usuario in usuarios" 
+            required><option value="" disabled selected>Selecione um valor</option></select>
+        </div>
+      </div> 
     <div class="form-group">
       <label class="control-label col-sm-2" for="email">Versão:</label>
       <div class="col-sm-10">

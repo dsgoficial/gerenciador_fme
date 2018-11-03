@@ -3,10 +3,18 @@
 
   var inserirCtrl = function($scope, $window, $route, dataFactory) {
     //inicializa as tabelas
+    $scope.categorias = [];
+    $scope.usuarios = [];
     $scope.reload = function() {
       dataFactory.getCategorias().then(
         function success(response) {
           $scope.categorias = response;
+        },
+        function error(response) {}
+      );
+      dataFactory.getUsuarios().then(
+        function success(response) {
+          $scope.usuarios = response;
         },
         function error(response) {}
       );

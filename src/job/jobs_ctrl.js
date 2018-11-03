@@ -8,9 +8,10 @@ controller.get = async () => {
   try {
     let data = await db.any(
       `
-      SELECT j.job_uuid, j.status, j.run_date, j.run_time, j.log, j.parameters, w.name as workspace, v.name as version
+      SELECT j.job_uuid, j.status, s.name as status_name, j.run_date, j.run_time, j.log, j.parameters, w.name as workspace, v.name as version
       FROM fme.job as j INNER JOIN fme.workspace_version AS v ON  j.workspace_version_id = v.id
       INNER JOIN fme.workspace AS w ON w.id = v.workspace_id
+      INNER JOIN fme.status AS s ON s.code = j.status
       `
     );
     return { error: null, data: data };

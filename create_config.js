@@ -55,7 +55,8 @@ const createConfig = () => {
     {
       type: "input",
       name: "fme_path",
-      message: "Enter the path for FME Workbench execution"
+      message: "Enter the path for FME Workbench execution",
+      default: "fme"
     },
     {
       type: "input",
@@ -68,7 +69,7 @@ const createConfig = () => {
       name: "fme_user",
       message:
         "Enter the user name for FME Manager administration user (internal to FME Manager)",
-      default: "administrator"
+      default: "administrador"
     },
     {
       type: "password",
@@ -148,8 +149,6 @@ FME_PATH=${answers.fme_path}`;
 
         console.log(chalk.blue("FME Manager database created successfully!"));
       }
-
-      console.log(chalk.blue("APIDoc created successfully!"));
     } catch (error) {
       if (
         error.message ===

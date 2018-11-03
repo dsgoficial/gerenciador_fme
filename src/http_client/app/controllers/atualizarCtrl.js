@@ -3,10 +3,18 @@
 
   var atualizarCtrl = function($scope, $window, $route, dataFactory) {
     //inicializa as tabelas
+    $scope.workspace = [];
+    $scope.usuarios = [];
     $scope.reload = function() {
       dataFactory.getTabelas().then(
         function success(response) {
           $scope.workspaces = dataFactory.tabelas;
+        },
+        function error(response) {}
+      );
+      dataFactory.getUsuarios().then(
+        function success(response) {
+          $scope.usuarios = response;
         },
         function error(response) {}
       );

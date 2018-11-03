@@ -3,7 +3,7 @@
 const { db } = require("../database");
 const { fmeRunner } = require("./workspace_runner");
 
-const Queue = require('better-queue');
+const Queue = require("better-queue");
 
 const updateJob = async (job_uuid, status, time, summary, parameters) => {
   let paramtext = [];
@@ -22,18 +22,24 @@ const updateJob = async (job_uuid, status, time, summary, parameters) => {
   );
 };
 
-const jobQueue = new Queue(async (input, cb) => {
-  try {
-    console.log('running')
-    let { time, summary } = await fmeRunner(input.workspace_path, input.parameters);
-    console.log('complete')
-    console.log({time, summary})
-    cb(null, {time, summary});
-  } catch (err) {
-    console.log('catch')
-    cb(err,null);
-  }
-},{ concurrent: 3 })
+const jobQueue = new Queue(
+  async (input, cb) => {
+    try {
+      console.log("running");
+      let { time, summary } = await fmeRunner(
+        input.workspace_path,
+        input.parameters
+      );
+      console.log("complete");
+      console.log({ time, summary });
+      cb(null, { time, summary });
+    } catch (err) {
+      console.log("catch");
+      cb(err, null);
+    }
+  },
+  { concurrent: 3 }
+);
 
 const controller = {};
 
@@ -46,11 +52,10 @@ controller.get = async (last, category) => {
           t.any(
             `
           SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
-          u.name AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
+          v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY workspace_id ORDER BY version_date DESC) rn FROM fme.workspace_version WHERE accessible = TRUE) AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
           INNER JOIN fme.category AS c ON c.id = w.category_id
-          INNER JOIN fme.user AS u ON u.id = v.author
           WHERE v.rn = 1
           `
           )
@@ -60,11 +65,10 @@ controller.get = async (last, category) => {
           t.any(
             `
           SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
-          u.name AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
+          v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM fme.workspace_version AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
           INNER JOIN fme.category AS c ON c.id = w.category_id
-          INNER JOIN fme.user AS u ON u.id = v.author
           `
           )
         );
@@ -87,13 +91,13 @@ controller.get = async (last, category) => {
         }
       });
     });
-    if(category){
-      let cats = category.split(',')
-      data[0] = data[0].filter( e => {
-        return cats.some(cat => cat == e.category_id)
-      })
+    if (category) {
+      let cats = category.split(",");
+      data[0] = data[0].filter(e => {
+        return cats.some(cat => cat == e.category_id);
+      });
     }
-    
+
     return { error: null, data: data[0] };
   } catch (error) {
     const err = new Error("Error getting all Versions");
@@ -155,15 +159,16 @@ controller.create = async (id, job_uuid, parameters) => {
       `,
       [job_uuid, 1, version.id]
     );
-    jobQueue.push({workspace_path: version.workspace_path, parameters: parameters})
-      .on('finish', async result => {
-        console.log('finish')
+    jobQueue
+      .push({ workspace_path: version.workspace_path, parameters: parameters })
+      .on("finish", async result => {
+        console.log("finish");
         await updateJob(job_uuid, 2, result.time, result.summary, parameters);
       })
-      .on('failed', async err => {
-        console.log('failed')
+      .on("failed", async err => {
+        console.log("failed");
         await updateJob(job_uuid, 3, null, [err], parameters);
-      })
+      });
     return { error: null };
   } catch (error) {
     let err;

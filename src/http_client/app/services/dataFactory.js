@@ -11,7 +11,7 @@
 
     factory.statusExecucao = {};
 
-    var urlpath = "http://localhost:3006/";
+    var urlpath = "/";
 
     factory.get = function(url) {
       //promise that the data will load
@@ -23,7 +23,7 @@
       }).then(
         function successCallback(response) {
           //merge arrays
-          var result = response.data;
+          var result = response.data.data;
           q.resolve(result);
         },
         function errorCallback(response) {
@@ -40,7 +40,7 @@
       return factory.get(urlpath + "versions").then(function(result) {
         factory.tabelasVersao = result;
         factory.tabelasVersao.forEach(function(d) {
-          d.link = urlpath + d.path;
+          d.link = urlpath + d.workspace_path;
         });
       });
     };
@@ -60,7 +60,14 @@
 
     //retorna todas as categorias
     factory.getCategorias = function() {
-      return factory.get(urlpath + "categorias").then(function(result) {
+      return factory.get(urlpath + "categories").then(function(result) {
+        return result;
+      });
+    };
+
+    //retorna todas os usuarios
+    factory.getUsuarios = function() {
+      return factory.get(urlpath + "users").then(function(result) {
         return result;
       });
     };
@@ -77,7 +84,7 @@
 
       $http({
         method: "POST",
-        url: urlpath + "categorias",
+        url: urlpath + "categories",
         data: data
       }).then(
         function successCallback(response) {
@@ -97,7 +104,7 @@
 
       $http({
         method: "PUT",
-        url: urlpath + "categorias/" + data.id,
+        url: urlpath + "categories/" + data.id,
         data: data
       }).then(
         function successCallback(response) {
@@ -134,11 +141,16 @@
 
     factory.updateVersao = function(data) {
       var q = $q.defer();
-
+      var dados = {
+        name: data.version_name,
+        author: data.version_author,
+        version_date: data.version_date,
+        accessible: data.accessible
+      };
       $http({
         method: "PUT",
         url: urlpath + "versions/" + data.id,
-        data: data
+        data: dados
       }).then(
         function successCallback(response) {
           q.resolve("success");
@@ -155,12 +167,12 @@
     factory.novaTabela = function(workspace, dados) {
       var fd = new FormData();
       fd.append("workspace", workspace);
-      fd.append("nome", dados.nome);
-      fd.append("descricao", dados.descricao);
-      fd.append("autor", dados.autor);
-      fd.append("versao", dados.versao);
-      fd.append("data", dados.data);
-      fd.append("categoria", dados.categoria);
+      fd.append("name", dados.nome);
+      fd.append("description", dados.descricao);
+      fd.append("version_author_id", dados.autor);
+      fd.append("version_name", dados.versao);
+      fd.append("version_date", dados.data);
+      fd.append("category_id", dados.categoria);
 
       return $http.post(urlpath + "workspaces", fd, {
         transformRequest: angular.identity,
@@ -171,9 +183,9 @@
     factory.novaVersao = function(workspace, dados) {
       var fd = new FormData();
       fd.append("workspace", workspace);
-      fd.append("autor", dados.autor);
-      fd.append("versao", dados.versao);
-      fd.append("data", dados.data);
+      fd.append("version_author", dados.autor);
+      fd.append("version_name", dados.versao);
+      fd.append("version_date", dados.data);
 
       return $http.post(
         urlpath + "workspaces/" + dados.workspaceid + "/versions",
@@ -215,11 +227,11 @@
             url: urlpath + "jobs/" + jobid
           })
             .then(function(response) {
-              if (response.data.status == "Executado") {
+              if (response.data.data.status == 2) {
                 resposta = true;
-                q.resolve(response.data);
+                q.resolve(response.data.data);
               }
-              if (response.data.data.status == "Erro") {
+              if (response.data.data.status == 3) {
                 resposta = true;
                 q.reject(response.status);
               }
@@ -247,10 +259,10 @@
       $http({
         method: "POST",
         url: urlpath + "versions/" + versionid + "/jobs",
-        data: { parametros: dados }
+        data: { parameters: dados }
       })
         .then(function(response) {
-          q.resolve(response.data.jobid);
+          q.resolve(response.data.data.job_uuid);
         })
         .catch(function(response) {
           q.reject("erro");

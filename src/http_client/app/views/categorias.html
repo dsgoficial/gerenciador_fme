@@ -11,10 +11,10 @@
           <tbody>
           <tr ng-repeat="categoria in categorias">
             <td>
-              <span editable-text="categoria.nome" e-name = "nome" e-form = "rowform" onbeforesave="checkName($data, categoria.id)">{{ categoria.nome }}</span>
+              <span editable-text="categoria.name" e-name = "nome" e-form = "rowform" onbeforesave="checkName($data, categoria.id)">{{ categoria.name }}</span>
             </td>
             <td>
-              <form editable-form name="rowform" onaftersave="saveCategoria(categoria, categoria.id)"  oncancel="cancel(categoria.nome, categoria.id)" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == categoria">
+              <form editable-form name="rowform" onaftersave="saveCategoria(categoria, categoria.id)"  oncancel="cancel(categoria.name, categoria.id)" ng-show="rowform.$visible" class="form-buttons form-inline" shown="inserted == categoria">
                 <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">
                   <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                 </button>

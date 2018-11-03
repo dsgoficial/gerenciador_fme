@@ -1,0 +1,29 @@
+<img src="icons/simbolo_1cgeo.svg" class="logo_1dl" />
+<div style="margin-top:20px">
+	<div class="text-center">
+		<div class="logo">Gerenciador do FME 1ºCGEO</div>
+		<div class="login-form-1">
+			<form id="login-form" name="loginForm" class="text-left">
+				<div class="login-form-main-message"></div>
+				<div class="main-login-form">
+					<div class="login-group">
+						<div class="form-group">
+							<label for="lg_username" class="sr-only">Usuário</label>
+							<input type="text" class="form-control" id="lg_username" name="lg_username" placeholder="Usuário" ng-model="info.login" ng-required ng-disabled = "processing">
+						</div>
+						<div class="form-group">
+							<label for="lg_password" class="sr-only">Senha</label>
+							<input type="password" class="form-control" id="lg_password" name="lg_password" placeholder="Senha" ng-model="info.password" ng-required ng-disabled = "processing">
+						</div>
+					</div>
+					<button type="submit" class="login-button" ng-click="login(info)" ng-disabled = "processing"><i class="glyphicon glyphicon-chevron-right"></i></button>
+				</div>
+			</form>
+			<div ng-messages="loginForm.$error" style="color:red" role="alert">
+				<div ng-message='requiredValues' ng-if='!loginForm.lg_username.$dirty || !loginForm.lg_password.$dirty'>Preencher usuário e senha</div>
+				<div ng-message="passwordError">Usuário ou senha incorreta</div>
+				<div ng-message="servidorError">Sem resposta do servidor</div>
+			</div>
+		</div>
+	</div>
+</div>

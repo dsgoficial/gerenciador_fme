@@ -3,6 +3,7 @@
 
   var executarCtrl = function($scope, $uibModal, dataFactory) {
     $scope.tabelas = [];
+    $scope.categorias = [];
     $scope.collapsed = [];
 
     //inicializa as tabelas
@@ -82,7 +83,6 @@
       log.forEach(function(d) {
         $scope.log.push({ camada: d.split(":")[0], valor: d.split(":")[1] });
       });
-      console.log($scope.log);
     }
 
     if (alert.header === "Sucesso") {

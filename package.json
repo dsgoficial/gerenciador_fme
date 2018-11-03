@@ -14,8 +14,8 @@
   "scripts": {
     "apidoc": "gulp apidoc",
     "dev": "nodemon src/index.js",
-    "production": "pm2 start src/index.js --name gerenciador-fme",
-    "config": "node create_config.js"
+    "production": "pm2 start src/index.js --name fme_manager",
+    "config": "node create_config.js & gulp apidoc"
   },
   "keywords": [
     "FME",

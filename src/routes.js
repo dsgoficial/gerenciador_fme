@@ -8,6 +8,7 @@ const { categoryRoute } = require("./category");
 const { jobRoute } = require("./job");
 const { workspacesRoute } = require("./workspace");
 const { versionsRoute } = require("./version");
+const { userRoute } = require("./user");
 
 const routes = app => {
   app.use("/login", loginRoute);
@@ -16,9 +17,13 @@ const routes = app => {
   app.use("/client", express.static(path.join(__dirname, "http_client")));
 
   //Serve static files (baixar tabelas do FME carregadas)
-  app.use("/fme", express.static(path.join(__dirname, "fme_workspaces")));
+  app.use(
+    "/client/fme",
+    express.static(path.join(__dirname, "fme_workspaces"))
+  );
 
   app.use("/categories", categoryRoute);
+  app.use("/users", userRoute);
   app.use("/jobs", jobRoute);
   app.use("/workspaces", workspacesRoute);
   app.use("/versions", versionsRoute);

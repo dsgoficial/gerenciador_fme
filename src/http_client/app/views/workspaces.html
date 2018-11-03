@@ -13,16 +13,16 @@
           <tbody>
           <tr ng-repeat="tabela in tabelas">
             <td>
-              <span editable-text="tabela.nome" e-name = "nome" e-form = "rowform_work" >{{ tabela.nome }}</span>              
+              <span editable-text="tabela.name" e-name = "nome" e-form = "rowform_work" >{{ tabela.name }}</span>              
             </td>
             <td>
-              <span editable-textarea="tabela.descricao" e-name = "descricao" e-form = "rowform_work" e-rows="4" e-cols="120">
-                {{ tabela.descricao }}
+              <span editable-textarea="tabela.description" e-name = "descricao" e-form = "rowform_work" e-rows="4" e-cols="120">
+                {{ tabela.description }}
               </span>
             </td>
             <td>
-              <span editable-select="tabela.categoria" e-name = "categoria" e-form = "rowform_work" e-ng-options="s.id as s.nome for s in categorias">
-                {{ showCategoria(tabela.categoria) }}
+              <span editable-select="tabela.category_id" e-name = "categoria" e-form = "rowform_work" e-ng-options="s.id as s.name for s in categorias">
+                {{ showCategoria(tabela.category_id) }}
               </span>              
             </td>
             <td>
@@ -62,17 +62,19 @@
           </thead>
           <tbody>
           <tr ng-repeat="versao in versoes">
-            <td>{{ versao.nome }}</td>
+            <td>{{ versao.workspace_name }}</td>
             <td>
-              <span editable-text="versao.versao" e-name = "versao" e-form = "rowform">{{ versao.versao }}</span>                            
+              <span editable-text="versao.version_name" e-name = "versao" e-form = "rowform">{{ versao.version_name }}</span>                            
             </td>
-            <td>{{ versao.data | date:'yyyy-MM-dd'}}</td>
+            <td>{{ versao.version_date | date:'yyyy-MM-dd'}}</td>
             <td>
-              <span editable-text="versao.autor" e-name = "autor" e-form = "rowform">{{ versao.autor }}</span>                            
+                <span editable-select="versao.version_author" e-name = "autor" e-form = "rowform" e-ng-options="s.id as s.name for s in usuarios">
+                    {{ showUsuario(versao.version_author) }}
+                  </span>   
             </td>
-            <td><a ng-href="{{versao.link}}" download>Link</a></td>
+            <td><a ng-href="{{versao.workspace_path}}" download>Link</a></td>
             <td>
-              <span editable-checkbox="versao.acessivel" e-title = "Acessível" e-form = "rowform">{{ versao.acessivel && "Acessível" || "Não acessível" }}</span>
+              <span editable-checkbox="versao.accessible" e-title = "Acessível" e-form = "rowform">{{ versao.accessible && "Acessível" || "Não acessível" }}</span>
             </td>
             <td>
               <form editable-form name="rowform" onaftersave="saveVersao(versao)" ng-show="rowform.$visible" class="form-buttons form-inline">

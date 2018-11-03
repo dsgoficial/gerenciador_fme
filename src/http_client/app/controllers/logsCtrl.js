@@ -1,11 +1,21 @@
 (function() {
   "use strict";
 
-  var logsCtrl = function($scope, $uibModal, dataFactory, DTOptionsBuilder) {
+  var logsCtrl = function($scope, dataFactory, DTOptionsBuilder) {
     $scope.logs = [];
     $scope.reload = function() {
       dataFactory.getLogs().then(
         function success(response) {
+          dataFactory.logs.forEach(function(log) {
+            var aux = [];
+            log.parameters.split(" | ").forEach(function(l) {
+              if (l.split(":")[0] != "LOG_FILE") {
+                aux.push(l);
+              }
+            });
+            log.parameters = aux.join(" | ");
+          });
+
           $scope.logs = dataFactory.logs;
         },
         function error(response) {
@@ -40,7 +50,7 @@
       });
   };
 
-  logsCtrl.$inject = ["$scope", "$uibModal", "dataFactory", "DTOptionsBuilder"];
+  logsCtrl.$inject = ["$scope", "dataFactory", "DTOptionsBuilder"];
 
   angular.module("fmeApp").controller("logsCtrl", logsCtrl);
 })();

@@ -54,7 +54,10 @@ const router = express.Router();
  *     }
  */
 router.get("/", async (req, res, next) => {
-  let { error, data } = await versionsCtrl.get(req.query.last === "true", req.query.category);
+  let { error, data } = await versionsCtrl.get(
+    req.query.last === "true",
+    req.query.category
+  );
   if (error) {
     return next(error);
   }
@@ -71,7 +74,9 @@ router.get("/", async (req, res, next) => {
 });
 
 router.put("/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, versionsModel.version);
+  let validationResult = Joi.validate(req.body, versionsModel.version, {
+    stripUnknown: true
+  });
   if (validationResult.error) {
     const err = new Error("Update versions validation error");
     err.status = 400;

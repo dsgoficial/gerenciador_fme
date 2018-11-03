@@ -4,6 +4,7 @@
   //ui.bootstrap https://angular-ui.github.io/bootstrap/ - MIT License
   //ngRoute https://docs.angularjs.org/api/ngRoute - MIT License
   //ngMessages https://docs.angularjs.org/api/ngMessages/directive/ngMessages - MIT License
+  //  ngStorage https://github.com/gsklee/ngStorage
   var app = angular.module("fmeApp", [
     "ui.bootstrap",
     "ngRoute",
@@ -11,12 +12,17 @@
     "cgBusy",
     "xeditable",
     "datatables",
-    "datatables.bootstrap"
+    "datatables.bootstrap",
+    "ngStorage"
   ]);
 
   app.config(function($routeProvider) {
     $routeProvider
       .when("/", {
+        controller: "loginCtrl",
+        templateUrl: "app/views/login.html"
+      })
+      .when("/main", {
         controller: "mainCtrl",
         templateUrl: "app/views/index.html"
       })

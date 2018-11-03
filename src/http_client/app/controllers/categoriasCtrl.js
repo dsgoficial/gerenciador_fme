@@ -2,10 +2,10 @@
   "use strict";
 
   var categoriasCtrl = function($scope, dataFactory, DTOptionsBuilder) {
+    $scope.categorias = [];
     $scope.reload = function() {
       dataFactory.getCategorias().then(
         function success(response) {
-          console.log(response);
           $scope.categorias = response;
         },
         function error(response) {
@@ -23,8 +23,7 @@
       }
       var erro = false;
       $scope.categorias.forEach(function(d) {
-        if (d.nome === data.trim() && d.id != id) {
-          console.log("aqui");
+        if (d.name === data.trim() && d.id != id) {
           erro = true;
         }
       });
@@ -40,7 +39,7 @@
     };
 
     $scope.saveCategoria = function(data, id) {
-      data.nome = data.nome.trim();
+      data.name = data.name.trim();
       if (typeof id === "string" && id.substring(0, 3) === "new") {
         dataFactory
           .insertCategoria(data)
@@ -67,7 +66,7 @@
     $scope.addCategoria = function() {
       $scope.inserted = {
         id: "new_" + $scope.categorias.length + 1,
-        nome: ""
+        name: ""
       };
       $scope.categorias.push($scope.inserted);
     };
