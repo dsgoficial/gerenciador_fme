@@ -12,6 +12,7 @@ controller.get = async () => {
       FROM fme.job as j INNER JOIN fme.workspace_version AS v ON  j.workspace_version_id = v.id
       INNER JOIN fme.workspace AS w ON w.id = v.workspace_id
       INNER JOIN fme.status AS s ON s.code = j.status
+      ORDER BY j.run_date DESC
       `
     );
     return { error: null, data: data };

@@ -7,13 +7,15 @@
       dataFactory.getLogs().then(
         function success(response) {
           dataFactory.logs.forEach(function(log) {
-            var aux = [];
-            log.parameters.split(" | ").forEach(function(l) {
-              if (l.split(":")[0] != "LOG_FILE") {
-                aux.push(l);
-              }
-            });
-            log.parameters = aux.join(" | ");
+            if(log.parameters){
+              var aux = [];
+              log.parameters.split(" | ").forEach(function(l) {
+                if (l.split(":")[0] != "LOG_FILE") {
+                  aux.push(l);
+                }
+              });
+              log.parameters = aux.join(" | ");
+            }
           });
 
           $scope.logs = dataFactory.logs;
