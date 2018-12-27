@@ -4,12 +4,16 @@
       <table datatable="ng" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="table table-hover table-responsive">
           <thead>
           <tr>
+              <th>ID</th>
               <th>Nome</th>
               <th><span class="glyphicon glyphicon-cog" style = "padding-left: 15px" aria-hidden="true"></span></th>
           </tr>
           </thead>
           <tbody>
           <tr ng-repeat="categoria in categorias">
+            <td>
+                {{ categoria.id }}
+            </td>
             <td>
               <span editable-text="categoria.name" e-name = "nome" e-form = "rowform" onbeforesave="checkName($data, categoria.id)">{{ categoria.name }}</span>
             </td>
