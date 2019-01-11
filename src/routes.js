@@ -13,10 +13,8 @@ const { userRoute } = require("./user");
 const routes = app => {
   app.use("/login", loginRoute);
 
-  //Serve HTTP Client
   app.use("/client", express.static(path.join(__dirname, "http_client")));
 
-  //Serve static files (baixar tabelas do FME carregadas)
   app.use(
     "/client/fme",
     express.static(path.join(__dirname, "fme_workspaces"))

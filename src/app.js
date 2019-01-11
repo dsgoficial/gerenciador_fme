@@ -43,7 +43,6 @@ app.use((req, res, next) => {
   next();
 });
 
-//informa que o serviço de dados do SAP está operacional
 app.get("/", (req, res, next) => {
   res.status(200).json({
     sucess: true,

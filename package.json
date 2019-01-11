@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dinizime/fme_manager"
+    "url": "git://github.com/1cgeo/fme_manager"
   },
   "engines": {
     "node": "~8.7.0",
@@ -25,7 +25,7 @@
   "author": "DSG/1CGEO <diniz.felipe@eb.mil.br>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dinizime/fme_manager/issues"
+    "url": "https://github.com/1cgeo/fme_manager/issues"
   },
   "dependencies": {
     "apidoc": "^0.17.7",
@@ -33,7 +33,7 @@
     "better-queue": "^3.8.10",
     "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
-    "chalk": "^2.4.1",
+    "chalk": "^2.4.2",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
@@ -41,16 +41,16 @@
     "gulp-apidoc": "^0.2.8",
     "helmet": "^3.15.0",
     "inquirer": "^6.2.1",
-    "joi": "^14.3.0",
+    "joi": "^14.3.1",
     "jsonwebtoken": "^8.4.0",
     "multer": "^1.4.1",
-    "nodemon": "^1.18.8",
-    "pg-promise": "^8.5.3",
+    "nodemon": "^1.18.9",
+    "pg-promise": "^8.5.4",
     "pgtools": "^0.3.0",
-    "pm2": "^3.2.3",
+    "pm2": "^3.2.8",
     "uuid": "^3.3.2",
     "winston": "^3.1.0",
-    "winston-daily-rotate-file": "^3.5.1"
+    "winston-daily-rotate-file": "^3.5.2"
   },
   "apidoc": {
     "name": "FME Manager API",
