@@ -65,20 +65,21 @@ const fmeRunner = (workspace_path, parameters) => {
     }
     executeCmd = executeCmd.join(" ");
 
-    exec(executeCmd, (err, stdout, stderr) => {
+    exec(executeCmd, { maxBuffer: Infinity }, (err, stdout, stderr) => {
       if (err) {
-        console.log(err)
+        console.log(err);
         reject("Erro na execução da workspace.");
-      } else if (stderr.trim() === "Translation was SUCCESSFUL") {
+      } else if (stderr.trim().indexOf("Translation was SUCCESSFUL") != -1) {
         let t1 = (new Date() - t0) / 1000;
         try {
           let summary = getSummary(parameters["LOG_FILE"]);
           resolve({ time: t1, summary });
         } catch (error) {
-          console.log(error)
+          console.log(error);
           reject("Erro na leitura do log.");
         }
       } else {
+        console.log(stderr);
         reject("Erro na execução da workspace.");
       }
     });

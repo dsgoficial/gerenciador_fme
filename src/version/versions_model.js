@@ -2,7 +2,9 @@ const Joi = require("joi");
 
 const version = Joi.object().keys({
   name: Joi.string().required(),
-  author: Joi.number().integer().required(),
+  author: Joi.number()
+    .integer()
+    .required(),
   version_date: Joi.date(),
   accessible: Joi.boolean()
 });
@@ -10,7 +12,7 @@ const version = Joi.object().keys({
 module.exports.version = version;
 
 const job = Joi.object().keys({
-  parameters: Joi.object().min(1)
+  parameters: Joi.object()
 });
 
 module.exports.job = job;
