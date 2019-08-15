@@ -56,7 +56,8 @@ const router = express.Router();
 router.get("/", async (req, res, next) => {
   let { error, data } = await versionsCtrl.get(
     req.query.last === "true",
-    req.query.category
+    req.query.category,
+    req.query.workspace
   );
   if (error) {
     return next(error);

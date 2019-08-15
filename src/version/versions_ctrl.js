@@ -43,7 +43,7 @@ const jobQueue = new Queue(
 
 const controller = {};
 
-controller.get = async (last, category) => {
+controller.get = async (last, category, workspace) => {
   try {
     let data = await db.task(t => {
       let batch = [];
@@ -51,7 +51,7 @@ controller.get = async (last, category) => {
         batch.push(
           t.any(
             `
-          SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
+          SELECT v.id, w.id AS workspace_id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
           v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY workspace_id ORDER BY version_date DESC) rn FROM fme.workspace_version WHERE accessible = TRUE) AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
@@ -64,7 +64,7 @@ controller.get = async (last, category) => {
         batch.push(
           t.any(
             `
-          SELECT v.id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
+          SELECT v.id, w.id AS workspace_id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
           v.author AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
           FROM fme.workspace_version AS v
           INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
@@ -95,6 +95,12 @@ controller.get = async (last, category) => {
       let cats = category.split(",");
       data[0] = data[0].filter(e => {
         return cats.some(cat => cat == e.category_id);
+      });
+    }
+    if (workspace) {
+      let works = workspace.split(",");
+      data[0] = data[0].filter(e => {
+        return works.some(work => work == e.workspace_id);
       });
     }
 
