@@ -4,14 +4,16 @@
       <table datatable="ng" dt-options="dtOptions" dt-column-defs="dtColumnDefs" class="table table-hover table-responsive">
           <thead>
           <tr>
+              <th style="width:10%">ID</th>
               <th style="width:20%">Nome</th>
-              <th style="width:55%">Descrição</th>
+              <th style="width:45%">Descrição</th>
               <th style="width:15%">Categoria</th>
               <th style="width:10%"><span class="glyphicon glyphicon-cog" style = "padding-left: 15px" aria-hidden="true"></span></th>
           </tr>
           </thead>
           <tbody>
           <tr ng-repeat="tabela in tabelas">
+            <td>{{ tabela.id }}</td>
             <td>
               <span editable-text="tabela.name" e-name = "nome" e-form = "rowform_work" >{{ tabela.name }}</span>              
             </td>
