@@ -1,21 +1,26 @@
 {
-  "name": "fme_manager",
+  "name": "gerenciador_fme",
   "version": "1.0.0",
   "description": "A simple implementation of a manager for Safe FME Workbench",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/1cgeo/fme_manager"
+    "url": "git://github.com/1cgeo/gerenciador_fme"
   },
   "engines": {
     "node": "~8.7.0",
     "npm": ">=5.4.2"
   },
   "scripts": {
-    "apidoc": "gulp apidoc",
     "dev": "nodemon src/index.js",
-    "production": "pm2 start src/index.js --name fme_manager",
+    "dev-multicore": "nodemon src/index.js --multicore",
+    "dev-https": "nodemon src/index.js --https",
+    "dev-https-multicore": "nodemon src/index.js --https --multicore",
+    "production": "pm2 start src/index.js -multicore -https --name sap",
     "config": "node create_config.js"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/js_docs/*"]
   },
   "keywords": [
     "FME",
@@ -25,37 +30,38 @@
   "author": "DSG/1CGEO <diniz.felipe@eb.mil.br>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/1cgeo/fme_manager/issues"
+    "url": "https://github.com/1cgeo/gerenciador_fme/issues"
   },
   "dependencies": {
-    "apidoc": "^0.18.0",
     "bcryptjs": "^2.4.3",
     "better-queue": "^3.8.10",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
-    "chalk": "^3.0.0",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
+    "documentation": "^12.1.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "gulp": "^4.0.2",
-    "gulp-apidoc": "^0.2.8",
+    "express-rate-limit": "^5.0.0",
     "helmet": "^3.21.2",
+    "hpp": "^0.2.2",
     "inquirer": "^7.0.0",
     "joi": "^14.3.1",
+    "jsdoc": "^3.6.3",
     "jsonwebtoken": "^8.5.1",
+    "minimist": "^1.2.0",
     "multer": "^1.4.2",
     "nodemon": "^2.0.1",
     "pg-promise": "^10.3.1",
     "pgtools": "^0.3.0",
     "pm2": "^4.2.0",
+    "semver": "^6.3.0",
+    "serialize-error": "^5.0.0",
+    "swagger-jsdoc": "^3.4.0",
+    "swagger-ui-express": "^4.1.2",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^4.3.0"
-  },
-  "apidoc": {
-    "name": "FME Manager API",
-    "version": "1.0.0",
-    "title": "FME Manager API",
-    "description": "FME Manager REST API"
+    "winston-daily-rotate-file": "^4.3.0",
+    "xss-clean": "^0.1.1"
   }
 }

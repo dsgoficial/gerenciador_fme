@@ -1,4 +1,4 @@
-﻿# FME Manager
+﻿# Gerenciador do FME v2.0
 
 Serviço em Node.js para gerenciamento do FME Workbench 2018 ([SAFE Software](https://www.safe.com/))
 
