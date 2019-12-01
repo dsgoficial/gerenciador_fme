@@ -1,6 +1,6 @@
 "use strict";
 
-const { AppError, asyncHandler, httpCode } = require("../utils");
+const { asyncHandler } = require("../utils");
 
 const validateToken = require("./validate_token");
 

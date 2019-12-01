@@ -2,7 +2,9 @@
 
 const Joi = require("joi");
 
-const workspace = Joi.object().keys({
+const models = {};
+
+models.workspace = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
   category_id: Joi.number()
@@ -10,9 +12,7 @@ const workspace = Joi.object().keys({
     .required()
 });
 
-module.exports.workspace = workspace;
-
-const workspaceVersion = Joi.object().keys({
+models.workspaceVersion = Joi.object().keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
   category_id: Joi.number()
@@ -25,14 +25,17 @@ const workspaceVersion = Joi.object().keys({
   version_date: Joi.date()
 });
 
-module.exports.workspaceVersion = workspaceVersion;
-
-const version = Joi.object().keys({
+models.version = Joi.object().keys({
   version_name: Joi.string().required(),
   version_author: Joi.number()
     .integer()
     .required(),
-  version_date: Joi.date()
+  version_date: Joi.date(),
+  accessible: Joi.boolean()
 });
 
-module.exports.version = version;
+models.jobParameters = Joi.object().keys({
+  parameters: Joi.object()
+});
+
+module.exports = models;

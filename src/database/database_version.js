@@ -14,7 +14,7 @@ let dbVersion = {};
 const validate = dbv => {
   if (semver.lt(semver.coerce(dbv), semver.coerce(MIN_DATABASE_VERSION))) {
     throw new AppError(
-      `Versão do banco de dados (${database_version}) não compatível com a versão do SAP. A versão deve ser superior a ${MIN_DATABASE_VERSION}.`
+      `Versão do banco de dados (${database_version}) não compatível com a versão do Gerenciador do FME. A versão deve ser superior a ${MIN_DATABASE_VERSION}.`
     );
   }
 };
@@ -28,7 +28,7 @@ dbVersion.load = async () => {
 
     if (!dbv) {
       throw new AppError(
-        `O banco de dados não não é compatível com a versão do SAP.`
+        `O banco de dados não não é compatível com a versão do Gerenciador do FME.`
       );
     }
     validate(dbv.nome);

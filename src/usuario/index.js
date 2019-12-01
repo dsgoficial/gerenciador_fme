@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-  userCtrl: require("./user_ctrl"),
-  userModel: require("./user_model"),
-  userRoute: require("./user_route")
+  usuarioCtrl: require("./usuario_ctrl"),
+  usuarioModel: require("./usuario_schema"),
+  usuarioRoute: require("./usuario_route")
 };

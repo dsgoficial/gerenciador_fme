@@ -1,99 +1,29 @@
 "use strict";
 
 const express = require("express");
-const Joi = require("joi");
 
-const { sendJsonAndLog } = require("../logger");
+const uuid = require("uuid");
 
-const { loginMiddleware } = require("../login");
+const { schemaValidation, asyncHandler, httpCode } = require("../utils");
+
+const { verifyAdmin } = require("../login");
 
 const workspacesCtrl = require("./workspaces_ctrl");
-const { workspaceVersion, workspace, version } = require("./workspaces_model");
+const workspaceSchema = require("./workspaces_schema");
 const uploadWorkspace = require("./upload_workspace");
 
 const router = express.Router();
 
-router.get("/", loginMiddleware, async (req, res, next) => {
-  let { error, data } = await workspacesCtrl.get();
-  if (error) {
-    return next(error);
-  }
-
-  return sendJsonAndLog(
-    true,
-    "Workspaces returned",
-    "workspaces_route",
-    null,
-    res,
-    200,
-    data
-  );
-});
-
-router.put("/:id", loginMiddleware, async (req, res, next) => {
-  let validationResult = Joi.validate(req.body, workspace, {
-    stripUnknown: true
-  });
-  if (validationResult.error) {
-    const err = new Error("Update workspace validation error");
-    err.status = 400;
-    err.context = "workspaces_route";
-    err.information = { body: req.body, trace: validationResult.error };
-    return next(err);
-  }
-
-  let { error } = await workspacesCtrl.update(
-    req.params.id,
-    req.body.name,
-    req.body.description,
-    req.body.category_id
-  );
-  if (error) {
-    return next(error);
-  }
-
-  return sendJsonAndLog(
-    true,
-    "Category updated",
-    "category_route",
-    {
-      id: req.params.id,
-      body: req.body
-    },
-    res,
-    200,
-    null
-  );
-});
-
-router.post("/:id/versions", loginMiddleware, async (req, res, next) => {
-  uploadWorkspace(req, res, async e => {
-    if (e || !req.file) {
-      const err = new Error("Upload workspace file error");
-      err.status = 400;
-      err.context = "workspaces_route";
-      err.information = {
-        trace: e
-      };
-      return next(err);
-    }
-
-    let validationResult = Joi.validate(req.body, version, {
-      stripUnknown: true
-    });
-    if (validationResult.error) {
-      const err = new Error("Create workspace validation error");
-      err.status = 400;
-      err.context = "workspaces_route";
-      err.information = {
-        id: req.params.id,
-        body: req.body,
-        trace: validationResult.error
-      };
-      return next(err);
-    }
-
-    let { error } = await workspacesCtrl.saveWorkspace(
+router.post(
+  "/:id/version",
+  verifyAdmin,
+  uploadWorkspace,
+  schemaValidation({
+    params: workspaceSchema.idParams,
+    body: workspaceSchema.version
+  }),
+  asyncHandler(async (req, res, next) => {
+    await workspacesCtrl.saveWorkspace(
       req.file.path,
       req.body.version_name,
       req.body.version_date,
@@ -103,46 +33,115 @@ router.post("/:id/versions", loginMiddleware, async (req, res, next) => {
       null,
       req.params.id
     );
-    if (error) {
-      return next(error);
-    }
 
-    return sendJsonAndLog(
-      true,
-      "Workspace created",
-      "workspaces_route",
-      {
-        id: req.params.id,
-        body: req.body
-      },
-      res,
-      201,
-      null
+    const msg = "Nova versão da workspace criada com sucesso";
+
+    return res.sendJsonAndLog(true, msg, httpCode.Created);
+  })
+);
+
+router.post(
+  "/:id/jobs",
+  verifyAdmin,
+  uploadWorkspace,
+  schemaValidation({
+    params: workspaceSchema.idParams,
+    body: workspaceSchema.jobParameters
+  }),
+  asyncHandler(async (req, res, next) => {
+    const job_uuid = uuid();
+
+    await workspacesCtrl.executeWorkspace(
+      req.params.id,
+      job_uuid,
+      req.body.parameters
     );
-  });
-});
 
-router.post("/", loginMiddleware, async (req, res, next) => {
-  uploadWorkspace(req, res, async e => {
-    if (e || !req.file) {
-      const err = new Error("Upload workspace file error");
-      err.status = 400;
-      err.context = "workspaces_route";
-      err.information = { trace: e };
-      return next(err);
-    }
+    const msg = "Job de execução da workspace criado com sucesso";
 
-    let validationResult = Joi.validate(req.body, workspaceVersion, {
-      stripUnknown: true
-    });
-    if (validationResult.error) {
-      const err = new Error("Create workspace validation error");
-      err.status = 400;
-      err.context = "workspaces_route";
-      err.information = { body: req.body, trace: validationResult.error };
-      return next(err);
-    }
-    let { error } = await workspacesCtrl.saveWorkspace(
+    return res.sendJsonAndLog(true, msg, httpCode.Created, { job_uuid });
+  })
+);
+
+router.put(
+  "/version/:id",
+  verifyAdmin,
+  schemaValidation({
+    params: workspaceSchema.idParams,
+    body: workspaceSchema.version
+  }),
+  asyncHandler(async (req, res, next) => {
+    await workspacesCtrl.updateVersion(
+      req.params.id,
+      req.body.name,
+      req.body.author,
+      req.body.version_date,
+      req.body.accessible
+    );
+
+    const msg = "Versão da workspace atualizada";
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK);
+  })
+);
+
+router.get(
+  "/version",
+  asyncHandler(async (req, res, next) => {
+    const dados = await workspacesCtrl.getVersions(
+      req.query.last === "true",
+      req.query.category,
+      req.query.workspace
+    );
+
+    const msg = "Versões retornadas";
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados);
+  })
+);
+
+router.put(
+  "/:id",
+  verifyAdmin,
+  schemaValidation({
+    params: workspaceSchema.idParams,
+    body: workspaceSchema.workspace
+  }),
+  asyncHandler(async (req, res, next) => {
+    await workspacesCtrl.update(
+      req.params.id,
+      req.body.name,
+      req.body.description,
+      req.body.category_id
+    );
+
+    const msg = "Versão da workspace atualizada";
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK);
+  })
+);
+
+router.get(
+  "/",
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await workspacesCtrl.get();
+
+    const msg = "Workspaces retornadas";
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados);
+  })
+);
+
+router.post(
+  "/",
+  verifyAdmin,
+  uploadWorkspace,
+  schemaValidation({
+    body: workspaceSchema.workspaceVersion
+  }),
+  asyncHandler(async (req, res, next) => {
+    await workspacesCtrl.saveWorkspace(
       req.file.path,
       req.body.version_name,
       req.body.version_date,
@@ -151,22 +150,11 @@ router.post("/", loginMiddleware, async (req, res, next) => {
       req.body.description,
       req.body.category_id
     );
-    if (error) {
-      return next(error);
-    }
 
-    return sendJsonAndLog(
-      true,
-      "Workspace created",
-      "workspaces_route",
-      {
-        body: req.body
-      },
-      res,
-      201,
-      null
-    );
-  });
-});
+    const msg = "Workspace criada com sucesso";
+
+    return res.sendJsonAndLog(true, msg, httpCode.Created);
+  })
+);
 
 module.exports = router;

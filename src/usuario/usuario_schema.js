@@ -2,8 +2,10 @@
 
 const Joi = require("joi");
 
-const user = Joi.object().keys({
+const models = {};
+
+models.user = Joi.object().keys({
   name: Joi.string().required()
 });
 
-module.exports.user = user;
+module.exports = models;
