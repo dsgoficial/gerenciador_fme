@@ -42,6 +42,29 @@ const verifyAuthServer = async authServer => {
   }
 };
 
+const verifyLoginAuthServer = async (servidor, usuario, senha) => {
+  const server = servidor.endsWith("/")
+    ? `${servidor}login`
+    : `${servidor}/login`;
+  try {
+    const response = await axios.post(server, {
+      usuario,
+      senha
+    });
+
+    if (!response || response.status !== 201 || !("data" in response)) {
+      throw new Error();
+    }
+
+    return response.data.success || false;
+  } catch (e) {
+    throw new AppError(
+      "Erro ao se comunicar com o servidor de autenticação",
+      http_code.InternalError
+    );
+  }
+};
+
 const createDotEnv = (
   port,
   dbServer,
@@ -62,7 +85,7 @@ DB_USER=${dbUser}
 DB_PASSWORD=${dbPassword}
 JWT_SECRET=${secret}
 AUTH_SERVER=${authServer}
-FME_PATH=${fmePath}`;
+fmePath=${fmePath}`;
 
   fs.writeFileSync("config.env", env);
 };
@@ -83,7 +106,22 @@ const givePermission = async ({
   await connection.none(readSqlFile("./er/permissao.sql"), [dbUser]);
 };
 
-const createDatabase = async (dbUser, dbPassword, dbPort, dbServer, dbName) => {
+const insertAdminUser = async (nome, connection) => {
+  await connection.none(
+    `INSERT INTO fme.user (name, administrator, active) VALUES
+    ($<nome>, TRUE, TRUE)`,
+    { nome }
+  );
+};
+
+const createDatabase = async (
+  dbUser,
+  dbPassword,
+  dbPort,
+  dbServer,
+  dbName,
+  authUser
+) => {
   const config = {
     user: dbUser,
     password: dbPassword,
@@ -100,6 +138,7 @@ const createDatabase = async (dbUser, dbPassword, dbPort, dbServer, dbName) => {
     await t.none(readSqlFile("./er/versao.sql"));
     await t.none(readSqlFile("./er/gerenciador_fme.sql"));
     await givePermission({ dbUser, connection: t });
+    await insertAdminUser(authUser, t);
   });
 };
 
@@ -170,6 +209,7 @@ const createConfig = async () => {
       {
         type: "password",
         name: "dbPassword",
+        mask: "*",
         message:
           "Qual a senha do usuário do PostgreSQL para interação com o Gerenciador do FME?"
       },
@@ -183,7 +223,7 @@ const createConfig = async () => {
         type: "input",
         name: "port",
         message: "Qual a porta do serviço do Gerenciador do FME?",
-        default: 3013
+        default: 3014
       },
       {
         type: "confirm",
@@ -193,7 +233,7 @@ const createConfig = async () => {
       },
       {
         type: "input",
-        name: "fme_path",
+        name: "fmePath",
         message: "Entre com o PATH para execução do FME Workbench",
         default: "fme"
       },
@@ -202,6 +242,19 @@ const createConfig = async () => {
         name: "authServer",
         message:
           "Qual a URL do serviço de autenticação (iniciar com http:// ou https://)?"
+      },
+      {
+        type: "input",
+        name: "authUser",
+        message:
+          "Qual o nome do usuário já existente Serviço de Autenticação que será administrador do SAP?"
+      },
+      {
+        type: "password",
+        name: "authPassword",
+        mask: "*",
+        message:
+          "Qual a senha do usuário já existente Serviço de Autenticação que será administrador do SAP?"
       }
     ];
 
@@ -213,14 +266,32 @@ const createConfig = async () => {
       dbUser,
       dbPassword,
       dbCreate,
-      fme_path,
-      authServer
+      fmePath,
+      authServer,
+      authUser,
+      authPassword
     } = await inquirer.prompt(questions);
 
     await verifyAuthServer(authServer);
 
+    const authenticated = await verifyLoginAuthServer(
+      authServer,
+      authUser,
+      authPassword
+    );
+    if (!authenticated) {
+      throw new Error("Usuário ou senha inválida no Serviço de Autenticação.");
+    }
+
     if (dbCreate) {
-      await createDatabase(dbUser, dbPassword, dbPort, dbServer, dbName);
+      await createDatabase(
+        dbUser,
+        dbPassword,
+        dbPort,
+        dbServer,
+        dbName,
+        authUser
+      );
 
       console.log(
         "Banco de dados do Gerenciador do FME criado com sucesso!".blue
@@ -239,7 +310,7 @@ const createConfig = async () => {
       dbUser,
       dbPassword,
       authServer,
-      fme_path
+      fmePath
     );
 
     console.log(
