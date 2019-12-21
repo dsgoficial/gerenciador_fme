@@ -1,8 +1,8 @@
-"use strict";
+'use strict'
 
-const Joi = require("joi");
+const Joi = require('joi')
 
-const models = {};
+const models = {}
 
 models.workspace = Joi.object().keys({
   name: Joi.string().required(),
@@ -10,7 +10,7 @@ models.workspace = Joi.object().keys({
   category_id: Joi.number()
     .integer()
     .required()
-});
+})
 
 models.workspaceVersion = Joi.object().keys({
   name: Joi.string().required(),
@@ -23,7 +23,7 @@ models.workspaceVersion = Joi.object().keys({
     .integer()
     .required(),
   version_date: Joi.date()
-});
+})
 
 models.version = Joi.object().keys({
   version_name: Joi.string().required(),
@@ -32,10 +32,10 @@ models.version = Joi.object().keys({
     .required(),
   version_date: Joi.date(),
   accessible: Joi.boolean()
-});
+})
 
 models.jobParameters = Joi.object().keys({
   parameters: Joi.object()
-});
+})
 
-module.exports = models;
+module.exports = models

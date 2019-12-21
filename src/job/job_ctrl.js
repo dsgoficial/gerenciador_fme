@@ -1,10 +1,10 @@
-"use strict";
+'use strict'
 
-const { db } = require("../database");
+const { db } = require('../database')
 
-const { AppError, httpCode } = require("../utils");
+const { AppError, httpCode } = require('../utils')
 
-const controller = {};
+const controller = {}
 
 controller.get = async () => {
   return db.conn.any(
@@ -15,8 +15,8 @@ controller.get = async () => {
     INNER JOIN fme.status AS s ON s.code = j.status
     ORDER BY j.run_date DESC
     `
-  );
-};
+  )
+}
 
 controller.getJobStatus = async uuid => {
   const dados = db.conn.any(
@@ -26,13 +26,13 @@ controller.getJobStatus = async uuid => {
     INNER JOIN fme.workspace AS w ON w.id = v.workspace_id WHERE j.job_uuid = $1
     `,
     [uuid]
-  );
+  )
 
-  if (!dados || dados.length == 0) {
-    throw new AppError("Job não encontrado", httpCode.BadRequest);
+  if (!dados || dados.length === 0) {
+    throw new AppError('Job não encontrado', httpCode.BadRequest)
   }
 
-  return dados;
-};
+  return dados
+}
 
-module.exports = controller;
+module.exports = controller

@@ -1,5 +1,5 @@
-"use strict";
+'use strict'
 
 module.exports = {
-  workspacesRoute: require("./workspaces_route")
-};
+  workspacesRoute: require('./workspaces_route')
+}

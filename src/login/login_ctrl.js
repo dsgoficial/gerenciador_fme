@@ -1,18 +1,18 @@
-"use strict";
+'use strict'
 
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
 
-const { db } = require("../database");
+const { db } = require('../database')
 
 const {
   AppError,
   httpCode,
   config: { JWT_SECRET }
-} = require("../utils");
+} = require('../utils')
 
-const { authenticateUser } = require("../authentication");
+const { authenticateUser } = require('../authentication')
 
-const controller = {};
+const controller = {}
 
 const signJWT = (data, secret) => {
   return new Promise((resolve, reject) => {
@@ -20,40 +20,40 @@ const signJWT = (data, secret) => {
       data,
       secret,
       {
-        expiresIn: "10h"
+        expiresIn: '10h'
       },
       (err, token) => {
         if (err) {
-          reject(new AppError("Erro durante a assinatura do token", null, err));
+          reject(new AppError('Erro durante a assinatura do token', null, err))
         }
-        resolve(token);
+        resolve(token)
       }
-    );
-  });
-};
+    )
+  })
+}
 
 controller.login = async (usuario, senha) => {
   const usuarioDb = await db.conn.oneOrNone(
-    `SELECT id, administrator FROM fme.usuario WHERE login = $<usuario> and active IS TRUE`,
+    'SELECT id, administrator FROM fme.usuario WHERE login = $<usuario> and active IS TRUE',
     { usuario }
-  );
+  )
   if (!usuarioDb) {
     throw new AppError(
-      "Usuário não autorizado para utilizar o Gerenciador do FME",
+      'Usuário não autorizado para utilizar o Gerenciador do FME',
       httpCode.Unauthorized
-    );
+    )
   }
 
-  const verifyAuthentication = await authenticateUser(usuario, senha);
+  const verifyAuthentication = await authenticateUser(usuario, senha)
   if (!verifyAuthentication) {
-    throw new AppError("Usuário ou senha inválida", httpCode.Unauthorized);
+    throw new AppError('Usuário ou senha inválida', httpCode.Unauthorized)
   }
 
-  const { id, administrator } = usuarioDb;
+  const { id, administrator } = usuarioDb
 
-  const token = await signJWT({ id, administrator }, JWT_SECRET);
+  const token = await signJWT({ id, administrator }, JWT_SECRET)
 
-  return { token, administrator };
-};
+  return { token, administrator }
+}
 
-module.exports = controller;
+module.exports = controller

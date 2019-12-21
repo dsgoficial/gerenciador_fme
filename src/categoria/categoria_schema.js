@@ -1,17 +1,17 @@
-"use strict";
+'use strict'
 
-const Joi = require("joi");
+const Joi = require('joi')
 
-const models = {};
+const models = {}
 
 models.idParams = Joi.object().keys({
   id: Joi.string()
     .regex(/^[0-9]+$/)
     .required()
-});
+})
 
 models.category = Joi.object().keys({
   name: Joi.string().required()
-});
+})
 
-module.exports = models;
+module.exports = models

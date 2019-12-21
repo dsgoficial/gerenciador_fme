@@ -1,5 +1,5 @@
-"use strict";
+'use strict'
 
 module.exports = {
-  categoriaRoute: require("./categoria_route")
-};
+  categoriaRoute: require('./categoria_route')
+}

@@ -1,11 +1,11 @@
-"use strict";
+'use strict'
 
-const Joi = require("joi");
+const Joi = require('joi')
 
-const models = {};
+const models = {}
 
 models.user = Joi.object().keys({
   name: Joi.string().required()
-});
+})
 
-module.exports = models;
+module.exports = models

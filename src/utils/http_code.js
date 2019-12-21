@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 const httpCode = {
   OK: 200,
@@ -9,6 +9,6 @@ const httpCode = {
   Forbidden: 403,
   NotFound: 404,
   InternalError: 500
-};
+}
 
-module.exports = httpCode;
+module.exports = httpCode

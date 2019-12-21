@@ -1,31 +1,33 @@
-"use strict";
+'use strict'
 
-const Queue = require("better-queue");
+const Queue = require('better-queue')
 
-const { db } = require("../database");
+const { db } = require('../database')
 
-const getParams = require("./workspace_parse");
+const getParams = require('./workspace_parse')
 
-const fmeRunner = require("./workspace_runner");
+const fmeRunner = require('./workspace_runner')
 
-const controller = {};
+const { AppError, httpCode } = require('../utils')
+
+const controller = {}
 
 controller.get = async () => {
   return db.conn.any(
-    `SELECT id, name, description, category_id FROM fme.workspace`
-  );
-};
+    'SELECT id, name, description, category_id FROM fme.workspace'
+  )
+}
 
 controller.update = async (id, name, description, categoryId) => {
   const result = db.conn.result(
     `UPDATE fme.workspace SET name =$<name>, description =$<description>, 
     category_id =$<categoryId> WHERE id = $<id>`,
     { id, name, description, categoryId }
-  );
-  if (!result.rowCount || result.rowCount != 1) {
-    throw new AppError("Workspace não encontrada", httpCode.BadRequest);
+  )
+  if (!result.rowCount || result.rowCount !== 1) {
+    throw new AppError('Workspace não encontrada', httpCode.BadRequest)
   }
-};
+}
 
 controller.saveWorkspace = async (
   workspacePath,
@@ -37,7 +39,7 @@ controller.saveWorkspace = async (
   categoryId,
   workspaceId
 ) => {
-  const params = getParams(workspacePath);
+  const params = getParams(workspacePath)
 
   await db.tx(async t => {
     if (!workspaceId) {
@@ -46,11 +48,11 @@ controller.saveWorkspace = async (
         INSERT INTO fme.workspace(name, description, category_id) VALUES($1,$2,$3) RETURNING id
         `,
         [name, description, categoryId]
-      );
-      workspaceId = workspace.id;
+      )
+      workspaceId = workspace.id
     }
 
-    versionDate = new Date(versionDate).toISOString();
+    versionDate = new Date(versionDate).toISOString()
 
     const version = await t.one(
       `
@@ -58,8 +60,8 @@ controller.saveWorkspace = async (
       VALUES($1,$2,$3,$4,$5,TRUE) RETURNING id
       `,
       [workspaceId, versionName, versionDate, versionAuthor, workspacePath]
-    );
-    let queries = [];
+    )
+    const queries = []
     params.forEach(p => {
       queries.push(
         t.none(
@@ -69,48 +71,48 @@ controller.saveWorkspace = async (
           `,
           [version.id, p]
         )
-      );
-    });
-    return await t.batch(queries);
-  });
-};
+      )
+    })
+    return t.batch(queries)
+  })
+}
 
-const updateJob = async (job_uuid, status, time, summary, parameters) => {
-  let paramtext = [];
-  for (let key in parameters) {
-    paramtext.push(key + ":" + parameters[key]);
+const updateJob = async (jobUuid, status, time, summary, parameters) => {
+  let paramtext = []
+  for (const key in parameters) {
+    paramtext.push(key + ':' + parameters[key])
   }
-  paramtext = paramtext.join(" | ");
+  paramtext = paramtext.join(' | ')
 
-  summary = summary.join(" | ");
+  summary = summary.join(' | ')
 
   return db.conn.none(
     `
     UPDATE fme.job set status =$1, run_time = $2, log = $3, parameters = $4 WHERE job_uuid = $5
     `,
-    [status, time, summary, paramtext, job_uuid]
-  );
-};
+    [status, time, summary, paramtext, jobUuid]
+  )
+}
 
 const jobQueue = new Queue(
   async (input, cb) => {
     try {
-      let { time, summary } = await fmeRunner(
+      const { time, summary } = await fmeRunner(
         input.workspace_path,
         input.parameters
-      );
-      console.log({ time, summary });
-      cb(null, { time, summary });
+      )
+      console.log({ time, summary })
+      cb(null, { time, summary })
     } catch (err) {
-      cb(err, null);
+      cb(err, null)
     }
   },
   { concurrent: 3 }
-);
+)
 
 controller.getVersions = async (last, category, workspace) => {
-  let data = await db.conn.task(t => {
-    let batch = [];
+  const data = await db.conn.task(t => {
+    const batch = []
     if (last) {
       batch.push(
         t.any(
@@ -123,7 +125,7 @@ controller.getVersions = async (last, category, workspace) => {
           WHERE v.rn = 1
           `
         )
-      );
+      )
     } else {
       batch.push(
         t.any(
@@ -135,7 +137,7 @@ controller.getVersions = async (last, category, workspace) => {
           INNER JOIN fme.category AS c ON c.id = w.category_id
           `
         )
-      );
+      )
     }
     batch.push(
       t.any(
@@ -143,75 +145,75 @@ controller.getVersions = async (last, category, workspace) => {
         SELECT workspace_version_id, name FROM fme.parameters
         `
       )
-    );
-    return t.batch(batch);
-  });
-  data[0].forEach(function(wv) {
-    wv.parameters = [];
-    wv.workspace_path = "fme/" + wv.workspace_path.split("\\").pop();
-    data[1].forEach(function(p) {
+    )
+    return t.batch(batch)
+  })
+  data[0].forEach(function (wv) {
+    wv.parameters = []
+    wv.workspace_path = 'fme/' + wv.workspace_path.split('\\').pop()
+    data[1].forEach(function (p) {
       if (wv.id === p.workspace_version_id) {
-        wv.parameters.push(p.name);
+        wv.parameters.push(p.name)
       }
-    });
-  });
+    })
+  })
   if (category) {
-    let cats = category.split(",");
+    const cats = category.split(',')
     data[0] = data[0].filter(e => {
-      return cats.some(cat => cat == e.category_id);
-    });
+      return cats.some(cat => cat === e.category_id)
+    })
   }
   if (workspace) {
-    let works = workspace.split(",");
+    const works = workspace.split(',')
     data[0] = data[0].filter(e => {
-      return works.some(work => work == e.workspace_id);
-    });
+      return works.some(work => work === e.workspace_id)
+    })
   }
 
-  return data[0];
-};
+  return data[0]
+}
 
 controller.updateVersion = async (
   id,
   name,
   author,
-  version_date,
+  versionDate,
   accessible
 ) => {
-  let result = await db.conn.result(
+  const result = await db.conn.result(
     `
       UPDATE fme.workspace_version set name =$1, author = $2, version_date = $3, accessible = $4 WHERE id = $5
       `,
-    [name, author, version_date, accessible, id]
-  );
+    [name, author, versionDate, accessible, id]
+  )
   if (!result.rowCount || result.rowCount < 1) {
-    throw new AppError("Versão não encontrada", httpCode.BadRequest);
+    throw new AppError('Versão não encontrada', httpCode.BadRequest)
   }
-};
+}
 
-controller.executeWorkspace = async (id, job_uuid, parameters) => {
-  let version = await db.conn.one(
+controller.executeWorkspace = async (id, jobUuid, parameters) => {
+  const version = await db.conn.one(
     `
       SELECT id, workspace_path FROM fme.workspace_version WHERE id = $1
       `,
     [id]
-  );
+  )
   await db.conn.none(
     `
       INSERT INTO fme.job(job_uuid, status, workspace_version_id, run_date) VALUES($1,$2,$3, CURRENT_TIMESTAMP)
       `,
-    [job_uuid, 1, version.id]
-  );
+    [jobUuid, 1, version.id]
+  )
   jobQueue
     .push({ workspace_path: version.workspace_path, parameters: parameters })
-    .on("finish", async result => {
-      console.log("finish");
-      await updateJob(job_uuid, 2, result.time, result.summary, parameters);
+    .on('finish', async result => {
+      console.log('finish')
+      await updateJob(jobUuid, 2, result.time, result.summary, parameters)
     })
-    .on("failed", async err => {
-      console.log("failed");
-      await updateJob(job_uuid, 3, null, [err], parameters);
-    });
-};
+    .on('failed', async err => {
+      console.log('failed')
+      await updateJob(jobUuid, 3, null, [err], parameters)
+    })
+}
 
-module.exports = controller;
+module.exports = controller
