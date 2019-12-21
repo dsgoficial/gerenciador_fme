@@ -18,7 +18,9 @@ controller.get = async () => {
 
 controller.update = async (id, name, description, categoryId) => {
   const result = db.conn.result(
-    `UPDATE fme.workspace SET name =$1, description =$2, category_id =$3 WHERE id = $4`
+    `UPDATE fme.workspace SET name =$<name>, description =$<description>, 
+    category_id =$<categoryId> WHERE id = $<id>`,
+    { id, name, description, categoryId }
   );
   if (!result.rowCount || result.rowCount != 1) {
     throw new AppError("Workspace não encontrada", httpCode.BadRequest);

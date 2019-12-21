@@ -5,7 +5,6 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
-const xss = require("xss-clean");
 const hpp = require("hpp");
 const rateLimit = require("express-rate-limit");
 const swaggerUi = require("swagger-ui-express");
@@ -31,7 +30,6 @@ const app = express();
 app.use(sendJsonAndLogMiddleware);
 
 app.use(bodyParser.json()); //parsear POST em JSON
-app.use(xss()); //sanitize body input
 app.use(hpp()); //protection against parameter polution
 
 //CORS middleware
@@ -74,7 +72,7 @@ app.get("/", (req, res, next) => {
 app.use("/api_docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //Serve JSDocs
-app.use("/js_docs", express.static(path.join(__dirname, "js_docs")));
+app.use("/js_docs", express.static(path.join(__dirname, "../js_docs")));
 
 //Handle missing URL
 app.use((req, res, next) => {

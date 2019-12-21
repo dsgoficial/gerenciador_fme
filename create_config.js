@@ -316,6 +316,8 @@ const createConfig = async () => {
     console.log(
       "Arquivo de configuração (config.env) criado com sucesso!".blue
     );
+
+    require("./create_documentation");
   } catch (e) {
     handleError(e);
   }
