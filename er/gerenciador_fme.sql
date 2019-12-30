@@ -8,7 +8,7 @@ CREATE TABLE fme.user(
 	name VARCHAR(255) NOT NULL,
   administrator BOOLEAN NOT NULL DEFAULT TRUE,
   active BOOLEAN NOT NULL DEFAULT TRUE,
-	uuid UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4()
+	uuid UUID NOT NULL UNIQUE
 );
 
 CREATE TABLE fme.category(
@@ -51,7 +51,7 @@ INSERT INTO fme.status (code, name) VALUES
 
 CREATE TABLE fme.job(
 	id SERIAL NOT NULL PRIMARY KEY,
-	job_uuid TEXT NOT NULL UNIQUE,
+	job_uuid UUID NOT NULL UNIQUE,
 	status SMALLINT NOT NULL REFERENCES fme.status(code),
 	workspace_version_id SMALLINT NOT NULL REFERENCES fme.workspace_version(id),
 	run_date TIMESTAMP WITH TIME ZONE NOT NULL,

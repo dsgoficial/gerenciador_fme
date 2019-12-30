@@ -10,7 +10,6 @@ const path = require('path')
 const promise = require('bluebird')
 const crypto = require('crypto')
 const axios = require('axios')
-const buildDocumentation = require('./create_documentation')
 
 const pgp = require('pg-promise')({
   promiseLib: promise
@@ -55,11 +54,22 @@ const verifyLoginAuthServer = async (servidor, usuario, senha) => {
       senha
     })
 
-    if (!response || response.status !== 201 || !('data' in response)) {
-      throw new Error()
+    if (
+      !response ||
+      !('status' in response) ||
+      response.status !== 201 ||
+      !('data' in response) ||
+      !('dados' in response.data) ||
+      !('token' in response.data.dados) ||
+      !('uuid' in response.data.dados)
+    ) {
+      throw new Error('')
     }
 
-    return response.data.success || false
+    const authenticated = response.data.success || false
+    const authUserUUID = response.data.dados.uuid
+
+    return { authenticated, authUserUUID }
   } catch (e) {
     throw new Error('Erro ao se comunicar com o servidor de autenticação')
   }
@@ -106,11 +116,11 @@ const givePermission = async ({
   await connection.none(readSqlFile('./er/permissao.sql'), [dbUser])
 }
 
-const insertAdminUser = async (nome, connection) => {
+const insertAdminUser = async (nome, uuid, connection) => {
   await connection.none(
-    `INSERT INTO fme.user (name, administrator, active) VALUES
-    ($<nome>, TRUE, TRUE)`,
-    { nome }
+    `INSERT INTO fme.user (name, administrator, active, uuid) VALUES
+    ($<nome>, TRUE, TRUE, $<uuid>)`,
+    { nome, uuid }
   )
 }
 
@@ -120,7 +130,8 @@ const createDatabase = async (
   dbPort,
   dbServer,
   dbName,
-  authUser
+  authUser,
+  authUserUUID
 ) => {
   const config = {
     user: dbUser,
@@ -138,7 +149,7 @@ const createDatabase = async (
     await t.none(readSqlFile('./er/versao.sql'))
     await t.none(readSqlFile('./er/gerenciador_fme.sql'))
     await givePermission({ dbUser, connection: t })
-    await insertAdminUser(authUser, t)
+    await insertAdminUser(authUser, authUserUUID, t)
   })
 }
 
@@ -239,7 +250,7 @@ const createConfig = async () => {
       },
       {
         type: 'input',
-        name: 'authServer',
+        name: 'authServerRaw',
         message:
           'Qual a URL do serviço de autenticação (iniciar com http:// ou https://)?'
       },
@@ -267,14 +278,16 @@ const createConfig = async () => {
       dbPassword,
       dbCreate,
       fmePath,
-      authServer,
+      authServerRaw,
       authUser,
       authPassword
     } = await inquirer.prompt(questions)
 
+    const authServer = authServerRaw.endsWith('/') ? authServerRaw.slice(0, -1) : `${authServerRaw}`
+
     await verifyAuthServer(authServer)
 
-    const authenticated = await verifyLoginAuthServer(
+    const { authenticated, authUserUUID } = await verifyLoginAuthServer(
       authServer,
       authUser,
       authPassword
@@ -290,7 +303,8 @@ const createConfig = async () => {
         dbPort,
         dbServer,
         dbName,
-        authUser
+        authUser,
+        authUserUUID
       )
 
       console.log(
@@ -316,8 +330,6 @@ const createConfig = async () => {
     console.log(
       'Arquivo de configuração (config.env) criado com sucesso!'.blue
     )
-
-    buildDocumentation()
   } catch (e) {
     handleError(e)
   }

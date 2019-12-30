@@ -9,9 +9,7 @@ const {
 } = require('../utils')
 
 const authorization = async (usuario, senha) => {
-  const server = AUTH_SERVER.endsWith('/')
-    ? `${AUTH_SERVER}login`
-    : `${AUTH_SERVER}/login`
+  const server = `${AUTH_SERVER}/login`
   try {
     const response = await axios.post(server, {
       usuario,
