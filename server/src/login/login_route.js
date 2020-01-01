@@ -15,7 +15,8 @@ router.post(
   asyncHandler(async (req, res, next) => {
     const { token, administrador } = await loginCtrl.login(
       req.body.usuario,
-      req.body.senha
+      req.body.senha,
+      req.body.cliente
     )
 
     return res.sendJsonAndLog(

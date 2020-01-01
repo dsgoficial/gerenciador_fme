@@ -8,12 +8,13 @@ const {
   config: { AUTH_SERVER }
 } = require('../utils')
 
-const authorization = async (usuario, senha) => {
+const authorization = async (usuario, senha, cliente) => {
   const server = `${AUTH_SERVER}/login`
   try {
     const response = await axios.post(server, {
       usuario,
-      senha
+      senha,
+      cliente
     })
 
     if (!response || response.status !== 201 || !('data' in response)) {

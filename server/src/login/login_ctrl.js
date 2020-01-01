@@ -32,7 +32,7 @@ const signJWT = (data, secret) => {
   })
 }
 
-controller.login = async (usuario, senha) => {
+controller.login = async (usuario, senha, cliente) => {
   const usuarioDb = await db.conn.oneOrNone(
     'SELECT id, administrator FROM fme.usuario WHERE login = $<usuario> and active IS TRUE',
     { usuario }
@@ -44,7 +44,7 @@ controller.login = async (usuario, senha) => {
     )
   }
 
-  const verifyAuthentication = await authenticateUser(usuario, senha)
+  const verifyAuthentication = await authenticateUser(usuario, senha, cliente)
   if (!verifyAuthentication) {
     throw new AppError('Usuário ou senha inválida', httpCode.Unauthorized)
   }
