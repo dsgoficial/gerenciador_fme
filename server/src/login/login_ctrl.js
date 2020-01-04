@@ -32,10 +32,10 @@ const signJWT = (data, secret) => {
   })
 }
 
-controller.login = async (usuario, senha, cliente) => {
+controller.login = async (login, senha, cliente) => {
   const usuarioDb = await db.conn.oneOrNone(
-    'SELECT id, administrator FROM fme.usuario WHERE login = $<usuario> and active IS TRUE',
-    { usuario }
+    'SELECT uuid, administrator FROM dgeo.usuario WHERE login = $<login> and ativo IS TRUE',
+    { login }
   )
   if (!usuarioDb) {
     throw new AppError(
@@ -44,16 +44,16 @@ controller.login = async (usuario, senha, cliente) => {
     )
   }
 
-  const verifyAuthentication = await authenticateUser(usuario, senha, cliente)
+  const verifyAuthentication = await authenticateUser(login, senha, cliente)
   if (!verifyAuthentication) {
     throw new AppError('Usuário ou senha inválida', httpCode.Unauthorized)
   }
 
-  const { id, administrator } = usuarioDb
+  const { uuid, administrator } = usuarioDb
 
-  const token = await signJWT({ id, administrator }, JWT_SECRET)
+  const token = await signJWT({ uuid, administrator }, JWT_SECRET)
 
-  return { token, administrator }
+  return { token, administrator, uuid }
 }
 
 module.exports = controller

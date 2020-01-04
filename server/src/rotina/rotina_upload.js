@@ -9,7 +9,8 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const nome = file.originalname.split('.')
     const extensao = nome.pop()
-    const nomeCorrigido = nome.join('.') + '_' + Date.now() + '.' + extensao
+    const ident = 1
+    const nomeCorrigido = nome.join('.') + '_' + ident + '.' + extensao
     cb(null, nomeCorrigido)
   }
 })

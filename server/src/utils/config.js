@@ -40,6 +40,7 @@ const configSchema = Joi.object().keys({
   AUTH_SERVER: Joi.string()
     .uri()
     .required(),
+  FME_PATH: Joi.string().required(),
   VERSION: Joi.string().required(),
   MIN_DATABASE_VERSION: Joi.string().required()
 })
@@ -53,6 +54,7 @@ const config = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   JWT_SECRET: process.env.JWT_SECRET,
   AUTH_SERVER: process.env.AUTH_SERVER,
+  FME_PATH: process.env.FME_PATH,
   VERSION,
   MIN_DATABASE_VERSION
 }

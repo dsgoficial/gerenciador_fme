@@ -2,12 +2,17 @@
 
 const path = require('path')
 const fs = require('fs')
+const util = require('util')
 
-const getParams = workspacePath => {
+const readFile = util.promisify(fs.readFile)
+
+const getParams = async workspacePath => {
   workspacePath = path.resolve(workspacePath)
 
   const parametros = []
-  const data = fs.readFileSync(workspacePath, 'utf8')
+
+  const data = await readFile(workspacePath, 'utf8')
+
   const linhas = data.split(/\r?\n/)
   linhas.slice(4).every(linha => {
     if (linha.indexOf('--') > -1) {
@@ -24,4 +29,5 @@ const getParams = workspacePath => {
   })
   return parametros
 }
+
 module.exports.getParams = getParams

@@ -4,10 +4,10 @@ const express = require('express')
 
 const { schemaValidation, asyncHandler, httpCode } = require('../utils')
 
-const { verifyAdmin } = require('../login')
+const { verifyLogin } = require('../login')
 
 const categoriaCtrl = require('./categoria_ctrl')
-const categoriaSchema = require('./categoryia_schema')
+const categoriaSchema = require('./categoria_schema')
 
 const router = express.Router()
 
@@ -24,10 +24,10 @@ router.get(
 
 router.post(
   '/',
-  verifyAdmin,
-  schemaValidation({ body: categoriaSchema.category }),
+  verifyLogin,
+  schemaValidation({ body: categoriaSchema.categoria }),
   asyncHandler(async (req, res, next) => {
-    await categoriaCtrl.create(req.body.name)
+    await categoriaCtrl.insert(req.body.nome, req.body.descricao)
 
     const msg = 'Categoria criada com sucesso'
 
@@ -37,13 +37,13 @@ router.post(
 
 router.put(
   '/:id',
-  verifyAdmin,
+  verifyLogin,
   schemaValidation({
-    body: categoriaSchema.category,
+    body: categoriaSchema.categoria,
     params: categoriaSchema.idParams
   }),
   asyncHandler(async (req, res, next) => {
-    await categoriaCtrl.update(req.params.id, req.body.name)
+    await categoriaCtrl.update(req.params.id, req.body.nome, req.body.descricao)
 
     const msg = 'Categoria atualizada com sucesso'
 
@@ -53,7 +53,7 @@ router.put(
 
 router.delete(
   '/:id',
-  verifyAdmin,
+  verifyLogin,
   schemaValidation({
     params: categoriaSchema.idParams
   }),

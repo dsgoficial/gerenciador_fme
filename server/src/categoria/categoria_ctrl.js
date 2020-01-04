@@ -7,21 +7,23 @@ const { AppError, httpCode } = require('../utils')
 const controller = {}
 
 controller.get = async () => {
-  return db.conn.one('SELECT id, name FROM fme.category')
+  return db.conn.any('SELECT id, nome, descricao FROM fme.categoria')
 }
 
-controller.create = async nome => {
-  return db.conn.none('INSERT INTO fme.category(name) VALUES($<nome>)', {
-    nome
+controller.insert = async (nome, descricao) => {
+  return db.conn.none('INSERT INTO fme.categoria(nome, descricao) VALUES($<nome>, $<descricao>)', {
+    nome,
+    descricao
   })
 }
 
-controller.update = async (id, nome) => {
-  const result = db.conn.result(
-    'UPDATE fme.category SET name = $<nome> WHERE id = $<id>',
+controller.update = async (id, nome, descricao) => {
+  const result = await db.conn.result(
+    'UPDATE fme.categoria SET nome = $<nome>, descricao = $<descricao> WHERE id = $<id>',
     {
       id,
-      nome
+      nome,
+      descricao
     }
   )
 
@@ -31,13 +33,21 @@ controller.update = async (id, nome) => {
 }
 
 controller.delete = async id => {
-  const result = db.conn.result('DELETE FROM fme.category WHERE id = $<id>', {
-    id
-  })
+  return db.conn.tx(async t => {
+    const rotina = await t.oneOrNone('SELECT id FROM fme.rotina WHERE categoria_id = $<id> LIMIT 1', { id })
 
-  if (!result.rowCount || result.rowCount !== 1) {
-    throw new AppError('Categoria não encontrada', httpCode.BadRequest)
-  }
+    if (rotina) {
+      throw new AppError('A categoria possui rotinas associadas, não podendo ser deletada.', httpCode.BadRequest)
+    }
+
+    const result = await t.result('DELETE FROM fme.categoria WHERE id = $<id>', {
+      id
+    })
+
+    if (!result.rowCount || result.rowCount !== 1) {
+      throw new AppError('Categoria não encontrada', httpCode.BadRequest)
+    }
+  })
 }
 
 module.exports = controller

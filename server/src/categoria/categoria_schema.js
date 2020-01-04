@@ -10,8 +10,9 @@ models.idParams = Joi.object().keys({
     .required()
 })
 
-models.category = Joi.object().keys({
-  name: Joi.string().required()
+models.categoria = Joi.object().keys({
+  nome: Joi.string().required(),
+  descricao: Joi.string().allow('').required()
 })
 
 module.exports = models

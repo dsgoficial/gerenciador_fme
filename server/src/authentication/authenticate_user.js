@@ -4,7 +4,6 @@ const axios = require('axios')
 
 const {
   AppError,
-  httpCode,
   config: { AUTH_SERVER }
 } = require('../utils')
 
@@ -25,7 +24,8 @@ const authorization = async (usuario, senha, cliente) => {
   } catch (e) {
     throw new AppError(
       'Erro ao se comunicar com o servidor de autenticação',
-      httpCode.InternalError
+      null,
+      e
     )
   }
 }

@@ -25,7 +25,7 @@ db.createConn = async () => {
 
   await conn
     .connect()
-    .then(function (obj) {
+    .then(obj => {
       obj.done() // success, release connection;
     })
     .catch(errorHandler)

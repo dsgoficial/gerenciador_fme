@@ -44,10 +44,35 @@ const verifyAuthServer = async authServer => {
   }
 }
 
+const getAuthUserData = async (servidor, token, uuid) => {
+  const server = `${servidor}/usuarios/${uuid}`
+
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.get(server, config)
+
+    if (
+      !('status' in response) ||
+      response.status !== 200 ||
+      !('data' in response) ||
+      !('dados' in response.data)
+    ) {
+      throw new Error()
+    }
+    return response.data.dados
+  } catch (e) {
+    throw new Error('Erro ao se comunicar com o servidor de autenticação')
+  }
+}
+
 const verifyLoginAuthServer = async (servidor, usuario, senha) => {
-  const server = servidor.endsWith('/')
-    ? `${servidor}login`
-    : `${servidor}/login`
+  const server = `${servidor}/login`
+
   try {
     const response = await axios.post(server, {
       usuario,
@@ -60,6 +85,7 @@ const verifyLoginAuthServer = async (servidor, usuario, senha) => {
       response.status !== 201 ||
       !('data' in response) ||
       !('dados' in response.data) ||
+      !('success' in response.data) ||
       !('token' in response.data.dados) ||
       !('uuid' in response.data.dados)
     ) {
@@ -68,8 +94,11 @@ const verifyLoginAuthServer = async (servidor, usuario, senha) => {
 
     const authenticated = response.data.success || false
     const authUserUUID = response.data.dados.uuid
+    const token = response.data.dados.token
 
-    return { authenticated, authUserUUID }
+    const authUserData = getAuthUserData(servidor, token, authUserUUID)
+
+    return { authenticated, authUserData }
   } catch (e) {
     throw new Error('Erro ao se comunicar com o servidor de autenticação')
   }
@@ -95,7 +124,7 @@ DB_USER=${dbUser}
 DB_PASSWORD=${dbPassword}
 JWT_SECRET=${secret}
 AUTH_SERVER=${authServer}
-fmePath=${fmePath}`
+FME_PATH=${fmePath}`
 
   fs.writeFileSync('config.env', env)
 }
@@ -116,11 +145,13 @@ const givePermission = async ({
   await connection.none(readSqlFile('./er/permissao.sql'), [dbUser])
 }
 
-const insertAdminUser = async (nome, uuid, connection) => {
+const insertAdminUser = async (authUserData, connection) => {
+  const { login, nome, nome_guerra: nomeGuerra, tipo_posto_grad_id: tpgId, uuid } = authUserData
+
   await connection.none(
-    `INSERT INTO fme.user (name, administrator, active, uuid) VALUES
-    ($<nome>, TRUE, TRUE, $<uuid>)`,
-    { nome, uuid }
+    `INSERT INTO dgeo.usuario (login, nome, nome_guerra, tipo_posto_grad_id, administrador, ativo, uuid) VALUES
+    ($<login>, $<nome>, $<nomeGuerra>, $<tpgId>, TRUE, TRUE, $<uuid>)`,
+    { login, nome, nomeGuerra, tpgId, uuid }
   )
 }
 
@@ -130,8 +161,7 @@ const createDatabase = async (
   dbPort,
   dbServer,
   dbName,
-  authUser,
-  authUserUUID
+  authUserData
 ) => {
   const config = {
     user: dbUser,
@@ -149,7 +179,7 @@ const createDatabase = async (
     await t.none(readSqlFile('./er/versao.sql'))
     await t.none(readSqlFile('./er/gerenciador_fme.sql'))
     await givePermission({ dbUser, connection: t })
-    await insertAdminUser(authUser, authUserUUID, t)
+    await insertAdminUser(authUserData, t)
   })
 }
 
@@ -283,11 +313,11 @@ const createConfig = async () => {
       authPassword
     } = await inquirer.prompt(questions)
 
-    const authServer = authServerRaw.endsWith('/') ? authServerRaw.slice(0, -1) : `${authServerRaw}`
+    const authServer = authServerRaw.endsWith('/') ? authServerRaw.slice(0, -1) : authServerRaw
 
     await verifyAuthServer(authServer)
 
-    const { authenticated, authUserUUID } = await verifyLoginAuthServer(
+    const { authenticated, authUserData } = await verifyLoginAuthServer(
       authServer,
       authUser,
       authPassword
@@ -303,8 +333,7 @@ const createConfig = async () => {
         dbPort,
         dbServer,
         dbName,
-        authUser,
-        authUserUUID
+        authUserData
       )
 
       console.log(
