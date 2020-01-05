@@ -7,7 +7,7 @@ const controller = {}
 controller.getUltimasExecucoes = async (total = 10) => {
   return db.conn.any(
     `
-    SELECTs.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
+    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao
     r.nome AS rotina, vr.nome AS versao_rotina
     FROM fme.execucao AS e
     INNER JOIN dominio.status AS s ON s.code = e.status_id
@@ -130,29 +130,16 @@ controller.getErrorsRotinas = async (total = 14, max = 10) => {
 }
 
 controller.getTempoExecucaoRotinas = async (total = 365, max = 10) => {
-  const dados = await db.conn.any(
-    `SELECT COALESCE(r.nome, 'Rotina deletada') AS rotina, avg(e.tempo_execucao) AS tempo_execucao_media
+  return db.conn.any(
+    `SELECT COALESCE(r.nome, 'Rotina deletada') AS rotina, avg(e.tempo_execucao) AS tempo_execucao_medio
     FROM fme.execucao AS e
     LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
     WHERE e.data_execucao::date >= (now() - interval '$<total:raw> day')::date AND e.status = 2
     GROUP BY r.nome
-    ORDER BY avg(e.tempo_execucao) DESC`,
-    { total: total - 1 }
+    ORDER BY avg(e.tempo_execucao) DESC
+    LIMIT $<max:raw>`,
+    { total: total - 1, max }
   )
-
-  const rotinasFixed = []
-  dados.forEach((r, i) => i < max - 1 ? rotinasFixed.push(r.rotina) : null)
-
-  const result = {}
-  dados.forEach(d => {
-    if (rotinasFixed.indexOf(d.rotina) !== -1) {
-      result[d.rotina] = +d.tempo_execucao_media
-    } else {
-      result[d.data_execucao].outros += d.tempo_execucao_media
-    }
-  })
-
-  return result
 }
 
 module.exports = controller

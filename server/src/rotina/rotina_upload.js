@@ -1,6 +1,7 @@
 'use strict'
 
 const multer = require('multer')
+const { AppError, httpCode } = require('../utils')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -9,12 +10,19 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const nome = file.originalname.split('.')
     const extensao = nome.pop()
-    const ident = 1
+    const ident = Date.now()
     const nomeCorrigido = nome.join('.') + '_' + ident + '.' + extensao
     cb(null, nomeCorrigido)
   }
 })
 
-const upload = multer({ storage: storage }).single('workspace')
+const fileFilter = function (req, file, cb) {
+  if (!file.originalname.match(/\.(fmw|FMW)$/)) {
+    return cb(new AppError('O arquivo deve ter extensão .fmw', httpCode.BadRequest), false)
+  }
+  cb(null, true)
+}
+
+const upload = multer({ storage: storage, fileFilter: fileFilter }).single('rotina')
 
 module.exports = upload

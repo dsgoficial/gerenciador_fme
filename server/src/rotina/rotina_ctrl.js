@@ -18,8 +18,6 @@ const controller = {}
 
 controller.criaVersao = async (id, path, uuid) => {
   await db.conn.tx(async t => {
-    const params = await getParams(path)
-
     const usuario = await t.one(
       `
         SELECT id FROM dgeo.usuario WHERE uuid = $<uuid>
@@ -40,6 +38,7 @@ controller.criaVersao = async (id, path, uuid) => {
       { id, usuarioId: usuario.id, path }
     )
 
+    const params = await getParams(path)
     const queries = []
     params.forEach(p => {
       queries.push(
@@ -210,16 +209,38 @@ controller.deletaRotina = async id => {
 }
 
 controller.getRotinas = async (ids, categoria) => {
-  t.any(
+  let rotinas = db.conn.any(
     `
-    SELECT v.id, w.id AS workspace_id, w.name AS workspace_name, w.description AS workspace_description, v.name AS version_name, v.version_date AS version_date,
-    COALESCE(v.author, 'Usuário deletado') AS version_author, v.workspace_path, v.accessible, c.id AS category_id, c.name AS category_name
-    FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY workspace_id ORDER BY version_date DESC) rn FROM fme.workspace_version WHERE accessible = TRUE) AS v
-    INNER JOIN fme.workspace AS w ON v.workspace_id = w.id
-    INNER JOIN fme.category AS c ON c.id = w.category_id
-    WHERE v.rn = 1
-    `
+      SELECT vr.id AS versao_id, vr.path, vr.nome AS versao, COALESCE(vr.usuario_id, 'Usuário deletado') AS autor,
+      vr.data, r.id, r.nome AS rotina, c.id AS categoria_id, c.nome AS categoria, r.ativa,
+      json_agg(p.nome ORDER BY p.nome) AS parametros
+      FROM fme.versao_rotina AS vr
+      FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
+      INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
+      INNER JOIN fme.categoria AS c ON c.id = r.categoria_id
+      LEFT JOIN fme.parametros AS p ON p.versao_rotina_id = vr.id
+      WHERE vr.rn = 1 
+      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa
+      `,
+    { ids, categoria }
   )
+
+  if (ids && ids.length > 0) {
+    rotinas = rotinas.filter(v => {
+      return ids.indexOf(v.id) !== -1
+    })
+  }
+  if (categoria) {
+    rotinas = rotinas.filter(v => {
+      return parseInt(categoria, 10) === parseInt(v.categoria_id, 10)
+    })
+  }
+
+  rotinas.forEach(v => {
+    v.path = 'fme/' + v.path.split('\\').pop()
+  })
+
+  return rotinas
 }
 
 controller.criaRotina = async (path, uuid, nome, descricao, categoria) => {

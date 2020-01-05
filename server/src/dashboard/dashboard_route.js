@@ -52,28 +52,6 @@ router.get(
 )
 
 router.get(
-  '/execucoes',
-  asyncHandler(async (req, res, next) => {
-    const dados = await dashboardCtrl.getExecucoes()
-
-    const msg = 'Número de execuções retornado com sucesso'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
-  })
-)
-
-router.get(
-  '/rotinas',
-  asyncHandler(async (req, res, next) => {
-    const dados = await dashboardCtrl.getRotinas()
-
-    const msg = 'Número de rotinas retornado com sucesso'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
-  })
-)
-
-router.get(
   '/execucoes/rotinas',
   schemaValidation({
     query: dashboardSchema.totalMaxQuery
@@ -110,6 +88,28 @@ router.get(
     const dados = await dashboardCtrl.getTempoExecucaoRotinas(req.query.total, req.query.max)
 
     const msg = 'Tempo de execução por rotinas retornados com sucesso'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.get(
+  '/execucoes',
+  asyncHandler(async (req, res, next) => {
+    const dados = await dashboardCtrl.getExecucoes()
+
+    const msg = 'Número de execuções retornado com sucesso'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.get(
+  '/rotinas',
+  asyncHandler(async (req, res, next) => {
+    const dados = await dashboardCtrl.getRotinas()
+
+    const msg = 'Número de rotinas retornado com sucesso'
 
     return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
   })

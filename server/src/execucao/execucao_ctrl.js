@@ -36,11 +36,11 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
   LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
   ${where} ${sort} ${paginacao}`
 
-  const logs = await db.conn.any(sql)
+  const execucoes = await db.conn.any(sql)
 
-  const result = { logs }
+  const result = { execucoes }
 
-  result.total = logs.length
+  result.total = execucoes.length
 
   return result
 }
