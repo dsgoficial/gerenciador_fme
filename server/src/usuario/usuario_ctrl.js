@@ -4,6 +4,8 @@ const { db } = require('../database')
 
 const { AppError, httpCode } = require('../utils')
 
+const { getUsuariosAuth } = require('../authentication')
+
 const controller = {}
 
 controller.getUsuarios = async () => {
@@ -58,7 +60,13 @@ controller.deletaUsuario = async uuid => {
   })
 }
 
-controller.atualizaListaUsuarios = async usuarios => {
+controller.getUsuariosAuthServer = async () => {
+  return getUsuariosAuth()
+}
+
+controller.atualizaListaUsuarios = async () => {
+  const usuariosAuth = await getUsuariosAuth()
+
   const table = new db.pgp.helpers.TableName({
     table: 'usuario',
     schema: 'dgeo'
@@ -67,7 +75,7 @@ controller.atualizaListaUsuarios = async usuarios => {
   const cs = new db.pgp.helpers.ColumnSet(['?uuid', 'login', 'nome', 'nome_guerra', 'tipo_posto_grad_id'], { table })
 
   const query =
-    db.pgp.helpers.update(usuarios, cs, null, {
+    db.pgp.helpers.update(usuariosAuth, cs, null, {
       tableAlias: 'X',
       valueAlias: 'Y'
     }) + 'WHERE Y.uuid = X.uuid'
@@ -76,6 +84,12 @@ controller.atualizaListaUsuarios = async usuarios => {
 }
 
 controller.criaListaUsuarios = async usuarios => {
+  const usuariosAuth = await getUsuariosAuth()
+
+  const usuariosFiltrados = usuariosAuth.filter(f => {
+    return usuarios.indexOf(f.uuid) !== -1
+  })
+
   const table = new db.pgp.helpers.TableName({
     table: 'usuario',
     schema: 'dgeo'
@@ -94,7 +108,7 @@ controller.criaListaUsuarios = async usuarios => {
     { table }
   )
 
-  usuarios.foreach(d => {
+  usuariosFiltrados.foreach(d => {
     d.ativo = true
     d.administrador = false
   })
