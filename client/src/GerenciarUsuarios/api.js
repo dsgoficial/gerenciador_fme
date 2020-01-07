@@ -5,7 +5,7 @@ const getUsuarios = async () => {
 }
 
 const getUsuariosAuth = async () => {
-  return api.getData('/usuarios/servico_autenticacao')
+  return api.getData('/usuarios/servico_autenticacao?cadastrados=false')
 }
 
 const atualizaUsuario = async (uuid, administrador, ativo) => {

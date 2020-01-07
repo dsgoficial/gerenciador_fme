@@ -5,19 +5,29 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import ReactLoading from 'react-loading'
+import FormLabel from '@material-ui/core/FormLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import Checkbox from '@material-ui/core/Checkbox'
 
-import { importaUsuarios, getUsuariosAuth, getUsuarios } from './api'
+import { importaUsuarios, getUsuariosAuth } from './api'
 import { SubmitButton } from '../helpers'
 import styles from './styles'
 
-const DialogoImporta = ({ open = false, usuario = {}, handleDialog }) => {
+const DialogoImporta = ({ open = false, handleDialog }) => {
   const classes = styles()
 
-  const [listaTurnos, setListaTurnos] = useState([])
-  const [listaPostoGrad, setListaPostoGrad] = useState([])
+  const [usuarios, setUsuarios] = useState([])
+  const [usuariosSelected, setUsuariosSelected] = useState({})
 
   const [submitting, setSubmitting] = useState(false)
   const [loaded, setLoaded] = useState(false)
+
+  const handleChange = uuid => event => {
+    setUsuariosSelected({ ...usuariosSelected, [uuid]: event.target.checked })
+  }
 
   useEffect(() => {
     let isCurrent = true
@@ -26,9 +36,12 @@ const DialogoImporta = ({ open = false, usuario = {}, handleDialog }) => {
         const response = await getUsuariosAuth()
         if (!response || !isCurrent) return
 
-        const { listaPostoGrad, listaTurnos } = response
-        setListaPostoGrad(listaPostoGrad)
-        setListaTurnos(listaTurnos)
+        setUsuarios(response)
+        const aux = {}
+        response.forEach(u => {
+          aux[u.uuid] = false
+        })
+        setUsuariosSelected(aux)
         setLoaded(true)
       } catch (err) {
         handleDialog('error', 'Ocorreu um erro ao se comunicar com o servidor.')
@@ -48,11 +61,11 @@ const DialogoImporta = ({ open = false, usuario = {}, handleDialog }) => {
     handleDialog()
   }
 
-  const handleConfirm = async (values, { resetForm }) => {
+  const handleConfirm = async () => {
     try {
       setSubmitting(true)
       const response = await importaUsuarios(
-        uuids
+        Object.keys(usuariosSelected.filter(v => v))
       )
       if (!response) return
       setSubmitting(false)
@@ -71,13 +84,26 @@ const DialogoImporta = ({ open = false, usuario = {}, handleDialog }) => {
     }
   }
 
+  const error = Object.values(usuariosSelected).filter(v => v).length > 0
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Importar usuários</DialogTitle>
       <DialogContent>
         {loaded ? (
-          <>
-          </>
+          <FormControl required error={error} component='fieldset' className={classes.formControl}>
+            <FormLabel component='legend'>Selecione um ou mais usuários para importar</FormLabel>
+            <FormGroup>
+              {usuarios.map(u => (
+                <FormControlLabel
+                  key={u.uuid}
+                  control={<Checkbox checked={usuariosSelected[u.uuid]} onChange={handleChange(u.uuid)} value={u.uuid} />}
+                  label={`${u.tipo_posto_grad} ${u.nome_guerra}`}
+                />
+              ))}
+            </FormGroup>
+            <FormHelperText>Selecione um ou mais usuários.</FormHelperText>
+          </FormControl>
         )
           : (
             <div className={classes.loading}>
@@ -89,7 +115,7 @@ const DialogoImporta = ({ open = false, usuario = {}, handleDialog }) => {
         <Button onClick={handleClose} color='primary' disabled={submitting} autoFocus>
           Cancelar
         </Button>
-        <SubmitButton onClick={handleConfirm} color='secondary' submitting={submitting}>
+        <SubmitButton onClick={handleConfirm} color='secondary' disabled={!loaded} submitting={submitting}>
           Confirmar
         </SubmitButton>
       </DialogActions>

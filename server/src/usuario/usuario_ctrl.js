@@ -60,8 +60,14 @@ controller.deletaUsuario = async uuid => {
   })
 }
 
-controller.getUsuariosAuthServer = async () => {
-  return getUsuariosAuth()
+controller.getUsuariosAuthServer = async cadastrados => {
+  const usuariosAuth = await getUsuariosAuth()
+
+  const usuarios = db.conn.any('SELECT u.uuid FROM dgeo.usuario AS u')
+
+  return usuariosAuth.filter(u => {
+    return usuarios.map(us => us.uuid).indexOf(u.uuid) !== -1
+  })
 }
 
 controller.atualizaListaUsuarios = async () => {
