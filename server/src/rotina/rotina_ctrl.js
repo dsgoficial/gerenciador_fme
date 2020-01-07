@@ -114,7 +114,7 @@ controller.getVersoes = async () => {
     `
       SELECT vr.id, vr.path, vr.nome AS versao, COALESCE(vr.usuario_id, 'Usuário deletado') AS autor,
       vr.data, r.nome AS rotina, c.nome AS categoria, r.ativa,
-      json_agg(p.nome ORDER BY p.nome) AS parametros
+      array_agg(p.nome ORDER BY p.nome) AS parametros
       FROM fme.versao_rotina AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
       INNER JOIN fme.categoria AS c ON c.id = r.categoria_id
@@ -212,8 +212,8 @@ controller.getRotinas = async (ids, categoria) => {
   let rotinas = db.conn.any(
     `
       SELECT vr.id AS versao_id, vr.path, vr.nome AS versao, COALESCE(vr.usuario_id, 'Usuário deletado') AS autor,
-      vr.data, r.id, r.nome AS rotina, c.id AS categoria_id, c.nome AS categoria, r.ativa,
-      json_agg(p.nome ORDER BY p.nome) AS parametros
+      vr.data, r.id, r.nome AS rotina, r.descricao, c.id AS categoria_id, c.nome AS categoria, r.ativa,
+      array_agg(p.nome ORDER BY p.nome) AS parametros
       FROM fme.versao_rotina AS vr
       FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id

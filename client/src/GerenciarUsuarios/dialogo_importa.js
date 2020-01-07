@@ -115,7 +115,7 @@ const DialogoImporta = ({ open = false, handleDialog }) => {
         <Button onClick={handleClose} color='primary' disabled={submitting} autoFocus>
           Cancelar
         </Button>
-        <SubmitButton onClick={handleConfirm} color='secondary' disabled={!loaded} submitting={submitting}>
+        <SubmitButton onClick={handleConfirm} color='secondary' disabled={!loaded || error} submitting={submitting}>
           Confirmar
         </SubmitButton>
       </DialogActions>
