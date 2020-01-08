@@ -23,8 +23,8 @@ export default withRouter(props => {
         setVersoes(response.versoes)
 
         const lookup = response.categorias.reduce((map, obj) => {
-          map[obj.id] = obj.nome;
-          return map;
+          map[obj.id] = obj.nome
+          return map
         }, {})
 
         setCategorias(lookup)
@@ -96,8 +96,8 @@ export default withRouter(props => {
           { title: 'Categoria', field: 'categoria_id', lookup: categorias },
           { title: 'Versão', field: 'versao', editable: 'never' },
           { title: 'Data', field: 'data', editable: 'never' },
-          { title: 'Ativa', field: 'ativa', type: 'boolean' }
-          { title: 'Download', field: 'path', editable: 'never', render: rowData => (<a href={rowData.path} download >Download</a>) }
+          { title: 'Ativa', field: 'ativa', type: 'boolean' },
+          { title: 'Download', field: 'path', editable: 'never', render: rowData => (<a href={rowData.path} download>Download</a>) }
         ]}
         data={rotinas}
         editable={{

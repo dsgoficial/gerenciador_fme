@@ -110,16 +110,18 @@ controller.execucaoRotina = async (id, uuid, parametros) => {
 }
 
 controller.getVersoes = async () => {
-  const versoes = db.conn.any(
+  const versoes = await db.conn.any(
     `
-      SELECT vr.id, vr.path, vr.nome AS versao, COALESCE(vr.usuario_id, 'Usuário deletado') AS autor,
+      SELECT vr.id, vr.path, vr.nome AS versao, vr.usuario_id, COALESCE(tpg.nome_abrev || ' ' || u.nome_guerra, 'Usuário deletado') AS usuario,
       vr.data, r.nome AS rotina, c.nome AS categoria, r.ativa,
       array_agg(p.nome ORDER BY p.nome) AS parametros
       FROM fme.versao_rotina AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
       INNER JOIN fme.categoria AS c ON c.id = r.categoria_id
       LEFT JOIN fme.parametros AS p ON p.versao_rotina_id = vr.id
-      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa
+      LEFT JOIN dgeo.usuario AS u ON u.id = vr.usuario_id
+      LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
+      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa, tpg.nome_abrev, u.nome_guerra
       `
   )
   versoes.forEach(v => {
@@ -158,7 +160,7 @@ controller.deletarVersao = async id => {
 }
 
 controller.atualizaRotina = async (id, nome, descricao, categoriaId, ativa) => {
-  const result = db.conn.result(
+  const result = await db.conn.result(
     `UPDATE fme.rotina SET nome = $<nome>, descricao = $<descricao>, 
     categoria_id = $<categoriaId>, ativa = $<ativa> WHERE id = $<id>`,
     { id, nome, descricao, categoriaId, ativa }
@@ -209,18 +211,19 @@ controller.deletaRotina = async id => {
 }
 
 controller.getRotinas = async (ids, categoria) => {
-  let rotinas = db.conn.any(
+  let rotinas = await db.conn.any(
     `
-      SELECT vr.id AS versao_id, vr.path, vr.nome AS versao, COALESCE(vr.usuario_id, 'Usuário deletado') AS autor,
+      SELECT vr.id AS versao_id, vr.path, vr.nome AS versao, vr.usuario_id, COALESCE(tpg.nome_abrev || ' ' || u.nome_guerra, 'Usuário deletado') AS usuario,
       vr.data, r.id, r.nome AS rotina, r.descricao, c.id AS categoria_id, c.nome AS categoria, r.ativa,
       array_agg(p.nome ORDER BY p.nome) AS parametros
-      FROM fme.versao_rotina AS vr
       FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
       INNER JOIN fme.categoria AS c ON c.id = r.categoria_id
       LEFT JOIN fme.parametros AS p ON p.versao_rotina_id = vr.id
+      LEFT JOIN dgeo.usuario AS u ON u.id = vr.usuario_id
+      LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
       WHERE vr.rn = 1 
-      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa
+      GROUP BY r.id, c.id, c.nome, vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa, u.nome_guerra, tpg.nome_abrev
       `,
     { ids, categoria }
   )

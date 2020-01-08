@@ -25,19 +25,25 @@ export default ({ title, series, fill, groupKey, valueKey }) => {
     <Card className={fixedHeightPaper}>
       <Typography variant='h6' gutterBottom>{title}</Typography>
       <CardContent className={classes.content}>
-        <ResponsiveContainer width='100%' height='100%'>
-          <BarChart
-            margin={{ top: 20, right: 0, left: 0, bottom: 10 }}
-            data={series}
-          >
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey={groupKey} height={60} tick={<CustomizedAxisTick />} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey={valueKey} fill={fill} />
-          </BarChart>
-        </ResponsiveContainer>
+        {series.length > 0 ? (
+
+          <ResponsiveContainer width='100%' height='100%'>
+            <BarChart
+              margin={{ top: 20, right: 0, left: 0, bottom: 10 }}
+              data={series}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey={groupKey} height={60} tick={<CustomizedAxisTick />} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey={valueKey} fill={fill} />
+            </BarChart>
+          </ResponsiveContainer>
+        )
+          : (
+            <Typography variant='h5' gutterBottom>Sem dados para exibir</Typography>
+          )}
       </CardContent>
     </Card>
   )

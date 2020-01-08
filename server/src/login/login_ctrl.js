@@ -20,7 +20,7 @@ const signJWT = (data, secret) => {
       data,
       secret,
       {
-        expiresIn: '10h'
+        expiresIn: '1h'
       },
       (err, token) => {
         if (err) {
@@ -32,28 +32,28 @@ const signJWT = (data, secret) => {
   })
 }
 
-controller.login = async (login, senha, cliente) => {
+controller.login = async (login, senha, aplicacao) => {
   const usuarioDb = await db.conn.oneOrNone(
-    'SELECT uuid, administrator FROM dgeo.usuario WHERE login = $<login> and ativo IS TRUE',
+    'SELECT uuid, administrador FROM dgeo.usuario WHERE login = $<login> and ativo IS TRUE',
     { login }
   )
   if (!usuarioDb) {
     throw new AppError(
       'Usuário não autorizado para utilizar o Gerenciador do FME',
-      httpCode.Unauthorized
+      httpCode.BadRequest
     )
   }
 
-  const verifyAuthentication = await authenticateUser(login, senha, cliente)
+  const verifyAuthentication = await authenticateUser(login, senha, aplicacao)
   if (!verifyAuthentication) {
-    throw new AppError('Usuário ou senha inválida', httpCode.Unauthorized)
+    throw new AppError('Usuário ou senha inválida', httpCode.BadRequest)
   }
 
-  const { uuid, administrator } = usuarioDb
+  const { uuid, administrador } = usuarioDb
 
-  const token = await signJWT({ uuid, administrator }, JWT_SECRET)
+  const token = await signJWT({ uuid, administrador }, JWT_SECRET)
 
-  return { token, administrator, uuid }
+  return { token, administrador, uuid }
 }
 
 module.exports = controller

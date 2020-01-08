@@ -4,16 +4,17 @@ const axios = require('axios')
 
 const {
   AppError,
+  httpCode,
   config: { AUTH_SERVER }
 } = require('../utils')
 
-const authorization = async (usuario, senha, cliente) => {
+const authorization = async (usuario, senha, aplicacao) => {
   const server = `${AUTH_SERVER}/login`
   try {
     const response = await axios.post(server, {
       usuario,
       senha,
-      cliente
+      aplicacao
     })
 
     if (!response || response.status !== 201 || !('data' in response)) {
@@ -21,12 +22,21 @@ const authorization = async (usuario, senha, cliente) => {
     }
 
     return response.data.success || false
-  } catch (e) {
-    throw new AppError(
-      'Erro ao se comunicar com o servidor de autenticação',
-      null,
-      e
-    )
+  } catch (err) {
+    if (
+      'response' in err &&
+      'data' in err.response &&
+      'message' in err.response.data
+    ) {
+      throw new AppError(
+        err.response.data.message,
+        httpCode.BadRequest
+      )
+    } else {
+      throw new AppError(
+        'Erro ao se comunicar com o servidor de autenticação'
+      )
+    }
   }
 }
 

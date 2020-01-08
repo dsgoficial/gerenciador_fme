@@ -10,7 +10,7 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
   let where = ''
 
   if (filtro) {
-    where = ` WHERE lower(concat_ws('|',e.uuid,s.nome,e.data_execucao,e.tempo_execucao, e.log, e.parametros,COALESCE(r.nome, 'Rotina deletada'), COALESCE(vr.nome, 'Versão deletada'))) LIKE '%${filtro.toLowerCase()}%'`
+    where = ` WHERE lower(concat_ws('|',e.uuid,s.nome,e.data_execucao,e.tempo_execucao, e.log, e.parametros,COALESCE(r.nome, 'Rotina deletada'), COALESCE(vr.nome::text, 'Versão deletada'))) LIKE '%${filtro.toLowerCase()}%'`
   }
 
   let sort = ''
@@ -29,7 +29,7 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
   }
 
   const sql = `SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
-  COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome, 'Versão deletada') AS versao_rotina
+  COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina
   FROM fme.execucao AS e
   INNER JOIN dominio.status AS s ON s.code = e.status_id
   LEFT JOIN fme.versao_rotina AS vr ON vr.id = e.versao_rotina_id
@@ -46,10 +46,10 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
 }
 
 controller.getExecucaoStatus = async uuid => {
-  const dados = db.conn.oneOrNone(
+  const dados = await db.conn.oneOrNone(
     `
     SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
-    COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome, 'Versão deletada') AS versao_rotina
+    COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada')::text AS versao_rotina
     FROM fme.execucao AS e
     INNER JOIN dominio.status AS s ON s.code = e.status_id
     LEFT JOIN fme.versao_rotina AS vr ON vr.id = e.versao_rotina_id

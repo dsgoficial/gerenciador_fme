@@ -14,6 +14,7 @@ import LibraryAddIcon from '@material-ui/icons/LibraryAdd'
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks'
 import EditIcon from '@material-ui/icons/Edit'
 import DataUsageIcon from '@material-ui/icons/DataUsage'
+import Tooltip from '@material-ui/core/Tooltip'
 
 import styles from './styles'
 
@@ -23,38 +24,51 @@ export const MainListItems = props => {
   return (
     <List>
       <Divider />
-      <ListItem button component={NavLink} replace exact to='/' activeClassName={classes.active}>
-        <ListItemIcon>
-          <InsertChartIcon />
-        </ListItemIcon>
-        <ListItemText primary='Gráficos' />
-      </ListItem>
-      <Divider />
-      <ListItem button component={NavLink} replace exact to='/adicionar_rotina' activeClassName={classes.active}>
-        <ListItemIcon>
-          <LibraryAddIcon />
-        </ListItemIcon>
-        <ListItemText primary='Adicionar rotina' />
-      </ListItem>
-      <ListItem button component={NavLink} replace exact to='/atualizar_rotina' activeClassName={classes.active}>
-        <ListItemIcon>
-          <EditIcon />
-        </ListItemIcon>
-        <ListItemText primary='Atualizar rotina' />
-      </ListItem>
-      <Divider />
-      <ListItem button component={NavLink} replace exact to='/categorias' activeClassName={classes.active}>
-        <ListItemIcon>
-          <LibraryBooksIcon />
-        </ListItemIcon>
-        <ListItemText primary='Categorias' />
-      </ListItem>
-      <ListItem button component={NavLink} replace exact to='/rotinas' activeClassName={classes.active}>
-        <ListItemIcon>
-          <ListIcon />
-        </ListItemIcon>
-        <ListItemText primary='Rotinas' />
-      </ListItem>
+      <Tooltip title='Gráficos' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/' activeClassName={classes.active}>
+          <ListItemIcon>
+            <InsertChartIcon />
+          </ListItemIcon>
+          <ListItemText primary='Gráficos' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Adicionar rotina' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/adicionar_rotina' activeClassName={classes.active}>
+          <ListItemIcon>
+            <LibraryAddIcon />
+          </ListItemIcon>
+          <ListItemText primary='Adicionar rotina' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Atualizar rotina' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/atualizar_rotina' activeClassName={classes.active}>
+          <ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          <ListItemText primary='Atualizar rotina' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Categorias' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/categorias' activeClassName={classes.active}>
+          <ListItemIcon>
+            <LibraryBooksIcon />
+          </ListItemIcon>
+          <ListItemText primary='Categorias' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Rotinas' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/rotinas' activeClassName={classes.active}>
+          <ListItemIcon>
+            <ListIcon />
+          </ListItemIcon>
+          <ListItemText primary='Rotinas' />
+        </ListItem>
+      </Tooltip>
+
     </List>
   )
 }
@@ -66,24 +80,34 @@ export const AdminListItems = props => {
     <List>
       <Divider />
       <ListSubheader inset>Administração</ListSubheader>
-      <ListItem button component={NavLink} replace exact to='/logs' activeClassName={classes.active}>
-        <ListItemIcon>
-          <DataUsageIcon />
-        </ListItemIcon>
-        <ListItemText primary='Logs' />
-      </ListItem>
-      <ListItem button component={NavLink} replace exact to='/gerenciar_usuarios' activeClassName={classes.active}>
-        <ListItemIcon>
-          <VerifiedUserIcon />
-        </ListItemIcon>
-        <ListItemText primary='Gerenciar usuários' />
-      </ListItem>
-      <ListItem button component={NavLink} replace exact to='/arquivos_temporarios' activeClassName={classes.active}>
-        <ListItemIcon>
-          <DeleteSweepIcon />
-        </ListItemIcon>
-        <ListItemText primary='Arquivos temporários' />
-      </ListItem>
+
+      <Tooltip title='Logs' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/logs' activeClassName={classes.active}>
+          <ListItemIcon>
+            <DataUsageIcon />
+          </ListItemIcon>
+          <ListItemText primary='Logs' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Gerenciar usuários' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/gerenciar_usuarios' activeClassName={classes.active}>
+          <ListItemIcon>
+            <VerifiedUserIcon />
+          </ListItemIcon>
+          <ListItemText primary='Gerenciar usuários' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Arquivos temporários' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/arquivos_temporarios' activeClassName={classes.active}>
+          <ListItemIcon>
+            <DeleteSweepIcon />
+          </ListItemIcon>
+          <ListItemText primary='Arquivos temporários' />
+        </ListItem>
+      </Tooltip>
+
     </List>
   )
 }

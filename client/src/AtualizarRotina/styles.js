@@ -29,10 +29,17 @@ const styles = makeStyles(theme => ({
     elevation: 3
   },
   button: {
-    margin: theme.spacing(1)
+    width: '100%',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1)
   },
   input: {
     display: 'none'
+  },
+  select: {
+    width: '100%',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1)
   }
 }))
 

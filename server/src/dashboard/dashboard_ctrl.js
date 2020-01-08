@@ -7,7 +7,7 @@ const controller = {}
 controller.getUltimasExecucoes = async (total = 10) => {
   return db.conn.any(
     `
-    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao
+    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao,
     r.nome AS rotina, vr.nome AS versao_rotina
     FROM fme.execucao AS e
     INNER JOIN dominio.status AS s ON s.code = e.status_id
@@ -76,7 +76,7 @@ const getExecRotinaByStatus = async (status, total, max) => {
     `SELECT COALESCE(r.nome, 'Rotina deletada') AS rotina, count(e.id) AS execucoes 
     FROM fme.execucao AS e
     LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
-    WHERE e.data_execucao::date >= (now() - interval '$<total:raw> day')::date AND e.status = $<status>
+    WHERE e.data_execucao::date >= (now() - interval '$<total:raw> day')::date AND e.status_id = $<status>
     GROUP BY r.nome
     ORDER BY count(e.id) DESC
     LIMIT $<max:raw>`,
@@ -87,7 +87,7 @@ const getExecRotinaByStatus = async (status, total, max) => {
     FROM generate_series((now() - interval '$<total:raw> day')::date, now()::date, interval  '1 day') AS day
     LEFT JOIN fme.execucao AS e ON e.data_execucao::date = day.day::date
     LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
-    WHERE e.status = $<status>
+    WHERE e.status_id = $<status>
     GROUP BY day::date, r.nome
     ORDER BY day::date, r.nome`,
     { status, total: total - 1 }
@@ -134,7 +134,7 @@ controller.getTempoExecucaoRotinas = async (total = 365, max = 10) => {
     `SELECT COALESCE(r.nome, 'Rotina deletada') AS rotina, avg(e.tempo_execucao) AS tempo_execucao_medio
     FROM fme.execucao AS e
     LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
-    WHERE e.data_execucao::date >= (now() - interval '$<total:raw> day')::date AND e.status = 2
+    WHERE e.data_execucao::date >= (now() - interval '$<total:raw> day')::date AND e.status_id = 2
     GROUP BY r.nome
     ORDER BY avg(e.tempo_execucao) DESC
     LIMIT $<max:raw>`,

@@ -16,7 +16,7 @@ router.post(
     const dados = await loginCtrl.login(
       req.body.usuario,
       req.body.senha,
-      req.body.cliente
+      req.body.aplicacao
     )
 
     return res.sendJsonAndLog(

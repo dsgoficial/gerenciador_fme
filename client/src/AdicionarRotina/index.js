@@ -77,11 +77,11 @@ export default withRouter(props => {
 
   return (
     <>
-      <Container maxWidth='sm'>
-        {loaded ? (
+      {loaded ? (
+        <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
-              <Typography component='h1' variant='h5'>
+              <Typography variant='h5'>
                 Cadastar nova rotina
               </Typography>
               <Formik
@@ -122,18 +122,16 @@ export default withRouter(props => {
                           Selecione a categoria da rotina
                         </MenuItem>
                         {categorias.map(option => (
-                          <MenuItem key={option.code} value={option.code}>
+                          <MenuItem key={option.id} value={option.id}>
                             {option.nome}
                           </MenuItem>
                         ))}
                       </Field>
                     </div>
-                    <input accept='*.fmw' className={classes.input} id='icon-button-file' type='file' />
+                    <input accept='fmw' className={classes.input} id='icon-button-file' type='file' />
                     <label htmlFor='icon-button-file'>
                       <Button
                         variant='contained'
-                        color='primary'
-                        size='large'
                         className={classes.button}
                         startIcon={<InsertDriveFileIcon />}
                         onChange={(event) => {
@@ -157,13 +155,13 @@ export default withRouter(props => {
               </Formik>
             </div>
           </Paper>
-        )
-          : (
-            <div className={classes.loading}>
-              <ReactLoading type='bars' color='#F83737' height='40%' width='40%' />
-            </div>
-          )}
-      </Container>
+        </Container>
+      )
+        : (
+          <div className={classes.loading}>
+            <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
+          </div>
+        )}
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
     </>
   )

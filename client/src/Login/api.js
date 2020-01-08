@@ -12,9 +12,8 @@ const handleLogin = async (usuario, senha) => {
     !('token' in response.data.dados) ||
     !('administrador' in response.data.dados)
   ) {
-    throw new Error('')
+    throw new Error()
   }
-
   auth.setToken(response.data.dados.token)
   auth.setAuthorization(response.data.dados.administrador)
 

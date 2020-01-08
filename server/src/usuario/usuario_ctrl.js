@@ -10,9 +10,9 @@ const controller = {}
 
 controller.getUsuarios = async () => {
   return db.conn.any(`
-  SELECT u.uuid, u.login, u.nome, u.tipo_posto_grad.id, tpg.nome_abrev AS posto_grad, u.nome_guerra, u.administrador, u.ativo FROM dgeo.usuario AS u
-  INNER JOIN dominio.tipo_posto_grad AS tpg.code = u.tipo_posto_grad_id
-
+  SELECT u.uuid, u.login, u.nome, u.tipo_posto_grad_id, tpg.nome_abrev AS posto_grad, u.nome_guerra, u.administrador, u.ativo 
+  FROM dgeo.usuario AS u
+  INNER JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
   `)
 }
 
@@ -63,7 +63,7 @@ controller.deletaUsuario = async uuid => {
 controller.getUsuariosAuthServer = async cadastrados => {
   const usuariosAuth = await getUsuariosAuth()
 
-  const usuarios = db.conn.any('SELECT u.uuid FROM dgeo.usuario AS u')
+  const usuarios = await db.conn.any('SELECT u.uuid FROM dgeo.usuario AS u')
 
   return usuariosAuth.filter(u => {
     return usuarios.map(us => us.uuid).indexOf(u.uuid) !== -1
@@ -121,7 +121,7 @@ controller.criaListaUsuarios = async usuarios => {
 
   const query = db.pgp.helpers.insert(usuarios, cs)
 
-  db.conn.none(query)
+  return db.conn.none(query)
 }
 
 module.exports = controller

@@ -48,21 +48,26 @@ export default ({ title, series, dataKey }) => {
     <Card className={fixedHeightPaper}>
       <Typography variant='h6' gutterBottom>{title}</Typography>
       <CardContent className={classes.content}>
-        <ResponsiveContainer width='100%' height='100%'>
-          <AreaChart
-            margin={{ top: 20, right: 0, left: 0, bottom: 10 }}
-            data={series}
-          >
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey={dataKey} height={60} tick={<CustomizedAxisTick />} />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend iconType='square' />
-            {prepareData(series, dataKey).map((s, i) => (
-              <Area key={i} type='monotone' dataKey={s} stackId='1' stroke={colors[i]} fill={colors[i]} />
-            ))}
-          </AreaChart>
-        </ResponsiveContainer>
+        {series.length > 0 ? (
+          <ResponsiveContainer width='100%' height='100%'>
+            <AreaChart
+              margin={{ top: 20, right: 0, left: 0, bottom: 10 }}
+              data={series}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis dataKey={dataKey} height={60} tick={<CustomizedAxisTick />} />
+              <YAxis />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend iconType='square' />
+              {prepareData(series, dataKey).map((s, i) => (
+                <Area key={i} type='monotone' dataKey={s} stackId='1' stroke={colors[i]} fill={colors[i]} />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
+        )
+          : (
+            <Typography variant='h5' gutterBottom>Sem dados para exibir</Typography>
+          )}
       </CardContent>
     </Card>
   )

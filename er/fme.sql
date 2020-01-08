@@ -1,4 +1,5 @@
-﻿
+BEGIN;
+
 CREATE SCHEMA fme;
 
 CREATE TABLE fme.categoria(
@@ -41,3 +42,5 @@ CREATE TABLE fme.execucao(
 	log json,
 	parametros json
 );
+
+COMMIT;

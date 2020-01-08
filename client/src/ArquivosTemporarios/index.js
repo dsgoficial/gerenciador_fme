@@ -65,8 +65,8 @@ export default withRouter(props => {
 
   return (
     <>
-      <Container maxWidth='sm'>
-        {loaded ? (
+      {loaded ? (
+        <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
               <Typography variant='subtitle1'>
@@ -83,13 +83,13 @@ export default withRouter(props => {
               </SubmitButton>
             </div>
           </Paper>
-        )
-          : (
-            <div className={classes.loading}>
-              <ReactLoading type='bars' color='#F83737' height='40%' width='40%' />
-            </div>
-          )}
-      </Container>
+        </Container>
+      )
+        : (
+          <div className={classes.loading}>
+            <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
+          </div>
+        )}
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
     </>
   )

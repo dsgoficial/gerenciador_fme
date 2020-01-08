@@ -1,5 +1,5 @@
 'use strict'
 
 module.exports = {
-  workspacesRoute: require('./workspaces_route')
+  rotinaRoute: require('./rotina_route')
 }

@@ -73,8 +73,8 @@ export default withRouter(props => {
 
   return (
     <>
-      <Container maxWidth='sm'>
-        {loaded ? (
+      {loaded ? (
+        <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
               <Typography component='h1' variant='h5'>
@@ -110,8 +110,6 @@ export default withRouter(props => {
                     <label htmlFor='icon-button-file'>
                       <Button
                         variant='contained'
-                        color='primary'
-                        size='large'
                         className={classes.button}
                         startIcon={<InsertDriveFileIcon />}
                         onChange={(event) => {
@@ -135,13 +133,13 @@ export default withRouter(props => {
               </Formik>
             </div>
           </Paper>
-        )
-          : (
-            <div className={classes.loading}>
-              <ReactLoading type='bars' color='#F83737' height='40%' width='40%' />
-            </div>
-          )}
-      </Container>
+        </Container>
+      )
+        : (
+          <div className={classes.loading}>
+            <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
+          </div>
+        )}
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
     </>
   )

@@ -21,7 +21,7 @@ const readSqlFile = file => {
 }
 
 const verifyDotEnv = () => {
-  return fs.existsSync('config.env')
+  return fs.existsSync(path.join(__dirname, 'server', 'config.env'))
 }
 
 const verifyAuthServer = async authServer => {
@@ -76,9 +76,9 @@ const verifyLoginAuthServer = async (servidor, usuario, senha) => {
   try {
     const response = await axios.post(server, {
       usuario,
-      senha
+      senha,
+      aplicacao: 'fme_web'
     })
-
     if (
       !response ||
       !('status' in response) ||
@@ -96,8 +96,7 @@ const verifyLoginAuthServer = async (servidor, usuario, senha) => {
     const authUserUUID = response.data.dados.uuid
     const token = response.data.dados.token
 
-    const authUserData = getAuthUserData(servidor, token, authUserUUID)
-
+    const authUserData = await getAuthUserData(servidor, token, authUserUUID)
     return { authenticated, authUserData }
   } catch (e) {
     throw new Error('Erro ao se comunicar com o servidor de autenticação')
@@ -126,7 +125,7 @@ JWT_SECRET=${secret}
 AUTH_SERVER=${authServer}
 FME_PATH=${fmePath}`
 
-  fs.writeFileSync('config.env', env)
+  fs.writeFileSync(path.join(__dirname, 'server', 'config.env'), env)
 }
 
 const givePermission = async ({
@@ -177,7 +176,9 @@ const createDatabase = async (
   const db = pgp(connectionString)
   await db.tx(async t => {
     await t.none(readSqlFile('./er/versao.sql'))
-    await t.none(readSqlFile('./er/gerenciador_fme.sql'))
+    await t.none(readSqlFile('./er/dominio.sql'))
+    await t.none(readSqlFile('./er/dgeo.sql'))
+    await t.none(readSqlFile('./er/fme.sql'))
     await givePermission({ dbUser, connection: t })
     await insertAdminUser(authUserData, t)
   })
@@ -322,6 +323,7 @@ const createConfig = async () => {
       authUser,
       authPassword
     )
+
     if (!authenticated) {
       throw new Error('Usuário ou senha inválida no Serviço de Autenticação.')
     }

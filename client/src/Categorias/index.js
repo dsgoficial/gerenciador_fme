@@ -44,7 +44,7 @@ export default withRouter(props => {
 
   const handleAdd = async newData => {
     try {
-      const response = await criaCategoria(newData)
+      const response = await criaCategoria(newData.nome, newData.descricao)
       if (!response) return
 
       setRefresh(new Date())
@@ -64,7 +64,7 @@ export default withRouter(props => {
 
   const handleUpdate = async (newData, oldData) => {
     try {
-      const response = await atualizaCategoria(newData)
+      const response = await atualizaCategoria(newData.id, newData.nome, newData.descricao)
       if (!response) return
 
       setRefresh(new Date())
@@ -114,7 +114,7 @@ export default withRouter(props => {
           },
           {
             title: 'Descricao',
-            field: 'nome_abrev',
+            field: 'descricao',
             editComponent: props => (
               <TextField
                 type='text'

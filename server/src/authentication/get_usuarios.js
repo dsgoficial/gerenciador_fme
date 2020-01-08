@@ -4,6 +4,7 @@ const axios = require('axios')
 
 const {
   AppError,
+  httpCode,
   config: { AUTH_SERVER }
 } = require('../utils')
 
@@ -17,12 +18,21 @@ const getUsuarios = async (usuario, senha, cliente) => {
     }
 
     return response.data.dados
-  } catch (e) {
-    throw new AppError(
-      'Erro ao se comunicar com o servidor de autenticação',
-      null,
-      e
-    )
+  } catch (err) {
+    if (
+      'response' in err &&
+      'data' in err.response &&
+      'message' in err.response.data
+    ) {
+      throw new AppError(
+        err.response.data.message,
+        httpCode.BadRequest
+      )
+    } else {
+      throw new AppError(
+        'Erro ao se comunicar com o servidor de autenticação'
+      )
+    }
   }
 }
 
