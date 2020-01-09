@@ -10,8 +10,7 @@ const verifyLogin = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization
 
   const decoded = await validateToken(token)
-
-  req.body.usuarioUuid = decoded.uuid
+  req.usuarioUuid = decoded.uuid
   next()
 })
 

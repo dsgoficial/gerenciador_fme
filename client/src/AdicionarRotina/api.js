@@ -10,7 +10,7 @@ const handleUpload = async (
   formData.append('rotina', file)
   formData.append('nome', nome)
   formData.append('descricao', descricao)
-  formData.append('categoria', categoria)
+  formData.append('categoria_id', categoria)
   const config = {
     headers: {
       'Content-Type': 'multipart/form-data'

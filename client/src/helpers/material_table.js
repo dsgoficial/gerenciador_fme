@@ -104,6 +104,7 @@ export default props => {
           ...props.options
         }}
         editable={props.editable}
+        detailPanel={props.detailPanel}
       />
     )
       : (

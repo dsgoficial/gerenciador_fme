@@ -39,7 +39,7 @@ export default withRouter(props => {
     }
   }, [refresh])
 
-  const handleClick = async (values) => {
+  const handleClick = async () => {
     setIsSubmitting(true)
     try {
       const success = await deleteFiles()

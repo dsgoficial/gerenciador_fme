@@ -12,9 +12,7 @@ models.uuidParams = Joi.object().keys({
 
 models.listaUsuario = Joi.object().keys({
   usuarios: Joi.array().items(
-    Joi.object().keys({
-      uuid: Joi.string().guid({ version: 'uuidv4' }).required()
-    })
+    Joi.string().guid({ version: 'uuidv4' }).required()
   ).required().min(1)
 })
 

@@ -63,7 +63,15 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Usuário deletado com sucesso', date: new Date() })
     } catch (err) {
-      setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+      if (
+        'response' in err &&
+        'data' in err.response &&
+        'message' in err.response.data
+      ) {
+        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
+      } else {
+        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+      }
     }
   }
 
@@ -72,7 +80,7 @@ export default withRouter(props => {
       open: true,
       title: 'Sincronizar informações dos usuários',
       msg: 'Deseja sincronizar as informações dos usuários com o serviço de autenticação?',
-      handleDialog: executeSincronizaDialog()
+      handleDialog: executeSincronizaDialog
     })
   }
 
@@ -82,31 +90,30 @@ export default withRouter(props => {
     })
   }
 
-  const executeSincronizaDialog = () => {
-    return async function (confirm) {
-      if (confirm) {
-        try {
-          const success = await sincronizaUsuarios()
-          if (success) {
-            setRefresh(new Date())
-            setSnackbar({ status: 'success', msg: 'Usuários sincronizados com sucesso.', date: new Date() })
-            setOpenSincronizaDialog({})
-          }
-        } catch (err) {
+  const executeSincronizaDialog = async (confirm) => {
+    if (confirm) {
+      try {
+        const success = await sincronizaUsuarios()
+        if (success) {
           setRefresh(new Date())
+          setSnackbar({ status: 'success', msg: 'Usuários sincronizados com sucesso.', date: new Date() })
           setOpenSincronizaDialog({})
-          if (
-            'response' in err &&
-            'data' in err.response &&
-            'message' in err.response.data
-          ) {
-            setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-          } else {
-            setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
-          }
+        }
+      } catch (err) {
+        setRefresh(new Date())
+        setOpenSincronizaDialog({})
+        if (
+          'response' in err &&
+          'data' in err.response &&
+          'message' in err.response.data
+        ) {
+          setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
+        } else {
+          setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
         }
       }
     }
+    setOpenSincronizaDialog({})
   }
 
   const executeAdicionaDialog = useMemo(() => (status, msg) => {

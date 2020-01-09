@@ -26,7 +26,8 @@ const controller = {}
 
 controller.deleteLogs = async () => {
   const files = await readdir(pathToFiles)
-  return Promise.all(files.map(f => unlink(path.join(pathToFiles, f))))
+  const filesFiltered = files.filter(f => f.endsWith('.log'))
+  return Promise.all(filesFiltered.map(f => unlink(path.join(pathToFiles, f))))
 }
 
 controller.getInfoLogs = async () => {

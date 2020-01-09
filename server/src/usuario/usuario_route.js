@@ -12,6 +12,29 @@ const usuarioSchema = require('./usuario_schema')
 
 const router = express.Router()
 
+router.get(
+  '/servico_autenticacao',
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await usuarioCtrl.getUsuariosAuthServer()
+
+    const msg = 'Usuários retornados'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.put(
+  '/sincronizar',
+  verifyAdmin,
+  asyncHandler(async (req, res, next) => {
+    await usuarioCtrl.atualizaListaUsuarios()
+    const msg = 'Usuários atualizados com sucesso'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK)
+  })
+)
+
 router.put(
   '/:uuid',
   verifyAdmin,
@@ -56,30 +79,6 @@ router.get(
     const msg = 'Usuários retornados'
 
     return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
-  })
-)
-
-router.get(
-  '/servico_autenticacao',
-  verifyAdmin,
-  asyncHandler(async (req, res, next) => {
-    const dados = await usuarioCtrl.getUsuariosAuthServer()
-
-    const msg = 'Usuários retornados'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
-  })
-)
-
-router.put(
-  '/sincronizar',
-  verifyAdmin,
-  asyncHandler(async (req, res, next) => {
-    await usuarioCtrl.atualizaListaUsuarios(
-    )
-    const msg = 'Usuários atualizados com sucesso'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK)
   })
 )
 

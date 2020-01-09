@@ -10,7 +10,7 @@ const controller = {}
 
 controller.getUsuarios = async () => {
   return db.conn.any(`
-  SELECT u.uuid, u.login, u.nome, u.tipo_posto_grad_id, tpg.nome_abrev AS posto_grad, u.nome_guerra, u.administrador, u.ativo 
+  SELECT u.uuid, u.login, u.nome, u.tipo_posto_grad_id, tpg.nome_abrev AS tipo_posto_grad, u.nome_guerra, u.administrador, u.ativo 
   FROM dgeo.usuario AS u
   INNER JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
   `)
@@ -66,7 +66,7 @@ controller.getUsuariosAuthServer = async cadastrados => {
   const usuarios = await db.conn.any('SELECT u.uuid FROM dgeo.usuario AS u')
 
   return usuariosAuth.filter(u => {
-    return usuarios.map(us => us.uuid).indexOf(u.uuid) !== -1
+    return usuarios.map(r => r.uuid).indexOf(u.uuid) === -1
   })
 }
 
@@ -84,7 +84,7 @@ controller.atualizaListaUsuarios = async () => {
     db.pgp.helpers.update(usuariosAuth, cs, null, {
       tableAlias: 'X',
       valueAlias: 'Y'
-    }) + 'WHERE Y.uuid = X.uuid'
+    }) + 'WHERE Y.uuid::uuid = X.uuid'
 
   return db.conn.none(query)
 }
@@ -95,7 +95,6 @@ controller.criaListaUsuarios = async usuarios => {
   const usuariosFiltrados = usuariosAuth.filter(f => {
     return usuarios.indexOf(f.uuid) !== -1
   })
-
   const table = new db.pgp.helpers.TableName({
     table: 'usuario',
     schema: 'dgeo'
@@ -114,12 +113,12 @@ controller.criaListaUsuarios = async usuarios => {
     { table }
   )
 
-  usuariosFiltrados.foreach(d => {
+  usuariosFiltrados.forEach(d => {
     d.ativo = true
     d.administrador = false
   })
 
-  const query = db.pgp.helpers.insert(usuarios, cs)
+  const query = db.pgp.helpers.insert(usuariosFiltrados, cs)
 
   return db.conn.none(query)
 }

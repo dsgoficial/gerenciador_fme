@@ -17,15 +17,15 @@ const router = express.Router()
 router.post(
   '/:id/versao',
   verifyLogin,
+  rotinaUpload,
   schemaValidation({
     params: rotinaSchema.idParams
   }),
-  rotinaUpload,
   asyncHandler(async (req, res, next) => {
     await rotinaCtrl.criaVersao(
       req.params.id,
       req.file.path,
-      req.body.usuarioUuid
+      req.usuarioUuid
     )
 
     const msg = 'Nova versão da rotina criada com sucesso'
@@ -137,17 +137,17 @@ router.get(
 router.post(
   '/',
   verifyLogin,
+  rotinaUpload,
   schemaValidation({
     body: rotinaSchema.versaoRotina
   }),
-  rotinaUpload,
   asyncHandler(async (req, res, next) => {
     await rotinaCtrl.criaRotina(
       req.file.path,
-      req.body.usuarioUuid,
+      req.usuarioUuid,
       req.body.nome,
       req.body.descricao,
-      req.body.categoria
+      req.body.categoria_id
     )
 
     const msg = 'Rotina criada com sucesso'

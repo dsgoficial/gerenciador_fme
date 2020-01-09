@@ -1,7 +1,6 @@
 'use strict'
 
 const express = require('express')
-const path = require('path')
 
 const { loginRoute } = require('../login')
 const { categoriaRoute } = require('../categoria')
@@ -16,7 +15,7 @@ const routes = app => {
 
   app.use(
     '/fme',
-    express.static(path.join(__dirname, 'fme_workspaces'))
+    express.static('./src/fme_workspaces')
   )
 
   app.use('/categorias', categoriaRoute)

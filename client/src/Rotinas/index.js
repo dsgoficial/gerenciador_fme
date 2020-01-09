@@ -113,6 +113,7 @@ export default withRouter(props => {
           { title: 'Categoria', field: 'categoria' },
           { title: 'Versão', field: 'versao' },
           { title: 'Data', field: 'data' },
+          { title: 'Versão atual', field: 'atual', type: 'boolean' },
           { title: 'Download', field: 'path', editable: 'never', render: rowData => (<a href={rowData.path} download>Download</a>) }
         ]}
         data={versoes}
@@ -121,11 +122,16 @@ export default withRouter(props => {
         }}
         detailPanel={rowData => {
           return (
-            <div>
-              <p>Autor: {rowData.autor}</p>
-              <p>Parâmetros: {rowData.parametros.join(', ')}</p>
+            <div style={{ margin: '15px' }}>
+              <p><b>Autor:</b> {rowData.usuario}</p>
+              <p><b>Parâmetros:</b> {rowData.parametros.join(', ')}</p>
             </div>
           )
+        }}
+        options={{
+          rowStyle: rowData => ({
+            backgroundColor: rowData.atual ? '#d4ffde' : '#FFF'
+          })
         }}
       />
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}

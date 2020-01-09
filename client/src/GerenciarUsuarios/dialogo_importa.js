@@ -52,7 +52,7 @@ const DialogoImporta = ({ open = false, handleDialog }) => {
     return () => {
       isCurrent = false
     }
-  }, [handleDialog])
+  }, [handleDialog, open])
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -65,7 +65,7 @@ const DialogoImporta = ({ open = false, handleDialog }) => {
     try {
       setSubmitting(true)
       const response = await importaUsuarios(
-        Object.keys(usuariosSelected.filter(v => v))
+        Object.keys(usuariosSelected).filter(k => usuariosSelected[k])
       )
       if (!response) return
       setSubmitting(false)
@@ -84,26 +84,33 @@ const DialogoImporta = ({ open = false, handleDialog }) => {
     }
   }
 
-  const error = Object.values(usuariosSelected).filter(v => v).length > 0
+  const error = Object.values(usuariosSelected).filter(v => v).length === 0
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Importar usuários</DialogTitle>
       <DialogContent>
         {loaded ? (
-          <FormControl required error={error} component='fieldset' className={classes.formControl}>
-            <FormLabel component='legend'>Selecione um ou mais usuários para importar</FormLabel>
-            <FormGroup>
-              {usuarios.map(u => (
-                <FormControlLabel
-                  key={u.uuid}
-                  control={<Checkbox checked={usuariosSelected[u.uuid]} onChange={handleChange(u.uuid)} value={u.uuid} />}
-                  label={`${u.tipo_posto_grad} ${u.nome_guerra}`}
-                />
-              ))}
-            </FormGroup>
-            <FormHelperText>Selecione um ou mais usuários.</FormHelperText>
-          </FormControl>
+          usuarios.length > 0 ? (
+            <FormControl required error={error} component='fieldset' className={classes.formControl}>
+              <FormLabel component='legend'>Selecione um ou mais usuários para importar</FormLabel>
+              <FormGroup>
+                {usuarios.map(u => (
+                  <FormControlLabel
+                    key={u.uuid}
+                    control={<Checkbox checked={usuariosSelected[u.uuid]} onChange={handleChange(u.uuid)} value={u.uuid} />}
+                    label={`${u.tipo_posto_grad} ${u.nome_guerra}`}
+                  />
+                ))}
+              </FormGroup>
+              <FormHelperText>Selecione um ou mais usuários.</FormHelperText>
+            </FormControl>
+          )
+            : (
+              <FormControl component='fieldset' className={classes.formControl}>
+                <FormLabel component='legend'>Não existem usuários para serem importados.</FormLabel>
+              </FormControl>
+            )
         )
           : (
             <div className={classes.loading}>
@@ -115,7 +122,7 @@ const DialogoImporta = ({ open = false, handleDialog }) => {
         <Button onClick={handleClose} color='primary' disabled={submitting} autoFocus>
           Cancelar
         </Button>
-        <SubmitButton onClick={handleConfirm} color='secondary' disabled={!loaded || error} submitting={submitting}>
+        <SubmitButton onClick={handleConfirm} color='secondary' disabled={!loaded || error || usuarios.length === 0} submitting={submitting}>
           Confirmar
         </SubmitButton>
       </DialogActions>

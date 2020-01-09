@@ -16,7 +16,7 @@ const { AppError, httpCode, errorHandler } = require('../utils')
 
 const controller = {}
 
-controller.criaVersao = async (id, path, uuid) => {
+controller.criaVersao = async (rotinaId, path, uuid) => {
   await db.conn.tx(async t => {
     const usuario = await t.one(
       `
@@ -27,15 +27,15 @@ controller.criaVersao = async (id, path, uuid) => {
 
     const versao = await t.one(
       `
-      INSERT INTO versao_rotina(rotina_id, nome, data, usuario_id, path)
+      INSERT INTO fme.versao_rotina(rotina_id, nome, data, usuario_id, path)
       SELECT $<rotinaId> AS rotina_id, vr.nome + 1 AS nome, CURRENT_TIMESTAMP AS data, $<usuarioId> AS usuario_id, $<path> AS path
-      FROM versao_rotina AS vr
+      FROM fme.versao_rotina AS vr
       WHERE vr.rotina_id = $<rotinaId>
       ORDER BY vr.nome DESC
       LIMIT 1
       RETURNING id
       `,
-      { id, usuarioId: usuario.id, path }
+      { rotinaId, usuarioId: usuario.id, path }
     )
 
     const params = await getParams(path)
@@ -113,15 +113,15 @@ controller.getVersoes = async () => {
   const versoes = await db.conn.any(
     `
       SELECT vr.id, vr.path, vr.nome AS versao, vr.usuario_id, COALESCE(tpg.nome_abrev || ' ' || u.nome_guerra, 'Usuário deletado') AS usuario,
-      vr.data, r.nome AS rotina, c.nome AS categoria, r.ativa,
+      vr.data, r.nome AS rotina, c.nome AS categoria, r.ativa, vr.rn = 1 AS atual,
       array_agg(p.nome ORDER BY p.nome) AS parametros
-      FROM fme.versao_rotina AS vr
+      FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
       INNER JOIN fme.categoria AS c ON c.id = r.categoria_id
       LEFT JOIN fme.parametros AS p ON p.versao_rotina_id = vr.id
       LEFT JOIN dgeo.usuario AS u ON u.id = vr.usuario_id
       LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
-      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa, tpg.nome_abrev, u.nome_guerra
+      GROUP BY vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, r.ativa, tpg.nome_abrev, u.nome_guerra, vr.rn
       `
   )
   versoes.forEach(v => {
@@ -246,16 +246,16 @@ controller.getRotinas = async (ids, categoria) => {
   return rotinas
 }
 
-controller.criaRotina = async (path, uuid, nome, descricao, categoria) => {
+controller.criaRotina = async (path, uuid, nome, descricao, categoriaId) => {
   await db.conn.tx(async t => {
     const params = await getParams(path)
 
     const rotina = await t.one(
       `
-        INSERT INTO fme.rotina(nome, descricao, categoria)
-        VALUES($<nome>,$<descricao>,$<categoria) RETURNING id
+        INSERT INTO fme.rotina(nome, descricao, categoria_id)
+        VALUES($<nome>, $<descricao>, $<categoriaId>) RETURNING id
         `,
-      { nome, descricao, categoria }
+      { nome, descricao, categoriaId }
     )
 
     const usuario = await t.one(
@@ -268,20 +268,20 @@ controller.criaRotina = async (path, uuid, nome, descricao, categoria) => {
     const versao = await t.one(
       `
       INSERT INTO fme.versao_rotina(rotina_id, nome, data, usuario_id, path)
-      VALUES($<rotinaId>,1,CURRENT_TIMESTAMP,$<usuarioId>,$<path>) RETURNING id
+      VALUES($<rotinaId>, 1, CURRENT_TIMESTAMP, $<usuarioId>, $<path>) RETURNING id
       `,
       { rotinaId: rotina.id, usuarioId: usuario.id, path }
     )
 
     const queries = []
-    params.forEach(p => {
+    params.forEach(pa => {
       queries.push(
         t.none(
           `
           INSERT INTO fme.parametros(versao_rotina_id, nome)
-          VALUES($<versaoId>, $<p>)
+          VALUES($<versaoId>, $<pa>)
           `,
-          { versaoId: versao.id, p }
+          { versaoId: versao.id, pa }
         )
       )
     })

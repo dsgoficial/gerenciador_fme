@@ -30,4 +30,4 @@ const getParams = async workspacePath => {
   return parametros
 }
 
-module.exports.getParams = getParams
+module.exports = getParams

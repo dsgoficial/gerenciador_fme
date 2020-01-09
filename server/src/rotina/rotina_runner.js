@@ -73,4 +73,4 @@ const fmeRunner = async (workspacePath, parameters) => {
   }
 }
 
-module.exports.fmeRunner = fmeRunner
+module.exports = fmeRunner

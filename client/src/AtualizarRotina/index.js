@@ -77,60 +77,78 @@ export default withRouter(props => {
         <Container maxWidth='sm'>
           <Paper className={classes.paper}>
             <div className={classes.formArea}>
-              <Typography component='h1' variant='h5'>
-                Atualizar rotina
-              </Typography>
-              <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleForm}
-              >
-                {({ isValid, isSubmitting, isValidating, setFieldValue }) => (
-                  <Form className={classes.form}>
-                    <div>
-                      <Field
-                        name='rotina'
-                        label='Rotina'
-                        variant='outlined'
-                        component={Select}
-                        displayEmpty
-                        className={classes.select}
-                      >
-                        <MenuItem value='' disabled>
-                          Selecione a rotina que será atualizada
-                        </MenuItem>
-                        {rotinas.map(option => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.rotina}
-                          </MenuItem>
-                        ))}
-                      </Field>
-                    </div>
-                    <input accept='*.fmw' className={classes.input} id='icon-button-file' type='file' />
-                    <label htmlFor='icon-button-file'>
-                      <Button
-                        variant='contained'
-                        className={classes.button}
-                        startIcon={<InsertDriveFileIcon />}
-                        onChange={(event) => {
-                          setFieldValue('file', event.currentTarget.files[0])
-                        }}
-                      >
-                        Selecionar arquivo .fmw
-                      </Button>
-                    </label>
-                    <SubmitButton
-                      type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
-                      fullWidth
-                      variant='contained'
-                      color='primary'
-                      className={classes.submit}
-                    >
-                      Atualizar
-                    </SubmitButton>
-                  </Form>
+              {rotinas.length > 0 ? (
+                <>
+                  <Typography component='h1' variant='h5'>
+                    Atualizar rotina
+                  </Typography>
+                  <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleForm}
+                  >
+                    {({ values, isValid, isSubmitting, isValidating, setFieldValue }) => (
+                      <Form className={classes.form}>
+                        <div>
+                          <Field
+                            name='rotina'
+                            label='Rotina'
+                            variant='outlined'
+                            component={Select}
+                            displayEmpty
+                            className={classes.select}
+                          >
+                            <MenuItem value='' disabled>
+                              Selecione a rotina que será atualizada
+                            </MenuItem>
+                            {rotinas.map(option => (
+                              <MenuItem key={option.id} value={option.id}>
+                                {option.rotina}
+                              </MenuItem>
+                            ))}
+                          </Field>
+                        </div>
+                        <div>
+                          <input
+                            accept='.fmw'
+                            className={classes.input}
+                            id='atualizar-rotina'
+                            type='file'
+                            onChange={(event) => {
+                              setFieldValue('file', event.currentTarget.files[0])
+                            }}
+                          />
+                          <label htmlFor='atualizar-rotina'>
+                            <Button
+                              variant='contained'
+                              className={classes.button}
+                              startIcon={<InsertDriveFileIcon />}
+                              component='span'
+                            >
+                              Selecionar arquivo .fmw
+                            </Button>
+                          </label>
+                          <p>{values.file.name}</p>
+                        </div>
+                        <SubmitButton
+                          type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
+                          fullWidth
+                          variant='contained'
+                          color='primary'
+                          className={classes.submit}
+                        >
+                          Atualizar
+                        </SubmitButton>
+                      </Form>
+                    )}
+                  </Formik>
+                </>
+              )
+                : (
+                  <Typography component='h1' variant='body1'>
+                    Sem rotinas cadastradas
+                  </Typography>
                 )}
-              </Formik>
             </div>
           </Paper>
         </Container>
