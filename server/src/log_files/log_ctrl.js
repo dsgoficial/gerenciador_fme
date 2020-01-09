@@ -8,7 +8,9 @@ const readdir = util.promisify(fs.readdir)
 const stat = util.promisify(fs.stat)
 const unlink = util.promisify(fs.unlink)
 
-const pathToFiles = './src/fme_workspaces/fme_logs'
+const {
+  config: { PATH_LOGS }
+} = require('../utils')
 
 const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'
@@ -25,15 +27,15 @@ const formatBytes = (bytes, decimals = 2) => {
 const controller = {}
 
 controller.deleteLogs = async () => {
-  const files = await readdir(pathToFiles)
+  const files = await readdir(PATH_LOGS)
   const filesFiltered = files.filter(f => f.endsWith('.log'))
-  return Promise.all(filesFiltered.map(f => unlink(path.join(pathToFiles, f))))
+  return Promise.all(filesFiltered.map(f => unlink(path.join(PATH_LOGS, f))))
 }
 
 controller.getInfoLogs = async () => {
-  const files = await readdir(pathToFiles)
+  const files = await readdir(PATH_LOGS)
   const filesFiltered = files.filter(f => f.endsWith('.log'))
-  const stats = await Promise.all(filesFiltered.map(f => stat(path.join(pathToFiles, f))))
+  const stats = await Promise.all(filesFiltered.map(f => stat(path.join(PATH_LOGS, f))))
 
   let size = 0
   stats.forEach(s => {

@@ -14,6 +14,32 @@ const rotinaUpload = require('./rotina_upload')
 
 const router = express.Router()
 
+router.delete(
+  '/versoes/:id',
+  schemaValidation({
+    params: rotinaSchema.idParams
+  }),
+  verifyLogin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await rotinaCtrl.deletarVersao(req.params.id)
+
+    const msg = 'Versão deletada com sucesso'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.get(
+  '/versoes',
+  asyncHandler(async (req, res, next) => {
+    const dados = await rotinaCtrl.getVersoes()
+
+    const msg = 'Versões retornadas com sucesso'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
 router.post(
   '/:id/versao',
   verifyLogin,
@@ -52,32 +78,6 @@ router.post(
     const msg = 'Execução da rotina requisitada com sucesso'
 
     return res.sendJsonAndLog(true, msg, httpCode.Created, { job_uuid: jobUuid })
-  })
-)
-
-router.get(
-  '/versoes',
-  asyncHandler(async (req, res, next) => {
-    const dados = await rotinaCtrl.getVersoes()
-
-    const msg = 'Versões retornadas com sucesso'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
-  })
-)
-
-router.delete(
-  '/versoes/:id',
-  schemaValidation({
-    params: rotinaSchema.idParams
-  }),
-  verifyLogin,
-  asyncHandler(async (req, res, next) => {
-    const dados = await rotinaCtrl.deletarVersao(req.params.id)
-
-    const msg = 'Versão deletada com sucesso'
-
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
   })
 )
 

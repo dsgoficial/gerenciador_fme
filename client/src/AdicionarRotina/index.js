@@ -22,7 +22,7 @@ export default withRouter(props => {
     nome: '',
     descricao: '',
     categoria: '',
-    file: 'asdasd'
+    file: ''
   }
   const [categorias, setCategorias] = useState([])
 
@@ -62,6 +62,7 @@ export default withRouter(props => {
         setSnackbar({ status: 'success', msg: 'Rotina cadastrada com sucesso', date: new Date() })
       }
     } catch (err) {
+      document.getElementById('adicionar-rotina').value = ''
       resetForm(initialValues)
       if (
         'response' in err &&

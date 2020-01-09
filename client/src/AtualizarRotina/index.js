@@ -58,6 +58,7 @@ export default withRouter(props => {
         setSnackbar({ status: 'success', msg: 'Rotina atualizada com sucesso', date: new Date() })
       }
     } catch (err) {
+      document.getElementById('atualizar-rotina').value = ''
       resetForm(initialValues)
       if (
         'response' in err &&

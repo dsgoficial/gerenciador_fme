@@ -8,8 +8,8 @@ const getData = async () => {
   })
 }
 
-const atualizaRotina = async (id, nome, descricao, categoria, ativa) => {
-  return api.put(`/rotinas/${id}`, { nome, descricao, categoria_id: categoria, ativa })
+const atualizaRotina = async (id, nome, descricao, categoriaId, ativa) => {
+  return api.put(`/rotinas/${id}`, { nome, descricao, categoria_id: categoriaId, ativa })
 }
 
 const deletaRotina = async id => {
@@ -17,7 +17,7 @@ const deletaRotina = async id => {
 }
 
 const deletaVersao = async id => {
-  return api.delete(`/rotinas/versao/${id}`)
+  return api.delete(`/rotinas/versoes/${id}`)
 }
 
 export { getData, atualizaRotina, deletaRotina, deletaVersao }

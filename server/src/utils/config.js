@@ -24,6 +24,7 @@ dotenv.config({
 
 const VERSION = '2.0.0'
 const MIN_DATABASE_VERSION = '2.0.0'
+const PATH_LOGS = './src/fme_workspaces/fme_logs'
 
 const configSchema = Joi.object().keys({
   PORT: Joi.number()
@@ -42,7 +43,8 @@ const configSchema = Joi.object().keys({
     .required(),
   FME_PATH: Joi.string().required(),
   VERSION: Joi.string().required(),
-  MIN_DATABASE_VERSION: Joi.string().required()
+  MIN_DATABASE_VERSION: Joi.string().required(),
+  PATH_LOGS: Joi.string().required()
 })
 
 const config = {
@@ -56,7 +58,8 @@ const config = {
   AUTH_SERVER: process.env.AUTH_SERVER,
   FME_PATH: process.env.FME_PATH,
   VERSION,
-  MIN_DATABASE_VERSION
+  MIN_DATABASE_VERSION,
+  PATH_LOGS
 }
 
 const { error } = configSchema.validate(config, {

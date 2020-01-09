@@ -42,7 +42,7 @@ export default withRouter(props => {
 
   const handleUpdateRotina = async (newData, oldData) => {
     try {
-      const response = await atualizaRotina(newData.id, newData.nome, newData.descricao, newData.categoria, newData.ativa)
+      const response = await atualizaRotina(newData.id, newData.rotina, newData.descricao, newData.categoria_id, newData.ativa)
       if (!response) return
 
       setRefresh(new Date())
@@ -92,7 +92,6 @@ export default withRouter(props => {
         columns={[
           { title: 'id', field: 'id', editable: 'never' },
           { title: 'Nome', field: 'rotina' },
-          { title: 'Descricao', field: 'descricao' },
           { title: 'Categoria', field: 'categoria_id', lookup: categorias },
           { title: 'Versão', field: 'versao', editable: 'never' },
           { title: 'Data', field: 'data', editable: 'never' },
@@ -103,6 +102,13 @@ export default withRouter(props => {
         editable={{
           onRowUpdate: handleUpdateRotina,
           onRowDelete: handleDeleteRotina
+        }}
+        detailPanel={rowData => {
+          return (
+            <div style={{ margin: '15px' }}>
+              <p><b>Descriçãp:</b> {rowData.descricao}</p>
+            </div>
+          )
         }}
       />
       <MaterialTable

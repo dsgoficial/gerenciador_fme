@@ -3,6 +3,7 @@
 const Queue = require('better-queue')
 const fs = require('fs')
 const util = require('util')
+const path = require('path')
 
 const unlink = util.promisify(fs.unlink)
 
@@ -133,7 +134,7 @@ controller.getVersoes = async () => {
 
 controller.deletarVersao = async id => {
   await db.conn.tx(async t => {
-    const versao = t.oneOrNone(
+    const versao = await t.oneOrNone(
       `SELECT path FROM fme.versao_rotina 
       WHERE id = $<id>`,
       { id }
@@ -150,16 +151,28 @@ controller.deletarVersao = async id => {
     )
 
     await t.none(
+      `DELETE FROM fme.parametros 
+      WHERE versao_rotina_id = $<id>`,
+      { id }
+    )
+
+    await t.none(
       `DELETE FROM fme.versao_rotina 
       WHERE id = $<id>`,
       { id }
     )
 
-    await unlink(versao.path)
+    await unlink(path.resolve(versao.path))
   })
 }
 
 controller.atualizaRotina = async (id, nome, descricao, categoriaId, ativa) => {
+  const rotinaExists = await db.conn.oneOrNone('SELECT id FROM fme.rotina WHERE nome = $<nome> AND id != $<id>', { id, nome })
+
+  if (rotinaExists) {
+    throw new AppError('Rotina com esse nome já existe', httpCode.BadRequest)
+  }
+
   const result = await db.conn.result(
     `UPDATE fme.rotina SET nome = $<nome>, descricao = $<descricao>, 
     categoria_id = $<categoriaId>, ativa = $<ativa> WHERE id = $<id>`,
@@ -172,7 +185,7 @@ controller.atualizaRotina = async (id, nome, descricao, categoriaId, ativa) => {
 
 controller.deletaRotina = async id => {
   await db.conn.tx(async t => {
-    const rotina = t.any(
+    const rotina = await t.any(
       `SELECT id FROM fme.rotina 
       WHERE id = $<id>`,
       { id }
@@ -181,7 +194,7 @@ controller.deletaRotina = async id => {
       throw new AppError('Rotina não encontrada', httpCode.BadRequest)
     }
 
-    const versoes = t.any(
+    const versoes = await t.any(
       `SELECT path FROM fme.versao_rotina 
       WHERE rotina_id = $<id>`,
       { id }
@@ -191,6 +204,15 @@ controller.deletaRotina = async id => {
       `UPDATE fme.execucao
       SET rotina_id = NULL, versao_rotina_id = NULL
       WHERE rotina_id = $<id>`,
+      { id }
+    )
+
+    await t.none(
+      `DELETE FROM fme.parametros 
+      WHERE versao_rotina_id IN (
+        SELECT id FROM fme.versao_rotina
+        WHERE rotina_id =  $<id>
+      )`,
       { id }
     )
 
@@ -206,7 +228,7 @@ controller.deletaRotina = async id => {
       { id }
     )
 
-    await Promise.all(versoes.map(v => unlink(v.path)))
+    await Promise.all(versoes.map(v => unlink(path.resolve(v.path))))
   })
 }
 
@@ -249,6 +271,12 @@ controller.getRotinas = async (ids, categoria) => {
 controller.criaRotina = async (path, uuid, nome, descricao, categoriaId) => {
   await db.conn.tx(async t => {
     const params = await getParams(path)
+
+    const rotinaExists = await t.oneOrNone('SELECT id FROM fme.rotina WHERE nome = $<nome>', { nome })
+
+    if (rotinaExists) {
+      throw new AppError('Rotina com esse nome já existe', httpCode.BadRequest)
+    }
 
     const rotina = await t.one(
       `
