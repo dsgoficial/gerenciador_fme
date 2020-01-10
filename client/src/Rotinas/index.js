@@ -92,6 +92,7 @@ export default withRouter(props => {
         columns={[
           { title: 'id', field: 'id', editable: 'never' },
           { title: 'Nome', field: 'rotina' },
+          { title: 'Descrição', field: 'descricao' },
           { title: 'Categoria', field: 'categoria_id', lookup: categorias },
           { title: 'Versão', field: 'versao', editable: 'never' },
           { title: 'Data', field: 'data', editable: 'never' },
@@ -102,13 +103,6 @@ export default withRouter(props => {
         editable={{
           onRowUpdate: handleUpdateRotina,
           onRowDelete: handleDeleteRotina
-        }}
-        detailPanel={rowData => {
-          return (
-            <div style={{ margin: '15px' }}>
-              <p><b>Descriçãp:</b> {rowData.descricao}</p>
-            </div>
-          )
         }}
       />
       <MaterialTable
