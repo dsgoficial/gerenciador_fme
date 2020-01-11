@@ -1,27 +1,27 @@
 import { api } from '../services'
 
 const getUsuarios = async () => {
-  return api.getData('/usuarios')
+  return api.getData('/api/usuarios')
 }
 
 const getUsuariosAuth = async () => {
-  return api.getData('/usuarios/servico_autenticacao')
+  return api.getData('/api/usuarios/servico_autenticacao')
 }
 
 const atualizaUsuario = async (uuid, administrador, ativo) => {
-  return api.put(`/usuarios/${uuid}`, { administrador, ativo })
+  return api.put(`/api/usuarios/${uuid}`, { administrador, ativo })
 }
 
 const deletaUsuario = async uuid => {
-  return api.delete(`/usuarios/${uuid}`)
+  return api.delete(`/api/usuarios/${uuid}`)
 }
 
 const sincronizaUsuarios = async () => {
-  return api.put('/usuarios/sincronizar')
+  return api.put('/api/usuarios/sincronizar')
 }
 
 const importaUsuarios = async uuids => {
-  return api.post('/usuarios', { usuarios: uuids })
+  return api.post('/api/usuarios', { usuarios: uuids })
 }
 
 export { getUsuarios, getUsuariosAuth, atualizaUsuario, deletaUsuario, sincronizaUsuarios, importaUsuarios }

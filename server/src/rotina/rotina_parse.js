@@ -1,14 +1,11 @@
 'use strict'
 
-const path = require('path')
 const fs = require('fs')
 const util = require('util')
 
 const readFile = util.promisify(fs.readFile)
 
 const getParams = async workspacePath => {
-  workspacePath = path.resolve(workspacePath)
-
   const parametros = []
 
   const data = await readFile(workspacePath, 'utf8')

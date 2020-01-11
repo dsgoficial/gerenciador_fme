@@ -13,11 +13,11 @@ const getParams = require('./rotina_parse')
 
 const fmeRunner = require('./rotina_runner')
 
-const { AppError, httpCode, errorHandler } = require('../utils')
+const { AppError, httpCode, errorHandler, config: { PATH_WORKSPACES } } = require('../utils')
 
 const controller = {}
 
-controller.criaVersao = async (rotinaId, path, uuid) => {
+controller.criaVersao = async (rotinaId, rotinaPath, uuid) => {
   await db.conn.tx(async t => {
     const usuario = await t.one(
       `
@@ -29,17 +29,17 @@ controller.criaVersao = async (rotinaId, path, uuid) => {
     const versao = await t.one(
       `
       INSERT INTO fme.versao_rotina(rotina_id, nome, data, usuario_id, path)
-      SELECT $<rotinaId> AS rotina_id, vr.nome + 1 AS nome, CURRENT_TIMESTAMP AS data, $<usuarioId> AS usuario_id, $<path> AS path
+      SELECT $<rotinaId> AS rotina_id, vr.nome + 1 AS nome, CURRENT_TIMESTAMP AS data, $<usuarioId> AS usuario_id, $<rotinaPath> AS path
       FROM fme.versao_rotina AS vr
       WHERE vr.rotina_id = $<rotinaId>
       ORDER BY vr.nome DESC
       LIMIT 1
       RETURNING id
       `,
-      { rotinaId, usuarioId: usuario.id, path }
+      { rotinaId, usuarioId: usuario.id, rotinaPath: rotinaPath.split(path.sep).pop() }
     )
 
-    const params = await getParams(path)
+    const params = await getParams(rotinaPath)
     const queries = []
     params.forEach(p => {
       queries.push(
@@ -60,7 +60,7 @@ const jobQueue = new Queue(
   async (input, cb) => {
     try {
       const summary = await fmeRunner(
-        input.path,
+        input.rotinaPath,
         input.parametros
       )
       cb(null, summary)
@@ -107,7 +107,7 @@ controller.execucaoRotina = async (id, uuid, parametros) => {
     { uuid, versaoId: versao.id, rotinaId: versao.rotina_id, parametros }
   )
 
-  jobQueue.push({ id: uuid, path: versao.path, parametros })
+  jobQueue.push({ id: uuid, rotinaPath: versao.path, parametros })
 }
 
 controller.getVersoes = async () => {
@@ -126,7 +126,7 @@ controller.getVersoes = async () => {
       `
   )
   versoes.forEach(v => {
-    v.path = 'fme/' + v.path.split('\\').pop()
+    v.path = 'api/fme/' + v.path
   })
 
   return versoes
@@ -162,7 +162,7 @@ controller.deletarVersao = async id => {
       { id }
     )
 
-    await unlink(path.resolve(versao.path))
+    await unlink(path.join(PATH_WORKSPACES, versao.path))
   })
 }
 
@@ -228,7 +228,7 @@ controller.deletaRotina = async id => {
       { id }
     )
 
-    await Promise.all(versoes.map(v => unlink(path.resolve(v.path))))
+    await Promise.all(versoes.map(v => unlink(path.join(PATH_WORKSPACES, v.path))))
   })
 }
 
@@ -262,15 +262,15 @@ controller.getRotinas = async (ids, categoria) => {
   }
 
   rotinas.forEach(v => {
-    v.path = 'fme/' + v.path.split('\\').pop()
+    v.path = 'api/fme/' + v.path
   })
 
   return rotinas
 }
 
-controller.criaRotina = async (path, uuid, nome, descricao, categoriaId) => {
+controller.criaRotina = async (rotinaPath, uuid, nome, descricao, categoriaId) => {
   await db.conn.tx(async t => {
-    const params = await getParams(path)
+    const params = await getParams(rotinaPath)
 
     const rotinaExists = await t.oneOrNone('SELECT id FROM fme.rotina WHERE nome = $<nome>', { nome })
 
@@ -292,13 +292,12 @@ controller.criaRotina = async (path, uuid, nome, descricao, categoriaId) => {
       `,
       { uuid }
     )
-
     const versao = await t.one(
       `
       INSERT INTO fme.versao_rotina(rotina_id, nome, data, usuario_id, path)
-      VALUES($<rotinaId>, 1, CURRENT_TIMESTAMP, $<usuarioId>, $<path>) RETURNING id
+      VALUES($<rotinaId>, 1, CURRENT_TIMESTAMP, $<usuarioId>, $<rotinaPath>) RETURNING id
       `,
-      { rotinaId: rotina.id, usuarioId: usuario.id, path }
+      { rotinaId: rotina.id, usuarioId: usuario.id, rotinaPath: rotinaPath.split(path.sep).pop() }
     )
 
     const queries = []

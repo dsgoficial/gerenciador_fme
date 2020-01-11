@@ -29,7 +29,7 @@ const verifyAuthServer = async authServer => {
     throw new Error('Servidor deve iniciar com http:// ou https://')
   }
   try {
-    const response = await axios.get(authServer)
+    const response = await axios.get(`${authServer}/api`)
     const wrongServer =
       !response ||
       response.status !== 200 ||
@@ -45,7 +45,7 @@ const verifyAuthServer = async authServer => {
 }
 
 const getAuthUserData = async (servidor, token, uuid) => {
-  const server = `${servidor}/usuarios/${uuid}`
+  const server = `${servidor}/api/usuarios/${uuid}`
 
   try {
     const config = {
@@ -71,7 +71,7 @@ const getAuthUserData = async (servidor, token, uuid) => {
 }
 
 const verifyLoginAuthServer = async (servidor, usuario, senha) => {
-  const server = `${servidor}/login`
+  const server = `${servidor}/api/login`
 
   try {
     const response = await axios.post(server, {

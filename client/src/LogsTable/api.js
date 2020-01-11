@@ -8,7 +8,7 @@ const getExecucaoPaginacao = async (page, perPage, sortColumn, sortDirection, fi
   }
   cancel = api.axios.CancelToken.source()
   const response = await api.getData(
-    `/execucoes?pagina=${page}&total_pagina=${perPage}&coluna_ordem=${sortColumn}&direcao_ordem=${sortDirection}&filtro=${filtro}`,
+    `/api/execucoes?pagina=${page}&total_pagina=${perPage}&coluna_ordem=${sortColumn}&direcao_ordem=${sortDirection}&filtro=${filtro}`,
     {
       cancelToken: cancel.token
     })

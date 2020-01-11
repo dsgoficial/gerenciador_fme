@@ -9,7 +9,7 @@ const {
 } = require('../utils')
 
 const getUsuarios = async (usuario, senha, cliente) => {
-  const server = `${AUTH_SERVER}/usuarios`
+  const server = `${AUTH_SERVER}/api/usuarios`
   try {
     const response = await axios.get(server)
 

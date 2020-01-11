@@ -11,11 +11,11 @@ const handleUpload = async (
       'Content-Type': 'multipart/form-data'
     }
   }
-  return api.post(`rotinas/${rotinaId}/versao`, formData, config)
+  return api.post(`/api/rotinas/${rotinaId}/versao`, formData, config)
 }
 
 const getRotinas = async () => {
-  return api.getData('/rotinas')
+  return api.getData('/api/rotinas')
 }
 
 export { handleUpload, getRotinas }

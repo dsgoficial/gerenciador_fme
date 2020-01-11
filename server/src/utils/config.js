@@ -3,6 +3,7 @@
 const dotenv = require('dotenv')
 const Joi = require('joi')
 const fs = require('fs')
+const path = require('path')
 
 const AppError = require('./App_error')
 const errorHandler = require('./error_handler')
@@ -10,7 +11,9 @@ const errorHandler = require('./error_handler')
 const configFile =
   process.env.NODE_ENV === 'test' ? 'config_testing.env' : 'config.env'
 
-if (!fs.existsSync(configFile)) {
+const configPath = path.join(__dirname, '..', '..', configFile)
+
+if (!fs.existsSync(configPath)) {
   errorHandler(
     new AppError(
       'Arquivo de configuração não encontrado. Configure o serviço primeiro.'
@@ -19,12 +22,13 @@ if (!fs.existsSync(configFile)) {
 }
 
 dotenv.config({
-  path: configFile
+  path: configPath
 })
 
 const VERSION = '2.0.0'
 const MIN_DATABASE_VERSION = '2.0.0'
-const PATH_LOGS = './src/fme_workspaces/fme_logs'
+const PATH_LOGS = path.join(__dirname, '..', 'fme_workspaces', 'fme_logs')
+const PATH_WORKSPACES = path.join(__dirname, '..', 'fme_workspaces')
 
 const configSchema = Joi.object().keys({
   PORT: Joi.number()
@@ -44,7 +48,8 @@ const configSchema = Joi.object().keys({
   FME_PATH: Joi.string().required(),
   VERSION: Joi.string().required(),
   MIN_DATABASE_VERSION: Joi.string().required(),
-  PATH_LOGS: Joi.string().required()
+  PATH_LOGS: Joi.string().required(),
+  PATH_WORKSPACES: Joi.string().required()
 })
 
 const config = {
@@ -59,7 +64,8 @@ const config = {
   FME_PATH: process.env.FME_PATH,
   VERSION,
   MIN_DATABASE_VERSION,
-  PATH_LOGS
+  PATH_LOGS,
+  PATH_WORKSPACES
 }
 
 const { error } = configSchema.validate(config, {

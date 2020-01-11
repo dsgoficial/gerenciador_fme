@@ -1,11 +1,11 @@
 'use strict'
 
 const multer = require('multer')
-const { AppError, httpCode } = require('../utils')
+const { AppError, httpCode, config: { PATH_WORKSPACES } } = require('../utils')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './src/fme_workspaces/')
+    cb(null, PATH_WORKSPACES)
   },
   filename: (req, file, cb) => {
     const nome = file.originalname.split('.')

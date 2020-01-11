@@ -8,7 +8,7 @@ const childProcess = require('child_process')
 const readFile = util.promisify(fs.readFile)
 const exec = util.promisify(childProcess.exec)
 
-const { AppError, config: { FME_PATH } } = require('../utils')
+const { AppError, config: { FME_PATH, PATH_WORKSPACES } } = require('../utils')
 
 const getSummary = async logPath => {
   const dados = await readFile(logPath.trim(), 'utf8')
@@ -38,6 +38,8 @@ const getSummary = async logPath => {
 }
 
 const fmeRunner = async (workspacePath, parameters) => {
+  workspacePath = path.join(PATH_WORKSPACES, workspacePath)
+
   const mainPath = workspacePath
     .split(path.sep)
     .slice(0, -1)

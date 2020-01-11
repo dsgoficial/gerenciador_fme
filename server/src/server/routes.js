@@ -1,6 +1,11 @@
 'use strict'
-
 const express = require('express')
+const path = require('path')
+
+const { databaseVersion } = require('../database')
+const {
+  httpCode
+} = require('../utils')
 
 const { loginRoute } = require('../login')
 const { categoriaRoute } = require('../categoria')
@@ -10,24 +15,36 @@ const { usuarioRoute } = require('../usuario')
 const { execucaoRoute } = require('../execucao')
 const { dashboardRoute } = require('../dashboard')
 
-const routes = app => {
-  app.use('/login', loginRoute)
+const router = express.Router()
 
-  app.use(
-    '/fme',
-    express.static('./src/fme_workspaces')
+router.get('/', (req, res, next) => {
+  return res.sendJsonAndLog(
+    true,
+    'Serviço do Gerenciador do FME operacional',
+    httpCode.OK,
+    {
+      database_version: databaseVersion.nome
+    }
   )
+})
 
-  app.use('/categorias', categoriaRoute)
+router.use('/login', loginRoute)
 
-  app.use('/logs', logRoute)
+router.use(
+  '/fme',
+  express.static(path.join(__dirname, '..', 'fme_workspaces'))
+)
 
-  app.use('/rotinas', rotinaRoute)
+router.use('/categorias', categoriaRoute)
 
-  app.use('/usuarios', usuarioRoute)
+router.use('/logs', logRoute)
 
-  app.use('/execucoes', execucaoRoute)
+router.use('/rotinas', rotinaRoute)
 
-  app.use('/dashboard', dashboardRoute)
-}
-module.exports = routes
+router.use('/usuarios', usuarioRoute)
+
+router.use('/execucoes', execucaoRoute)
+
+router.use('/dashboard', dashboardRoute)
+
+module.exports = router

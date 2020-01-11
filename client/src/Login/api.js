@@ -2,7 +2,7 @@
 import { api, auth } from '../services'
 
 const handleLogin = async (usuario, senha) => {
-  const response = await api.post('/login', { usuario, senha, aplicacao: api.APLICACAO })
+  const response = await api.post('/api/login', { usuario, senha, aplicacao: api.APLICACAO })
   if (!response) return false
   if (
     !('status' in response) ||
