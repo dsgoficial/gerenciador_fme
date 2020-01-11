@@ -15,12 +15,14 @@ const DialogoConfirmacao = ({ open = false, title = '', msg = '', onClose }) => 
     if (reason === 'clickaway') {
       return
     }
-    onClose(false)
+    onClose && onClose(false)
   }
 
   const handleConfirm = async () => {
     setSubmitting(true)
-    await onClose(true)
+    if (onClose) {
+      await onClose(true)
+    }
     setSubmitting(false)
   }
 

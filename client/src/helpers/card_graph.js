@@ -7,8 +7,24 @@ import { AreaChart, Area, ResponsiveContainer } from 'recharts'
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp'
 import { green, red } from '@material-ui/core/colors'
+import { makeStyles } from '@material-ui/core/styles'
 
-import styles from './styles'
+const styles = makeStyles(theme => ({
+  cardContent: {
+    textAlign: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    height: '140px',
+    boxSizing: 'border-box'
+  },
+  stacked: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0
+  }
+}))
 
 const calcVariation = (series, seriesKey) => {
   if (series.length < 2) return 0

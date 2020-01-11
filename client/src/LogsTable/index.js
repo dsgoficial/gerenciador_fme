@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom'
 
 import { getExecucaoPaginacao } from './api'
 import { MessageSnackBar, DataTable } from '../helpers'
+import { handleApiError } from '../services'
 
 export default withRouter(props => {
   const [snackbar, setSnackbar] = useState('')
@@ -14,7 +15,7 @@ export default withRouter(props => {
 
       return response
     } catch (err) {
-      setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+      handleApiError(err, setSnackbar)
       return { data: [], total: 0 }
     }
   }, [])

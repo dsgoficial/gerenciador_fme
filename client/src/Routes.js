@@ -6,7 +6,7 @@ import { auth, history } from './services'
 import Login from './Login'
 import NaoEncontrado from './NaoEncontrado'
 import Erro from './Erro'
-import Dashboard from './Dashboard'
+import Main from './Main'
 
 const PrivateRoute = ({ component: Component, exact, path, role, ...rest }) => (
   <Route
@@ -35,7 +35,7 @@ const PrivateRoute = ({ component: Component, exact, path, role, ...rest }) => (
 const Routes = () => (
   <Router history={history}>
     <Switch>
-      <PrivateRoute exact path='/' component={Dashboard} />
+      <PrivateRoute exact path='/' component={Main} />
       <Route exact path='/login' component={Login} />
       <Route exact path='/erro' component={Erro} />
       <Route path='*' component={NaoEncontrado} />

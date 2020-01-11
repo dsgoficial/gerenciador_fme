@@ -5,8 +5,28 @@ import CardContent from '@material-ui/core/CardContent'
 import { AreaChart, ResponsiveContainer, Legend, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
+import { makeStyles } from '@material-ui/core/styles'
 
-import styles from './styles'
+const styles = makeStyles(theme => ({
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column'
+  },
+  total: {
+    marginTop: 5
+  },
+  fixedHeight: {
+    height: 500
+  },
+  content: {
+    flex: '1 0 auto',
+    textAlign: 'center',
+    alignItems: 'center',
+    position: 'relative'
+  }
+}))
 
 // http://colorbrewer2.org/#type=qualitative&scheme=Set3&n=12
 const colors = ['#8dd3c7', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5']

@@ -1,106 +1,93 @@
-import React, { useState } from 'react'
-import { withRouter, HashRouter, Route } from 'react-router-dom'
-import clsx from 'clsx'
-import AppBar from '@material-ui/core/AppBar'
-import Drawer from '@material-ui/core/Drawer'
-import Container from '@material-ui/core/Container'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import MenuIcon from '@material-ui/icons/Menu'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import React, { useState, useEffect } from 'react'
+import { withRouter } from 'react-router-dom'
+import Grid from '@material-ui/core/Grid'
+import ReactLoading from 'react-loading'
 
+import UltimasExecucoesDataTable from './ultimas_execucoes'
 import styles from './styles'
-import { MainListItems, AdminListItems } from './list_items'
-import { handleLogout } from './api.js'
+import { handleApiError } from '../services'
 
-import Graficos from '../Graficos'
-import AdicionarRotina from '../AdicionarRotina'
-import AtualizarRotina from '../AtualizarRotina'
-import Categorias from '../Categorias'
-import Rotinas from '../Rotinas'
-import LogsTable from '../LogsTable'
-import GerenciarUsuarios from '../GerenciarUsuarios'
-import ArquivosTemporarios from '../ArquivosTemporarios'
+import { getDashboardData } from './api'
+import { MessageSnackBar, CardGraph, Card, StackedArea, Bar } from '../helpers'
 
 export default withRouter(props => {
   const classes = styles()
 
-  const [open, setOpen] = useState(false)
+  const [snackbar, setSnackbar] = useState('')
+  const [loaded, setLoaded] = useState(false)
 
-  const handleDrawerOpen = () => {
-    setOpen(true)
-  }
-  const handleDrawerClose = () => {
-    setOpen(false)
-  }
+  const [execucoes, setExecucoes] = useState(0)
+  const [rotinas, setRotinas] = useState(0)
+  const [ultimasExecucoes, setUltimasExecucoes] = useState([])
+  const [execucoesPorDia, setExecucoesPorDia] = useState([])
+  const [execucoesPorMes, setExecucoesPorMes] = useState([])
+  const [execucoesRotinas, setExecucoesRotinas] = useState([])
+  const [errosRotinas, setErrosRotinas] = useState([])
+  const [tempoExecucao, setTempoExecucao] = useState([])
 
-  const clickLogout = () => {
-    handleLogout()
-    props.history.push('/login')
-  }
+  useEffect(() => {
+    let isCurrent = true
+    const load = async () => {
+      try {
+        const response = await getDashboardData()
+        if (!response || !isCurrent) return
+        setExecucoes(response.execucoes)
+        setRotinas(response.rotinas)
+        setUltimasExecucoes(response.ultimasExecucoes)
+        setExecucoesPorDia(response.execucoesPorDia)
+        setExecucoesPorMes(response.execucoesPorMes)
+        setExecucoesRotinas(response.execucoesRotinas)
+        setErrosRotinas(response.errosRotinas)
+        setTempoExecucao(response.tempoExecucao)
+        setLoaded(true)
+      } catch (err) {
+        if (!isCurrent) return
+        handleApiError(err, setSnackbar)
+      }
+    }
+    load()
+
+    return () => {
+      isCurrent = false
+    }
+  }, [])
 
   return (
-    <div className={classes.root}>
-      <HashRouter>
-        <AppBar position='absolute' className={clsx(classes.appBar, open && classes.appBarShift)}>
-          <Toolbar className={classes.toolbar}>
-            <IconButton
-              edge='start'
-              color='inherit'
-              aria-label='open drawer'
-              onClick={handleDrawerOpen}
-              className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography component='h1' variant='h6' color='inherit' noWrap className={classes.title}>
-              Gerenciador do FME
-            </Typography>
-            <IconButton color='inherit' onClick={clickLogout}>
-              <Typography variant='body1' color='inherit' noWrap className={classes.title}>
-                Sair
-              </Typography>
-              <ExitToAppIcon className={classes.logoutButton} />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant='permanent'
-          classes={{
-            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
-          }}
-          open={open}
-        >
-          <div className={classes.toolbarIcon}>
-            <Typography variant='h6' className={classes.menu}>
-              Menu
-            </Typography>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
+    <>
+      {loaded ? (
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} lg={3}>
+            <CardGraph label='Execuções hoje' series={execucoesPorDia} seriesKey='execucoes' fill='#8dd3c7' />
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <CardGraph label='Execuções este mês' series={execucoesPorMes} seriesKey='execucoes' fill='#bebada' />
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <Card label='Execuções' currentValue={execucoes} />
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <Card label='Rotinas' currentValue={rotinas} />
+          </Grid>
+          <Grid item xs={12} md={12} lg={12}>
+            <StackedArea title='Execuções por dia por rotina' series={execucoesRotinas} dataKey='data' />
+          </Grid>
+          <Grid item xs={12} md={12} lg={6}>
+            <Bar title='Tempo de execução por rotina' series={tempoExecucao} fill='#8dd3c7' groupKey='rotina' valueKey='tempo_execucao_medio' />
+          </Grid>
+          <Grid item xs={12} md={12} lg={6}>
+            <StackedArea title='Erros por dia por rotina' series={errosRotinas} dataKey='data' />
+          </Grid>
+          <Grid item xs={12}>
+            <UltimasExecucoesDataTable data={ultimasExecucoes} />
+          </Grid>
+        </Grid>
+      )
+        : (
+          <div className={classes.loading}>
+            <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
           </div>
-          <MainListItems />
-          {props.role === 'ADMIN' &&
-            <>
-              <AdminListItems />
-            </>}
-        </Drawer>
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth='xl' className={classes.container}>
-            <Route exact path='/' component={Graficos} />
-            <Route exact path='/adicionar_rotina' component={AdicionarRotina} />
-            <Route exact path='/atualizar_rotina' component={AtualizarRotina} />
-            <Route exact path='/categorias' component={Categorias} />
-            <Route exact path='/rotinas' component={Rotinas} />
-            <Route exact path='/logs' component={LogsTable} />
-            <Route exact path='/gerenciar_usuarios' component={GerenciarUsuarios} />
-            <Route exact path='/arquivos_temporarios' component={ArquivosTemporarios} />
-          </Container>
-        </main>
-      </HashRouter>
-    </div>
+        )}
+      {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
+    </>
   )
 })

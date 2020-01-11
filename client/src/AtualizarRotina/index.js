@@ -14,6 +14,7 @@ import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
 import validationSchema from './validation_schema'
 import { handleUpload, getRotinas } from './api'
+import { handleApiError } from '../services'
 
 export default withRouter(props => {
   const classes = styles()
@@ -37,7 +38,8 @@ export default withRouter(props => {
         setRotinas(response)
         setLoaded(true)
       } catch (err) {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+        if (!isCurrent) return
+        handleApiError(err, setSnackbar)
       }
     }
     load()
@@ -60,15 +62,7 @@ export default withRouter(props => {
     } catch (err) {
       document.getElementById('atualizar-rotina').value = ''
       resetForm(initialValues)
-      if (
-        'response' in err &&
-        'data' in err.response &&
-        'message' in err.response.data
-      ) {
-        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-      } else {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao atualizar a rotina. Contate o gerente.', date: new Date() })
-      }
+      handleApiError(err, setSnackbar)
     }
   }
 

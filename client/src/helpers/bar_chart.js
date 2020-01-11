@@ -4,8 +4,25 @@ import CardContent from '@material-ui/core/CardContent'
 import { BarChart, Bar, ResponsiveContainer, Legend, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
+import { makeStyles } from '@material-ui/core/styles'
 
-import styles from './styles'
+const styles = makeStyles(theme => ({
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column'
+  },
+  fixedHeight: {
+    height: 500
+  },
+  content: {
+    flex: '1 0 auto',
+    textAlign: 'center',
+    alignItems: 'center',
+    position: 'relative'
+  }
+}))
 
 const CustomizedAxisTick = (props) => {
   const { x, y, payload } = props

@@ -24,12 +24,12 @@ export const MainListItems = props => {
   return (
     <List>
       <Divider />
-      <Tooltip title='Gráficos' placement='right-start'>
+      <Tooltip title='Dashboard' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/' activeClassName={classes.active}>
           <ListItemIcon>
             <InsertChartIcon />
           </ListItemIcon>
-          <ListItemText primary='Gráficos' />
+          <ListItemText primary='Dashboard' />
         </ListItem>
       </Tooltip>
 

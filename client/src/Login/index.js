@@ -10,6 +10,7 @@ import styles from './styles'
 import validationSchema from './validation_schema'
 import { handleLogin } from './api'
 import LoginForm from './login_form'
+import { handleApiError } from '../services'
 
 import { MessageSnackBar, BackgroundImages } from '../helpers'
 
@@ -24,15 +25,7 @@ export default withRouter(props => {
       const success = await handleLogin(values.usuario, values.senha)
       if (success) props.history.push('/')
     } catch (err) {
-      if (
-        'response' in err &&
-        'data' in err.response &&
-        'message' in err.response.data
-      ) {
-        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-      } else {
-        setSnackbar({ status: 'error', msg: 'Houve um problema com o login, verifique suas credenciais.', date: new Date() })
-      }
+      handleApiError(err, setSnackbar)
     }
   }
 

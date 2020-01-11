@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
+import TextField from '@material-ui/core/TextField'
 
 import { getData, atualizaRotina, deletaRotina, deletaVersao } from './api'
 import { MessageSnackBar, MaterialTable } from '../helpers'
+import { handleApiError } from '../services'
+
+import styles from './styles'
 
 export default withRouter(props => {
+  const classes = styles()
+
   const [rotinas, setRotinas] = useState([])
   const [versoes, setVersoes] = useState([])
   const [categorias, setCategorias] = useState({})
@@ -30,7 +36,8 @@ export default withRouter(props => {
         setCategorias(lookup)
         setLoaded(true)
       } catch (err) {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+        if (!isCurrent) return
+        handleApiError(err, setSnackbar)
       }
     }
     load()
@@ -48,15 +55,7 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Rotina atualizada com sucesso', date: new Date() })
     } catch (err) {
-      if (
-        'response' in err &&
-        'data' in err.response &&
-        'message' in err.response.data
-      ) {
-        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-      } else {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
-      }
+      handleApiError(err, setSnackbar)
     }
   }
 
@@ -68,7 +67,7 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Rotina deletada com sucesso', date: new Date() })
     } catch (err) {
-      setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+      handleApiError(err, setSnackbar)
     }
   }
 
@@ -80,7 +79,7 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Versao deletada com sucesso', date: new Date() })
     } catch (err) {
-      setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+      handleApiError(err, setSnackbar)
     }
   }
 
@@ -92,7 +91,21 @@ export default withRouter(props => {
         columns={[
           { title: 'id', field: 'id', editable: 'never' },
           { title: 'Nome', field: 'rotina' },
-          { title: 'Descrição', field: 'descricao' },
+          {
+            title: 'Descrição',
+            field: 'descricao',
+            render: rowData => (<> {rowData.descricao.length > 70 ? rowData.descricao.substring(0, 70) + '...' : rowData.descricao}</>),
+            editComponent: props => (
+              <TextField
+                type='text'
+                multiline
+                rowsMax='4'
+                value={props.value || ''}
+                className={classes.textField}
+                onChange={e => props.onChange(e.target.value)}
+              />
+            )
+          },
           { title: 'Categoria', field: 'categoria_id', lookup: categorias },
           { title: 'Versão', field: 'versao', editable: 'never' },
           { title: 'Data', field: 'data', editable: 'never' },

@@ -6,6 +6,7 @@ import Add from '@material-ui/icons/Add'
 import { getUsuarios, atualizaUsuario, deletaUsuario, sincronizaUsuarios } from './api'
 import { MessageSnackBar, MaterialTable, DialogoConfirmacao } from '../helpers'
 import DialogoImporta from './dialogo_importa'
+import { handleApiError } from '../services'
 
 export default withRouter(props => {
   const [usuarios, setUsuarios] = useState([])
@@ -25,7 +26,8 @@ export default withRouter(props => {
         setUsuarios(response)
         setLoaded(true)
       } catch (err) {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
+        if (!isCurrent) return
+        handleApiError(err, setSnackbar)
       }
     }
     load()
@@ -43,15 +45,7 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Usuário atualizado com sucesso', date: new Date() })
     } catch (err) {
-      if (
-        'response' in err &&
-        'data' in err.response &&
-        'message' in err.response.data
-      ) {
-        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-      } else {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
-      }
+      handleApiError(err, setSnackbar)
     }
   }
 
@@ -63,15 +57,7 @@ export default withRouter(props => {
       setRefresh(new Date())
       setSnackbar({ status: 'success', msg: 'Usuário deletado com sucesso', date: new Date() })
     } catch (err) {
-      if (
-        'response' in err &&
-        'data' in err.response &&
-        'message' in err.response.data
-      ) {
-        setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-      } else {
-        setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
-      }
+      handleApiError(err, setSnackbar)
     }
   }
 
@@ -97,23 +83,16 @@ export default withRouter(props => {
         if (success) {
           setRefresh(new Date())
           setSnackbar({ status: 'success', msg: 'Usuários sincronizados com sucesso.', date: new Date() })
-          setOpenSincronizaDialog({})
         }
       } catch (err) {
         setRefresh(new Date())
+        handleApiError(err, setSnackbar)
+      } finally {
         setOpenSincronizaDialog({})
-        if (
-          'response' in err &&
-          'data' in err.response &&
-          'message' in err.response.data
-        ) {
-          setSnackbar({ status: 'error', msg: err.response.data.message, date: new Date() })
-        } else {
-          setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
-        }
       }
+    } else {
+      setOpenSincronizaDialog({})
     }
-    setOpenSincronizaDialog({})
   }
 
   const executeAdicionaDialog = useMemo(() => (status, msg) => {

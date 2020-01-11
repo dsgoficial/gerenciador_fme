@@ -2,8 +2,17 @@ import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
+import { makeStyles } from '@material-ui/core/styles'
 
-import styles from './styles'
+const styles = makeStyles(theme => ({
+  cardContent: {
+    textAlign: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    height: '140px',
+    boxSizing: 'border-box'
+  }
+}))
 
 export default ({ label, currentValue }) => {
   const classes = styles()
