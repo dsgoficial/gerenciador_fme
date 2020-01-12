@@ -2,7 +2,7 @@ import { api } from '../services'
 
 const getData = async () => {
   return api.axiosAll({
-    rotinas: api.getData('/api/rotinas'),
+    rotinas: api.getData('/api/rotinas/completo'),
     versoes: api.getData('/api/rotinas/versoes'),
     categorias: api.getData('/api/categorias')
   })

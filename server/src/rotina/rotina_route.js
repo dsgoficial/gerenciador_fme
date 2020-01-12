@@ -134,6 +134,18 @@ router.get(
   })
 )
 
+router.get(
+  '/completo',
+  verifyLogin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await rotinaCtrl.getRotinasCompleto()
+
+    const msg = 'Rotinas retornadas'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
 router.post(
   '/',
   verifyLogin,
