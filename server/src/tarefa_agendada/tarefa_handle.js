@@ -11,7 +11,7 @@ handleTarefas.tarefasAgendadas = {}
 
 const loadTarefaData = tarefas => {
   tarefas.forEach(t => {
-    const job = schedule.scheduleJob(t.data_execucao, () => {
+    const job = schedule.scheduleJob(t.configuracao, () => {
       const jobUuid = uuidv4()
       const taskId = `${jobUuid}|${t.uuid}`
       jobQueue.push({ id: taskId, rotinaPath: t.path, parameteros: t.parametros })
