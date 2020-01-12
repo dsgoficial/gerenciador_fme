@@ -8,9 +8,7 @@ const readdir = util.promisify(fs.readdir)
 const stat = util.promisify(fs.stat)
 const unlink = util.promisify(fs.unlink)
 
-const {
-  config: { PATH_LOGS }
-} = require('../utils')
+const { PATH_LOGS } = require('../config')
 
 const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes'

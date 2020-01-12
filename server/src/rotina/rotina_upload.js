@@ -1,7 +1,9 @@
 'use strict'
 
 const multer = require('multer')
-const { AppError, httpCode, config: { PATH_WORKSPACES } } = require('../utils')
+const { AppError, httpCode } = require('../utils')
+
+const { PATH_WORKSPACES } = require('../config')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

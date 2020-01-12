@@ -18,7 +18,7 @@ const {
   sendJsonAndLogMiddleware
 } = require('../utils')
 
-const appRoutes = require('./routes')
+const appRoutes = require('../routes')
 
 const app = express()
 

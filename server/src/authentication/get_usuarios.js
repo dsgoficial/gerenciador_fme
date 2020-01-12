@@ -2,11 +2,9 @@
 
 const axios = require('axios')
 
-const {
-  AppError,
-  httpCode,
-  config: { AUTH_SERVER }
-} = require('../utils')
+const { AppError, httpCode } = require('../utils')
+
+const { AUTH_SERVER } = require('../config')
 
 const getUsuarios = async (usuario, senha, cliente) => {
   const server = `${AUTH_SERVER}/api/usuarios`

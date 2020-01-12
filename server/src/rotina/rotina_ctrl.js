@@ -13,7 +13,9 @@ const getParams = require('./rotina_parse')
 
 const fmeRunner = require('./rotina_runner')
 
-const { AppError, httpCode, errorHandler, config: { PATH_WORKSPACES } } = require('../utils')
+const { AppError, httpCode, errorHandler } = require('../utils')
+
+const { PATH_WORKSPACES } = require('../config')
 
 const controller = {}
 

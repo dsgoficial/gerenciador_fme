@@ -8,7 +8,9 @@ const childProcess = require('child_process')
 const readFile = util.promisify(fs.readFile)
 const exec = util.promisify(childProcess.exec)
 
-const { AppError, config: { FME_PATH, PATH_WORKSPACES } } = require('../utils')
+const { AppError } = require('../utils')
+
+const { FME_PATH, PATH_WORKSPACES } = require('../config')
 
 const getSummary = async logPath => {
   const dados = await readFile(logPath.trim(), 'utf8')
@@ -57,11 +59,11 @@ const fmeRunner = async (workspacePath, parameters) => {
 
   parameters.LOG_FILE = `${mainPath}${path.sep}fme_logs${path.sep}${fixedWorkspacePath}_${logDate}.log`
 
-  let executeCmd = [FME_PATH, workspacePath]
+  const executeCmdArray = [FME_PATH, workspacePath]
   for (const key in parameters) {
-    executeCmd.push(`--${key} "${parameters[key]}"`)
+    executeCmdArray.push(`--${key} "${parameters[key]}"`)
   }
-  executeCmd = executeCmd.join(' ')
+  const executeCmd = executeCmdArray.join(' ')
 
   try {
     const { stderr } = await exec(executeCmd, { maxBuffer: Infinity })

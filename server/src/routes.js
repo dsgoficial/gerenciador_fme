@@ -2,18 +2,18 @@
 const express = require('express')
 const path = require('path')
 
-const { databaseVersion } = require('../database')
+const { databaseVersion } = require('./database')
 const {
   httpCode
-} = require('../utils')
+} = require('./utils')
 
-const { loginRoute } = require('../login')
-const { categoriaRoute } = require('../categoria')
-const { logRoute } = require('../log_files')
-const { rotinaRoute } = require('../rotina')
-const { usuarioRoute } = require('../usuario')
-const { execucaoRoute } = require('../execucao')
-const { dashboardRoute } = require('../dashboard')
+const { loginRoute } = require('./login')
+const { categoriaRoute } = require('./categoria')
+const { logRoute } = require('./log_files')
+const { rotinaRoute } = require('./rotina')
+const { usuarioRoute } = require('./usuario')
+const { execucaoRoute } = require('./execucao')
+const { dashboardRoute } = require('./dashboard')
 
 const router = express.Router()
 
@@ -32,7 +32,7 @@ router.use('/login', loginRoute)
 
 router.use(
   '/fme',
-  express.static(path.join(__dirname, '..', 'fme_workspaces'))
+  express.static(path.join(__dirname, 'fme_workspaces'))
 )
 
 router.use('/categorias', categoriaRoute)

@@ -5,13 +5,13 @@ const Joi = require('joi')
 const fs = require('fs')
 const path = require('path')
 
-const AppError = require('./App_error')
-const errorHandler = require('./error_handler')
+const AppError = require('./utils/App_error')
+const errorHandler = require('./utils/error_handler')
 
 const configFile =
   process.env.NODE_ENV === 'test' ? 'config_testing.env' : 'config.env'
 
-const configPath = path.join(__dirname, '..', '..', configFile)
+const configPath = path.join(__dirname, '..', configFile)
 
 if (!fs.existsSync(configPath)) {
   errorHandler(
@@ -27,8 +27,8 @@ dotenv.config({
 
 const VERSION = '2.0.0'
 const MIN_DATABASE_VERSION = '2.0.0'
-const PATH_LOGS = path.join(__dirname, '..', 'fme_workspaces', 'fme_logs')
-const PATH_WORKSPACES = path.join(__dirname, '..', 'fme_workspaces')
+const PATH_LOGS = path.join(__dirname, 'fme_workspaces', 'fme_logs')
+const PATH_WORKSPACES = path.join(__dirname, 'fme_workspaces')
 
 const configSchema = Joi.object().keys({
   PORT: Joi.number()
