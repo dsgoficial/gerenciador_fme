@@ -14,6 +14,7 @@ const { rotinaRoute } = require('./rotina')
 const { usuarioRoute } = require('./usuario')
 const { execucaoRoute } = require('./execucao')
 const { dashboardRoute } = require('./dashboard')
+const { tarefaRoute } = require('./tarefa_agendada')
 
 const router = express.Router()
 
@@ -40,6 +41,8 @@ router.use('/categorias', categoriaRoute)
 router.use('/logs', logRoute)
 
 router.use('/rotinas', rotinaRoute)
+
+router.use('/tarefas', tarefaRoute)
 
 router.use('/usuarios', usuarioRoute)
 

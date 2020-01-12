@@ -47,11 +47,20 @@ controller.deletaUsuario = async uuid => {
       `UPDATE fme.versao_rotina
       SET usuario_id = NULL
       WHERE usuario_id IN
-      (SELECT id FROM dgeo.usuario WHERE uuid = $<uuid> AND administrador IS FALSE)`,
+      (SELECT id FROM dgeo.usuario WHERE uuid = $<uuid>)`,
       { uuid }
     )
+
+    await t.none(
+      `UPDATE fme.tarefa_agendada
+      SET usuario_id = NULL
+      WHERE usuario_id IN
+      (SELECT id FROM dgeo.usuario WHERE uuid = $<uuid>)`,
+      { uuid }
+    )
+
     const result = await t.result(
-      'DELETE FROM dgeo.usuario WHERE uuid = $<uuid> AND administrador IS FALSE',
+      'DELETE FROM dgeo.usuario WHERE uuid = $<uuid>',
       { uuid }
     )
     if (!result.rowCount || result.rowCount < 1) {

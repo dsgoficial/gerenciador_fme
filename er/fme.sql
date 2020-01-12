@@ -31,6 +31,26 @@ CREATE TABLE fme.parametros(
 	nome VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE fme.tarefa_agendada_cron(
+	id SERIAL NOT NULL PRIMARY KEY,
+	uuid UUID NOT NULL UNIQUE,
+	rotina_id SMALLINT NOT NULL REFERENCES fme.rotina(id),
+	data_agendamento TIMESTAMP WITH TIME ZONE NOT NULL,
+	usuario_id SMALLINT REFERENCES dgeo.usuario(id),
+	configuracao_cron VARCHAR(255) NOT NULL,
+	parametros json,
+);
+
+CREATE TABLE fme.tarefa_agendada_data(
+	id SERIAL NOT NULL PRIMARY KEY,
+	uuid UUID NOT NULL UNIQUE,
+	rotina_id SMALLINT NOT NULL REFERENCES fme.rotina(id),
+	data_agendamento TIMESTAMP WITH TIME ZONE NOT NULL,
+	usuario_id SMALLINT REFERENCES dgeo.usuario(id),
+	data_execucao TIMESTAMP WITH TIME ZONE NOT NULL,
+	parametros json,
+);
+
 CREATE TABLE fme.execucao(
 	id SERIAL NOT NULL PRIMARY KEY,
 	uuid UUID NOT NULL UNIQUE,
@@ -40,7 +60,8 @@ CREATE TABLE fme.execucao(
 	data_execucao TIMESTAMP WITH TIME ZONE NOT NULL,
 	tempo_execucao REAL,
 	log json,
-	parametros json
+	parametros json,
+	tarefa_agendada_uuid UUID
 );
 
 COMMIT;

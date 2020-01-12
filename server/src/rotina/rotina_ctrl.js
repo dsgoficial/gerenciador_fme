@@ -1,19 +1,18 @@
 'use strict'
 
-const Queue = require('better-queue')
 const fs = require('fs')
 const util = require('util')
 const path = require('path')
 
 const unlink = util.promisify(fs.unlink)
 
+const jobQueue = require('../queue')
+
 const { db } = require('../database')
 
 const getParams = require('./rotina_parse')
 
-const fmeRunner = require('./rotina_runner')
-
-const { AppError, httpCode, errorHandler } = require('../utils')
+const { AppError, httpCode } = require('../utils')
 
 const { PATH_WORKSPACES } = require('../config')
 
@@ -58,45 +57,13 @@ controller.criaVersao = async (rotinaId, rotinaPath, uuid) => {
   })
 }
 
-const jobQueue = new Queue(
-  async (input, cb) => {
-    try {
-      const summary = await fmeRunner(
-        input.rotinaPath,
-        input.parametros
-      )
-      cb(null, summary)
-    } catch (err) {
-      cb(err, null)
-    }
-  },
-  { concurrent: 3 }
-)
-
-const updateJob = async (uuid, status, time, log) => {
-  return db.conn.none(
-    `
-    UPDATE fme.execucao SET status = $<status>, tempo_execucao = $<time>,
-    log = $<log:json>
-    WHERE uuid = $<uuid>
-    `,
-    { status, time, log, uuid }
-  )
-}
-
-jobQueue.on('task_finish', (taskId, result, stats) => {
-  updateJob(taskId, 2, stats.elapsed, result)
-})
-
-jobQueue.on('task_failed', function (taskId, err, stats) {
-  errorHandler(err)
-  updateJob(taskId, 3, stats.elapsed, null)
-})
-
 controller.execucaoRotina = async (id, uuid, parametros) => {
   const versao = await db.conn.one(
     `
-      SELECT id, rotina_id, path FROM fme.versao_rotina WHERE id = $<id>
+    SELECT r.id AS rotina_id, vr.id AS versao_id, vr.path
+    FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
+    INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
+    WHERE vr.rn = 1 AND r.ativa IS TRUE
       `,
     { id }
   )
@@ -106,7 +73,7 @@ controller.execucaoRotina = async (id, uuid, parametros) => {
       INSERT INTO fme.execucao(uuid, status_id, versao_rotina_id, rotina_id, data_execucao, parametros)
       VALUES($<uuid>,1,$<versaoId>,$<rotinaId>, CURRENT_TIMESTAMP, $<parametros:json>)
       `,
-    { uuid, versaoId: versao.id, rotinaId: versao.rotina_id, parametros }
+    { uuid, versaoId: versao.versao_id, rotinaId: versao.rotina_id, parametros }
   )
 
   jobQueue.push({ id: uuid, rotinaPath: versao.path, parametros })
