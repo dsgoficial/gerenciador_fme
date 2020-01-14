@@ -4,8 +4,9 @@ const Joi = require('joi')
 
 const models = {}
 
-models.idParams = Joi.object().keys({
-  id: Joi.number().integer()
+models.uuidParams = Joi.object().keys({
+  uuid: Joi.string()
+    .guid({ version: 'uuidv4' })
     .required()
 })
 

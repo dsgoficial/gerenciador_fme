@@ -15,6 +15,8 @@ import styles from './styles'
 import { MainListItems, AdminListItems } from './list_items'
 import { handleLogout } from './api.js'
 
+import { PrivateRoute } from '../helpers'
+
 import Dashboard from '../Dashboard'
 import AdicionarRotina from '../AdicionarRotina'
 import AtualizarRotina from '../AtualizarRotina'
@@ -23,6 +25,8 @@ import Rotinas from '../Rotinas'
 import LogsTable from '../LogsTable'
 import GerenciarUsuarios from '../GerenciarUsuarios'
 import ArquivosTemporarios from '../ArquivosTemporarios'
+import Tarefas from '../Tarefas'
+import ExecucaoAgendada from '../ExecucaoAgendada'
 
 export default withRouter(props => {
   const classes = styles()
@@ -95,9 +99,11 @@ export default withRouter(props => {
             <Route exact path='/atualizar_rotina' component={AtualizarRotina} />
             <Route exact path='/categorias' component={Categorias} />
             <Route exact path='/rotinas' component={Rotinas} />
-            <Route exact path='/logs' component={LogsTable} />
-            <Route exact path='/gerenciar_usuarios' component={GerenciarUsuarios} />
-            <Route exact path='/arquivos_temporarios' component={ArquivosTemporarios} />
+            <Route exact path='/agendar_tarefas' component={Tarefas} />
+            <Route exact path='/execucoes_agendadas' component={ExecucaoAgendada} />
+            <PrivateRoute role='ADMIN' exact path='/logs' component={LogsTable} />
+            <PrivateRoute role='ADMIN' exact path='/gerenciar_usuarios' component={GerenciarUsuarios} />
+            <PrivateRoute role='ADMIN' exact path='/arquivos_temporarios' component={ArquivosTemporarios} />
           </Container>
         </main>
       </HashRouter>

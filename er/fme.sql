@@ -38,7 +38,7 @@ CREATE TABLE fme.tarefa_agendada_cron(
 	data_agendamento TIMESTAMP WITH TIME ZONE NOT NULL,
 	usuario_id SMALLINT REFERENCES dgeo.usuario(id),
 	configuracao_cron VARCHAR(255) NOT NULL,
-	parametros json,
+	parametros json
 );
 
 CREATE TABLE fme.tarefa_agendada_data(
@@ -48,7 +48,7 @@ CREATE TABLE fme.tarefa_agendada_data(
 	data_agendamento TIMESTAMP WITH TIME ZONE NOT NULL,
 	usuario_id SMALLINT REFERENCES dgeo.usuario(id),
 	data_execucao TIMESTAMP WITH TIME ZONE NOT NULL,
-	parametros json,
+	parametros json
 );
 
 CREATE TABLE fme.execucao(

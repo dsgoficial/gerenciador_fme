@@ -66,4 +66,25 @@ controller.getExecucaoStatus = async uuid => {
   return dados
 }
 
+controller.getExecucaoAgendada = async () => {
+  const dados = await db.conn.oneOrNone(
+    `
+    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
+    COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina,
+    ta.nome AS agendamento
+    FROM fme.execucao AS e
+    INNER JOIN fme.tarefa_agendada_data AS ta ON ta.uuid = e.tarefa_agendada_uuid
+    INNER JOIN dominio.status AS s ON s.code = e.status_id
+    LEFT JOIN fme.versao_rotina AS vr ON vr.id = e.versao_rotina_id
+    LEFT JOIN fme.rotina AS r ON r.id = e.rotina_id
+    `
+  )
+
+  if (!dados) {
+    throw new AppError('Informação de execução não encontrada', httpCode.BadRequest)
+  }
+
+  return dados
+}
+
 module.exports = controller

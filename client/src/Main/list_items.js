@@ -69,6 +69,24 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
+      <Tooltip title='Agendar tarefas' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/agendar_tarefas' activeClassName={classes.active}>
+          <ListItemIcon>
+            <ListIcon />
+          </ListItemIcon>
+          <ListItemText primary='Agendar tarefas' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Execuções agendadas' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/execucoes_agendadas' activeClassName={classes.active}>
+          <ListItemIcon>
+            <ListIcon />
+          </ListItemIcon>
+          <ListItemText primary='Execuções agendadas' />
+        </ListItem>
+      </Tooltip>
+
     </List>
   )
 }

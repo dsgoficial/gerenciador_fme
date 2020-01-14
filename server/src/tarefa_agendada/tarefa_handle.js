@@ -20,7 +20,15 @@ const loadTarefaData = tarefas => {
   })
 }
 
-handleTarefas.carregaTarefaAgendada = async () => {
+handleTarefas.cancel = uuid => {
+  handleTarefas.tarefasAgendadas[uuid].cancel()
+}
+
+handleTarefas.load = (uuid, path, configuracao, parametros) => {
+  loadTarefaData([{ uuid, path, configuracao, parametros }])
+}
+
+handleTarefas.carregaTarefasAgendadas = async () => {
   const tarefasData = await db.conn.any(
     `
     SELECT ta.uuid, ta.data_execucao AS configuracao, ta.parametros, vr.path
@@ -43,6 +51,7 @@ handleTarefas.carregaTarefaAgendada = async () => {
   )
 
   const tarefas = [...tarefasData, ...tarefasCron]
+
   if (tarefas.length > 0) {
     loadTarefaData(tarefas)
   }

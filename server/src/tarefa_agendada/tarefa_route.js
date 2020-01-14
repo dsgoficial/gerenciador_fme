@@ -36,10 +36,10 @@ router.post(
 )
 
 router.delete(
-  '/:id',
+  '/:uuid',
   verifyLogin,
   schemaValidation({
-    params: tarefaSchema.idParams
+    params: tarefaSchema.uuidParams
   }),
   asyncHandler(async (req, res, next) => {
     await tarefaCtrl.delete(req.params.id)

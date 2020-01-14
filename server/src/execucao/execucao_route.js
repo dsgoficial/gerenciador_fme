@@ -4,7 +4,7 @@ const express = require('express')
 
 const { schemaValidation, asyncHandler, httpCode } = require('../utils')
 
-const { verifyAdmin } = require('../login')
+const { verifyAdmin, verifyLogin } = require('../login')
 
 const execucaoCtrl = require('./execucao_ctrl')
 const execucaoSchema = require('./execucao_schema')
@@ -37,6 +37,19 @@ router.get(
     const dados = await execucaoCtrl.getExecucaoStatus(req.params.uuid)
 
     const msg = 'Informação sobre o execução retornada'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.get(
+  '/agendadas',
+  verifyLogin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await execucaoCtrl.getExecucaoAgendada(
+    )
+
+    const msg = 'Lista de execuções retornadas'
 
     return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
   })
