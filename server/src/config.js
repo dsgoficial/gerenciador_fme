@@ -5,8 +5,7 @@ const Joi = require('joi')
 const fs = require('fs')
 const path = require('path')
 
-const AppError = require('./utils/App_error')
-const errorHandler = require('./utils/error_handler')
+const { AppError, errorHandler } = require('./utils')
 
 const configFile =
   process.env.NODE_ENV === 'test' ? 'config_testing.env' : 'config.env'
