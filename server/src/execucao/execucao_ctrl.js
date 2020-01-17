@@ -10,7 +10,7 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
   let where = ''
 
   if (filtro) {
-    where = ` WHERE lower(concat_ws('|',e.uuid,s.nome,e.data_execucao,e.tempo_execucao, e.log, e.parametros,COALESCE(r.nome, 'Rotina deletada'), COALESCE(vr.nome::text, 'Versão deletada'))) LIKE '%${filtro.toLowerCase()}%'`
+    where = ` WHERE lower(concat_ws('|',e.uuid,s.nome,e.data_execucao,e.tempo_execucao, e.sumario, e.parametros,COALESCE(r.nome, 'Rotina deletada'), COALESCE(vr.nome::text, 'Versão deletada'))) LIKE '%${filtro.toLowerCase()}%'`
   }
 
   let sort = ''
@@ -28,7 +28,7 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
     paginacao = ` LIMIT ${totalPagina} OFFSET (${pagina} - 1)*${totalPagina}`
   }
 
-  const sql = `SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
+  const sql = `SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.sumario, e.log, e.parametros,
   COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina
   FROM fme.execucao AS e
   INNER JOIN dominio.status AS s ON s.code = e.status_id
@@ -48,7 +48,7 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
 controller.getExecucaoStatus = async uuid => {
   const dados = await db.conn.oneOrNone(
     `
-    SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
+    SELECT e.uuid, s.nome AS status, e.data_execucao, e.tempo_execucao, e.sumario, e.parametros,
     COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada')::text AS versao_rotina
     FROM fme.execucao AS e
     INNER JOIN dominio.status AS s ON s.code = e.status_id
@@ -69,7 +69,7 @@ controller.getExecucaoStatus = async uuid => {
 controller.getExecucaoAgendada = async () => {
   const dados = await db.conn.oneOrNone(
     `
-    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao, e.log, e.parametros,
+    SELECT s.nome AS status, e.data_execucao, e.tempo_execucao, e.sumario, e.log, e.parametros,
     COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina,
     ta.nome AS agendamento
     FROM fme.execucao AS e

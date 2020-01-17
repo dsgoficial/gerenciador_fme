@@ -12,10 +12,25 @@ const { AppError } = require('../utils')
 
 const { FME_PATH, PATH_WORKSPACES } = require('../config')
 
-const getSummary = async logPath => {
-  const dados = await readFile(logPath.trim(), 'utf8')
+class FMEError extends Error {
+  constructor (message, log = null) {
+    super(message)
+    this.log = log
+  }
+}
 
-  const contents = dados.toString().split('\n')
+const getLog = async logPath => {
+  try {
+    return readFile(logPath.trim(), 'utf8')
+  } catch (error) {
+    return ''
+  }
+}
+
+const getSummary = async logPath => {
+  const log = await getLog(logPath)
+
+  const contents = log.toString().split('\n')
 
   let fim = contents.length
   let inicio = fim
@@ -36,7 +51,7 @@ const getSummary = async logPath => {
       }
     }
   })
-  return summary
+  return { summary, log }
 }
 
 const fmeRunner = async (workspacePath, parameters) => {
@@ -73,8 +88,12 @@ const fmeRunner = async (workspacePath, parameters) => {
 
     return getSummary(parameters.LOG_FILE)
   } catch (e) {
-    throw new AppError('Erro na execução da workspace.', null, e)
+    const log = await getLog(parameters.LOG_FILE)
+    if (log) {
+      throw new FMEError('Erro na execução da rotina', log)
+    }
+    throw new AppError('Erro na execução do FME', null, e)
   }
 }
 
-module.exports = fmeRunner
+module.exports = { fmeRunner, FMEError }

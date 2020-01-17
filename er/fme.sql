@@ -59,7 +59,8 @@ CREATE TABLE fme.execucao(
 	rotina_id SMALLINT REFERENCES fme.rotina(id),
 	data_execucao TIMESTAMP WITH TIME ZONE NOT NULL,
 	tempo_execucao REAL,
-	log json,
+	sumario json,
+	log TEXT,
 	parametros json,
 	tarefa_agendada_uuid UUID
 );
