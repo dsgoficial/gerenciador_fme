@@ -9,6 +9,7 @@ import Card from './card'
 import StackedArea from './stacked_area'
 import Bar from './bar_chart'
 import StackedBar from './stacked_bar'
+import PrivateRoute from './private_route'
 
 export {
   MessageSnackBar,
@@ -21,5 +22,6 @@ export {
   Card,
   StackedArea,
   Bar,
-  StackedBar
+  StackedBar,
+  PrivateRoute
 }
