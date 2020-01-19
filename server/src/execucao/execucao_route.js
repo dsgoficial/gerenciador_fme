@@ -43,10 +43,23 @@ router.get(
 )
 
 router.get(
-  '/agendadas',
+  '/agendada/cron',
   verifyLogin,
   asyncHandler(async (req, res, next) => {
-    const dados = await execucaoCtrl.getExecucaoAgendada(
+    const dados = await execucaoCtrl.getExecucaoAgendadaCron(
+    )
+
+    const msg = 'Lista de execuções retornadas'
+
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+  })
+)
+
+router.get(
+  '/agendada/data',
+  verifyLogin,
+  asyncHandler(async (req, res, next) => {
+    const dados = await execucaoCtrl.getExecucaoAgendadaData(
     )
 
     const msg = 'Lista de execuções retornadas'
