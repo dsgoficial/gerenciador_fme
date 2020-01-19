@@ -16,7 +16,7 @@ router.get(
   verifyAdmin,
   schemaValidation({ query: execucaoSchema.paginacaoQuery }),
   asyncHandler(async (req, res, next) => {
-    const dados = await execucaoCtrl.getExecucaoPagination(
+    const { execucoes, total } = await execucaoCtrl.getExecucaoPagination(
       req.query.pagina,
       req.query.total_pagina,
       req.query.coluna_ordem,
@@ -26,7 +26,7 @@ router.get(
 
     const msg = 'Lista de execuções retornadas'
 
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+    return res.sendJsonAndLog(true, msg, httpCode.OK, execucoes, null, { total })
   })
 )
 

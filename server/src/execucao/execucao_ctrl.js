@@ -38,11 +38,9 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
 
   const execucoes = await db.conn.any(sql)
 
-  const result = { execucoes }
+  const total = execucoes.length
 
-  result.total = execucoes.length
-
-  return result
+  return { execucoes, total }
 }
 
 controller.getExecucaoStatus = async uuid => {

@@ -12,16 +12,14 @@ const verifyAdmin = asyncHandler(async (req, res, next) => {
 
   const decoded = await validateToken(token)
 
-  if (!('uuid' in decoded && decoded.uuid)) {
+  if (!decoded.uuid) {
     throw new AppError('Falta informação de usuário')
   }
-  const {
-    administrador
-  } = await db.conn.oneOrNone(
+  const response = await db.conn.oneOrNone(
     'SELECT administrador FROM dgeo.usuario WHERE uuid = $<usuarioUuid> and ativo IS TRUE',
     { usuarioUuid: decoded.uuid }
   )
-  if (!administrador) {
+  if (!response.administrador) {
     throw new AppError(
       'Usuário necessita ser um administrador',
       httpCode.Forbidden
