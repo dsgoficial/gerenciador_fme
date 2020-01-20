@@ -15,6 +15,8 @@ import LibraryBooksIcon from '@material-ui/icons/LibraryBooks'
 import EditIcon from '@material-ui/icons/Edit'
 import DataUsageIcon from '@material-ui/icons/DataUsage'
 import Tooltip from '@material-ui/core/Tooltip'
+import AddAlarmIcon from '@material-ui/icons/AddAlarm'
+import AlarmOnIcon from '@material-ui/icons/AlarmOn'
 
 import styles from './styles'
 
@@ -51,6 +53,15 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
+      <Tooltip title='Agendar tarefas' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/agendar_tarefas' activeClassName={classes.active}>
+          <ListItemIcon>
+            <AddAlarmIcon />
+          </ListItemIcon>
+          <ListItemText primary='Agendar tarefas' />
+        </ListItem>
+      </Tooltip>
+
       <Tooltip title='Categorias' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/categorias' activeClassName={classes.active}>
           <ListItemIcon>
@@ -69,21 +80,21 @@ export const MainListItems = props => {
         </ListItem>
       </Tooltip>
 
-      <Tooltip title='Agendar tarefas' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/agendar_tarefas' activeClassName={classes.active}>
-          <ListItemIcon>
-            <ListIcon />
-          </ListItemIcon>
-          <ListItemText primary='Agendar tarefas' />
-        </ListItem>
-      </Tooltip>
-
       <Tooltip title='Execuções agendadas' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/execucoes_agendadas' activeClassName={classes.active}>
           <ListItemIcon>
-            <ListIcon />
+            <AlarmOnIcon />
           </ListItemIcon>
           <ListItemText primary='Execuções agendadas' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Logs de Execução' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/logs' activeClassName={classes.active}>
+          <ListItemIcon>
+            <DataUsageIcon />
+          </ListItemIcon>
+          <ListItemText primary='Logs de Execução' />
         </ListItem>
       </Tooltip>
 
@@ -98,15 +109,6 @@ export const AdminListItems = props => {
     <List>
       <Divider />
       <ListSubheader inset>Administração</ListSubheader>
-
-      <Tooltip title='Logs' placement='right-start'>
-        <ListItem button component={NavLink} replace exact to='/logs' activeClassName={classes.active}>
-          <ListItemIcon>
-            <DataUsageIcon />
-          </ListItemIcon>
-          <ListItemText primary='Logs' />
-        </ListItem>
-      </Tooltip>
 
       <Tooltip title='Gerenciar usuários' placement='right-start'>
         <ListItem button component={NavLink} replace exact to='/gerenciar_usuarios' activeClassName={classes.active}>

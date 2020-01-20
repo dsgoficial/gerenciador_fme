@@ -15,12 +15,11 @@ const controller = {}
 controller.getCron = async () => {
   const tarefaCron = await db.conn.any(`
     SELECT ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.configuracao_cron AS configuracao,
-    ta.data_inicio, ta.data_fim
-    ta.parametros, tpg.nome_abrev || ' ' || u.nome_abrev AS usuario
+    ta.data_inicio, ta.data_fim, ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM fme.tarefa_agendada_cron AS ta
     INNER JOIN fme.rotina AS r ON r.id = ta.rotina_id
     LEFT JOIN dgeo.usuario AS u ON u.id = ta.usuario_id
-    LEFT JOIN dominio.tipo_posto_grad_id AS tpg ON tpg.code = u.tipo_posto_grad_id
+    LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
     WHERE ta.data_fim IS NULL OR ta.data_fim::timestamp with time zone > now()
   `)
   tarefaCron.forEach(t => {
@@ -100,11 +99,11 @@ controller.deleteCron = async uuid => {
 controller.getData = async () => {
   const tarefaData = await db.conn.any(`
     SELECT ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.data_execucao,
-    ta.parametros, tpg.nome_abrev || ' ' || u.nome_abrev AS usuario
+    ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM fme.tarefa_agendada_data AS ta
     INNER JOIN fme.rotina AS r ON r.id = ta.rotina_id
     LEFT JOIN dgeo.usuario AS u ON u.id = ta.usuario_id
-    LEFT JOIN dominio.tipo_posto_grad_id AS tpg ON tpg.code = u.tipo_posto_grad_id
+    LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
     WHERE ta.data_execucao > now()
   `)
 

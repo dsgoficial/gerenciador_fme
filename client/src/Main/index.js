@@ -101,7 +101,7 @@ export default withRouter(props => {
             <Route exact path='/rotinas' component={Rotinas} />
             <Route exact path='/agendar_tarefas' component={Tarefas} />
             <Route exact path='/execucoes_agendadas' component={ExecucaoAgendada} />
-            <PrivateRoute role='ADMIN' exact path='/logs' component={LogsTable} />
+            <Route exact path='/logs' component={LogsTable} />
             <PrivateRoute role='ADMIN' exact path='/gerenciar_usuarios' component={GerenciarUsuarios} />
             <PrivateRoute role='ADMIN' exact path='/arquivos_temporarios' component={ArquivosTemporarios} />
           </Container>

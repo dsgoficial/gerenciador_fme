@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
-import { auth } from './services'
+import { auth } from '../services'
 
 export default ({ component: Component, exact, path, role, ...rest }) => (
   <Route

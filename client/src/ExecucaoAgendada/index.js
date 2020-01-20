@@ -11,7 +11,9 @@ import { MessageSnackBar, MaterialTable } from '../helpers'
 import { handleApiError } from '../services'
 
 export default withRouter(props => {
-  const [logs, setLogs] = useState([])
+  const [execucaoCron, setExecucaoCron] = useState([])
+  const [execucaoData, setExecucaoData] = useState([])
+
   const [openLogDialog, setOpenLogDialog] = useState({
     open: false,
     log: ''
@@ -26,7 +28,8 @@ export default withRouter(props => {
       try {
         const response = await getExecucao()
         if (!response || !isCurrent) return
-        setLogs(response)
+        setExecucaoCron(response.cron)
+        setExecucaoData(response.data)
         setLoaded(true)
       } catch (err) {
         if (!isCurrent) return
@@ -57,17 +60,57 @@ export default withRouter(props => {
   return (
     <>
       <MaterialTable
-        title='Logs de execução'
+        title='Logs de execução - CRON'
         loaded={loaded}
         columns={[
-          { title: 'uuid', field: 'uuid' },
+          { title: 'Agendamento UUID', field: 'agendamento_uuid' },
+          { title: 'Agendamento', field: 'agendamento' },
           { title: 'Rotina', field: 'rotina' },
           { title: 'Versão', field: 'versao_rotina' },
-          { title: 'Status', field: 'nome' },
+          { title: 'Status', field: 'status' },
           { title: 'Data', field: 'data_execucao' },
           { title: 'Tempo', field: 'tempo_execucao' }
         ]}
-        data={logs}
+        data={execucaoCron}
+        actions={[
+          {
+            icon: ViewHeadlineIcon,
+            tooltip: 'Log FME',
+            onClick: handleLogFME
+          }
+        ]}
+        detailPanel={rowData => {
+          return (
+            <>
+              <div style={{ margin: '15px' }}>
+                <Typography variant='h6' gutterBottom>Sumário</Typography>
+                {Object.keys(rowData.sumario).map((key, i) => (
+                  <p key={i}><b>{key}</b> {rowData.sumario[key]}</p>
+                ))}
+              </div>
+              <div style={{ margin: '15px' }}>
+                <Typography variant='h6' gutterBottom>Parâmetros</Typography>
+                {Object.keys(rowData.parametros).map((key, i) => (
+                  <p key={i}><b>{key}</b> {rowData.parametros[key]}</p>
+                ))}
+              </div>
+            </>
+          )
+        }}
+      />
+      <MaterialTable
+        title='Logs de execução - Data'
+        loaded={loaded}
+        columns={[
+          { title: 'Agendamento UUID', field: 'agendamento_uuid' },
+          { title: 'Agendamento', field: 'agendamento' },
+          { title: 'Rotina', field: 'rotina' },
+          { title: 'Versão', field: 'versao_rotina' },
+          { title: 'Status', field: 'status' },
+          { title: 'Data', field: 'data_execucao' },
+          { title: 'Tempo', field: 'tempo_execucao' }
+        ]}
+        data={execucaoData}
         actions={[
           {
             icon: ViewHeadlineIcon,

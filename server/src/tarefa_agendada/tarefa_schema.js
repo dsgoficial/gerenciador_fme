@@ -24,8 +24,8 @@ models.tarefaCron = Joi.object().keys({
   rotina_id: Joi.number().integer()
     .required(),
   parametros: Joi.object(),
-  data_inicio: Joi.date(),
-  data_fim: Joi.date()
+  data_inicio: Joi.date().allow(null),
+  data_fim: Joi.date().allow(null)
 })
 
 module.exports = models

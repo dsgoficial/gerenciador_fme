@@ -69,7 +69,7 @@ controller.getExecucaoAgendadaCron = async () => {
     `
     SELECT s.nome AS status, e.data_execucao, e.tempo_execucao, e.sumario, e.log, e.parametros,
     COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina,
-    ta.nome AS agendamento
+    ta.nome AS agendamento, ta.uuid AS agendamento_uuid
     FROM fme.execucao AS e
     INNER JOIN fme.tarefa_agendada_cron AS ta ON ta.uuid = e.tarefa_agendada_uuid
     INNER JOIN dominio.status AS s ON s.code = e.status_id
@@ -84,7 +84,7 @@ controller.getExecucaoAgendadaData = async () => {
     `
     SELECT s.nome AS status, e.data_execucao, e.tempo_execucao, e.sumario, e.log, e.parametros,
     COALESCE(r.nome, 'Rotina deletada') AS rotina, COALESCE(vr.nome::text, 'Versão deletada') AS versao_rotina,
-    ta.nome AS agendamento
+    ta.nome AS agendamento, ta.uuid AS agendamento_uuid
     FROM fme.execucao AS e
     INNER JOIN fme.tarefa_agendada_data AS ta ON ta.uuid = e.tarefa_agendada_uuid
     INNER JOIN dominio.status AS s ON s.code = e.status_id
