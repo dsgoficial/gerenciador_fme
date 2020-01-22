@@ -17,6 +17,7 @@ import DataUsageIcon from '@material-ui/icons/DataUsage'
 import Tooltip from '@material-ui/core/Tooltip'
 import AddAlarmIcon from '@material-ui/icons/AddAlarm'
 import AlarmOnIcon from '@material-ui/icons/AlarmOn'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 
 import styles from './styles'
 
@@ -59,6 +60,15 @@ export const MainListItems = props => {
             <AddAlarmIcon />
           </ListItemIcon>
           <ListItemText primary='Agendar tarefas' />
+        </ListItem>
+      </Tooltip>
+
+      <Tooltip title='Executar rotinas' placement='right-start'>
+        <ListItem button component={NavLink} replace exact to='/executar' activeClassName={classes.active}>
+          <ListItemIcon>
+            <PlayArrowIcon />
+          </ListItemIcon>
+          <ListItemText primary='Executar rotinas' />
         </ListItem>
       </Tooltip>
 

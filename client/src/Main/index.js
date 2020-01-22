@@ -27,6 +27,7 @@ import GerenciarUsuarios from '../GerenciarUsuarios'
 import ArquivosTemporarios from '../ArquivosTemporarios'
 import Tarefas from '../Tarefas'
 import ExecucaoAgendada from '../ExecucaoAgendada'
+import ExecutarRotina from '../ExecutarRotina'
 
 export default withRouter(props => {
   const classes = styles()
@@ -100,6 +101,7 @@ export default withRouter(props => {
             <Route exact path='/categorias' component={Categorias} />
             <Route exact path='/rotinas' component={Rotinas} />
             <Route exact path='/agendar_tarefas' component={Tarefas} />
+            <Route exact path='/executar' component={ExecutarRotina} />
             <Route exact path='/execucoes_agendadas' component={ExecucaoAgendada} />
             <Route exact path='/logs' component={LogsTable} />
             <PrivateRoute role='ADMIN' exact path='/gerenciar_usuarios' component={GerenciarUsuarios} />

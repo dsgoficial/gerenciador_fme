@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { withRouter, Link } from 'react-router-dom'
 import { Formik, Form, Field } from 'formik'
-import { Select } from 'formik-material-ui'
+import { TextField, Select } from 'formik-material-ui'
 import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import ReactLoading from 'react-loading'
 import MenuItem from '@material-ui/core/MenuItem'
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile'
-import Button from '@material-ui/core/Button'
 import LinkMui from '@material-ui/core/Link'
 
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
 import validationSchema from './validation_schema'
-import { handleUpload, getRotinas } from './api'
+import { handleExecute, getRotinas } from './api'
 import { handleApiError } from '../services'
 
 export default withRouter(props => {
   const classes = styles()
 
   const initialValues = {
-    rotina: '',
-    file: ''
+    rotinaId: '',
+    parametros: {}
   }
+
   const [rotinas, setRotinas] = useState([])
 
   const [snackbar, setSnackbar] = useState('')
@@ -52,16 +51,16 @@ export default withRouter(props => {
 
   const handleForm = async (values, { resetForm }) => {
     try {
-      const success = await handleUpload(
-        values.file,
-        values.rotina
+      const success = await handleExecute(
+        values.rotinaId,
+        values.parametros
       )
       if (success) {
         resetForm(initialValues)
-        setSnackbar({ status: 'success', msg: 'Rotina atualizada com sucesso', date: new Date() })
+        setSnackbar({ status: 'success', msg: 'Rotina executada com sucesso', date: new Date() })
+        // TODO mostrar resultado em modal
       }
     } catch (err) {
-      document.getElementById('atualizar-rotina').value = ''
       resetForm(initialValues)
       handleApiError(err, setSnackbar)
     }
@@ -75,8 +74,8 @@ export default withRouter(props => {
             <div className={classes.formArea}>
               {rotinas.length > 0 ? (
                 <>
-                  <Typography component='h1' variant='h5'>
-                    Atualizar rotina
+                  <Typography variant='h5'>
+                    Executar rotina
                   </Typography>
                   <Formik
                     initialValues={initialValues}
@@ -87,7 +86,7 @@ export default withRouter(props => {
                       <Form className={classes.form}>
                         <div>
                           <Field
-                            name='rotina'
+                            name='rotinaId'
                             label='Rotina'
                             variant='outlined'
                             component={Select}
@@ -95,7 +94,7 @@ export default withRouter(props => {
                             className={classes.select}
                           >
                             <MenuItem value='' disabled>
-                              Selecione a rotina que será atualizada
+                              Selecione a rotina que deseja executar
                             </MenuItem>
                             {rotinas.map(option => (
                               <MenuItem key={option.id} value={option.id}>
@@ -104,28 +103,27 @@ export default withRouter(props => {
                             ))}
                           </Field>
                         </div>
-                        <div>
-                          <input
-                            accept='.fmw'
-                            className={classes.input}
-                            id='atualizar-rotina'
-                            type='file'
-                            onChange={(event) => {
-                              setFieldValue('file', event.currentTarget.files[0])
-                            }}
-                          />
-                          <label htmlFor='atualizar-rotina'>
-                            <Button
-                              variant='contained'
-                              className={classes.button}
-                              startIcon={<InsertDriveFileIcon />}
-                              component='span'
-                            >
-                              Selecionar arquivo .fmw
-                            </Button>
-                          </label>
-                          <p>{values.file.name}</p>
-                        </div>
+                        {rotinas.filter(r => {
+                          return r.id === values.rotinaId
+                        }).map(r => {
+                          if (r.parametros && r.parametros.length > 0) {
+                            return r.parametros.map((p, i) => {
+                              values.parametros[p] = values.parametros[p] || ''
+                              return (
+                                <Field
+                                  key={i}
+                                  name={`parametros.${p}`}
+                                  component={TextField}
+                                  variant='outlined'
+                                  margin='normal'
+                                  fullWidth
+                                  label={p}
+                                />
+                              )
+                            })
+                          }
+                          return null
+                        })}
                         <SubmitButton
                           type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
                           fullWidth
@@ -133,7 +131,7 @@ export default withRouter(props => {
                           color='primary'
                           className={classes.submit}
                         >
-                          Atualizar
+                          Executar
                         </SubmitButton>
                       </Form>
                     )}
