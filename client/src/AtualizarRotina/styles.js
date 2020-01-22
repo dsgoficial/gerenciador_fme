@@ -1,6 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles(theme => ({
+  root: {
+    marginTop: theme.spacing(2),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
   formArea: {
     display: 'flex',
     flexDirection: 'column',

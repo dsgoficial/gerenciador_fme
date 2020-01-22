@@ -42,7 +42,7 @@ router.delete(
     params: tarefaSchema.uuidParams
   }),
   asyncHandler(async (req, res, next) => {
-    await tarefaCtrl.deleteCron(req.params.id)
+    await tarefaCtrl.deleteCron(req.params.uuid)
 
     const msg = 'Tarefa deletada com sucesso'
 
@@ -81,7 +81,7 @@ router.delete(
     params: tarefaSchema.uuidParams
   }),
   asyncHandler(async (req, res, next) => {
-    await tarefaCtrl.deleteData(req.params.id)
+    await tarefaCtrl.deleteData(req.params.uuid)
 
     const msg = 'Tarefa deletada com sucesso'
 

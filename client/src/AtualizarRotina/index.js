@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import { Formik, Form, Field } from 'formik'
 import { Select } from 'formik-material-ui'
 import Typography from '@material-ui/core/Typography'
@@ -9,6 +9,7 @@ import ReactLoading from 'react-loading'
 import MenuItem from '@material-ui/core/MenuItem'
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile'
 import Button from '@material-ui/core/Button'
+import LinkMui from '@material-ui/core/Link'
 
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
@@ -140,9 +141,14 @@ export default withRouter(props => {
                 </>
               )
                 : (
-                  <Typography component='h1' variant='body1'>
-                    Sem rotinas cadastradas
-                  </Typography>
+                  <div className={classes.root}>
+                    <Typography component='h1' variant='body1'>
+                      Sem rotinas cadastradas
+                    </Typography>
+                    <LinkMui to='/categorias' variant='body1' component={Link}>
+                      Cadastrar rotina
+                    </LinkMui>
+                  </div>
                 )}
             </div>
           </Paper>

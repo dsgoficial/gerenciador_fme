@@ -88,9 +88,12 @@ controller.insertCron = async (usuarioUuid, nome, rotinaId, configuracao, parame
 
 controller.deleteCron = async uuid => {
   return db.conn.tx(async t => {
-    await t.none('DELETE FROM fme.tarefa_agendada_cron WHERE uuid = $<uuid>', {
+    const result = await t.result('DELETE FROM fme.tarefa_agendada_cron WHERE uuid = $<uuid>', {
       uuid
     })
+    if (!result.rowCount || result.rowCount !== 1) {
+      throw new AppError('Tarefa não encontrada', httpCode.BadRequest)
+    }
 
     cancel(uuid)
   })

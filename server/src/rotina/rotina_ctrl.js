@@ -41,6 +41,11 @@ controller.criaVersao = async (rotinaId, rotinaPath, uuid) => {
     )
 
     const params = await getParams(rotinaPath)
+    if (params.indexOf('LOG_FILE') === -1) {
+      await unlink(path.join(rotinaPath))
+      throw new AppError('A rotina deve ter o parametro LOG_FILE', httpCode.BadRequest)
+    }
+
     const queries = []
     params.forEach(p => {
       queries.push(
@@ -257,6 +262,10 @@ controller.getRotinasCompleto = async () => {
 controller.criaRotina = async (rotinaPath, uuid, nome, descricao, categoriaId) => {
   await db.conn.tx(async t => {
     const params = await getParams(rotinaPath)
+    if (params.indexOf('LOG_FILE') === -1) {
+      await unlink(path.join(rotinaPath))
+      throw new AppError('A rotina deve ter o parametro LOG_FILE', httpCode.BadRequest)
+    }
 
     const rotinaExists = await t.oneOrNone('SELECT id FROM fme.rotina WHERE nome = $<nome>', { nome })
 
