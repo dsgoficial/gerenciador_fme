@@ -8,6 +8,9 @@ import Paper from '@material-ui/core/Paper'
 import ReactLoading from 'react-loading'
 import MenuItem from '@material-ui/core/MenuItem'
 import LinkMui from '@material-ui/core/Link'
+import Modal from '@material-ui/core/Modal'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
@@ -24,7 +27,7 @@ export default withRouter(props => {
   }
 
   const [rotinas, setRotinas] = useState([])
-
+  const [resultDialog, setResultDialog] = useState([])
   const [snackbar, setSnackbar] = useState('')
   const [loaded, setLoaded] = useState(false)
 
@@ -51,19 +54,27 @@ export default withRouter(props => {
 
   const handleForm = async (values, { resetForm }) => {
     try {
-      const success = await handleExecute(
+      const result = await handleExecute(
         values.rotinaId,
         values.parametros
       )
-      if (success) {
+      if (result) {
         resetForm(initialValues)
         setSnackbar({ status: 'success', msg: 'Rotina executada com sucesso', date: new Date() })
-        // TODO mostrar resultado em modal
+        setResultDialog({ open: true, log: result.log, sumario: result.sumario })
       }
     } catch (err) {
       resetForm(initialValues)
       handleApiError(err, setSnackbar)
     }
+  }
+
+  const closeLogDialog = () => {
+    setResultDialog({
+      open: false,
+      log: '',
+      sumario: {}
+    })
   }
 
   return (
@@ -109,17 +120,19 @@ export default withRouter(props => {
                           if (r.parametros && r.parametros.length > 0) {
                             return r.parametros.map((p, i) => {
                               values.parametros[p] = values.parametros[p] || ''
-                              return (
-                                <Field
-                                  key={i}
-                                  name={`parametros.${p}`}
-                                  component={TextField}
-                                  variant='outlined'
-                                  margin='normal'
-                                  fullWidth
-                                  label={p}
-                                />
-                              )
+                              if (p !== 'LOG_FILE') {
+                                return (
+                                  <Field
+                                    key={i}
+                                    name={`parametros.${p}`}
+                                    component={TextField}
+                                    variant='outlined'
+                                    margin='normal'
+                                    fullWidth
+                                    label={p}
+                                  />
+                                )
+                              }
                             })
                           }
                           return null
@@ -157,6 +170,25 @@ export default withRouter(props => {
             <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
           </div>
         )}
+      <Modal
+        open={resultDialog.open}
+        onClose={closeLogDialog}
+      >
+        <Card>
+          <CardContent>
+            <div style={{ margin: '15px' }}>
+              <Typography variant='h6' gutterBottom>Sumário</Typography>
+              {Object.keys(resultDialog.sumario).map((key, i) => (
+                <p key={i}><b>{key}</b> {resultDialog.sumario[key]}</p>
+              ))}
+            </div>
+            <div style={{ margin: '15px' }}>
+              <Typography variant='h6' gutterBottom>Log de Execução</Typography>
+              <div>{resultDialog.log}</div>
+            </div>
+          </CardContent>
+        </Card>
+      </Modal>
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
     </>
   )
