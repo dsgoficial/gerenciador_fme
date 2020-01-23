@@ -8,14 +8,15 @@ const acompanhaExec = async uuid => {
       setTimeout(async () => {
         try {
           const response = await api.getData(`/api/execucoes/${uuid}`)
-          if (!('status' in response)) {
+          if (!response || !('status' in response)) {
             throw new Error()
           }
-          if (['Executado', 'Erro'].indexOf(response.status)) {
+          if (['Executado', 'Erro'].indexOf(response.status) !== -1) {
             completed = true
             return resolve(response)
           }
         } catch (e) {
+          console.log(e)
           completed = true
           return reject(new Error('Erro no servidor'))
         }

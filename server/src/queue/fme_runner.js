@@ -13,7 +13,7 @@ const { AppError } = require('../utils')
 const { FME_PATH, PATH_WORKSPACES } = require('../config')
 
 class FMEError extends Error {
-  constructor (message, log = null) {
+  constructor(message, log = null) {
     super(message)
     this.log = log
   }
@@ -21,7 +21,8 @@ class FMEError extends Error {
 
 const getLog = async logPath => {
   try {
-    return readFile(logPath.trim(), 'utf8')
+    const dados = await readFile(logPath.trim(), 'utf8')
+    return dados
   } catch (error) {
     return ''
   }

@@ -27,7 +27,11 @@ export default withRouter(props => {
   }
 
   const [rotinas, setRotinas] = useState([])
-  const [resultDialog, setResultDialog] = useState([])
+  const [resultDialog, setResultDialog] = useState({
+    open: false,
+    log: '',
+    sumario: {}
+  })
   const [snackbar, setSnackbar] = useState('')
   const [loaded, setLoaded] = useState(false)
 
@@ -64,6 +68,7 @@ export default withRouter(props => {
         setResultDialog({ open: true, log: result.log, sumario: result.sumario })
       }
     } catch (err) {
+      console.log(err)
       resetForm(initialValues)
       handleApiError(err, setSnackbar)
     }
