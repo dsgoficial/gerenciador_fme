@@ -1,6 +1,6 @@
 'use strict'
 
-const { asyncHandler } = require('../utils')
+const { AppError, asyncHandler, httpCode } = require('../utils')
 
 const validateToken = require('./validate_token')
 
@@ -10,6 +10,14 @@ const verifyLogin = asyncHandler(async (req, res, next) => {
   const token = req.headers.authorization
 
   const decoded = await validateToken(token)
+
+  if (req.params.usuario_uuid && decoded.uuid !== req.params.usuario_uuid) {
+    throw new AppError(
+      'Usuário só pode acessar sua própria informação',
+      httpCode.Unauthorized
+    )
+  }
+
   req.usuarioUuid = decoded.uuid
   next()
 })
