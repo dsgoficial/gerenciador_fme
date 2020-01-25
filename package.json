@@ -17,7 +17,7 @@
     "build": "node create_build.js",
     "create-docs": "node server/create_documentation.js",
     "start": "pm2 start server/src/index.js --name gerenciador-fme",
-    "start-all-dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run start\""
+    "start-dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run start\""
   },
   "keywords": [
     "FME",
@@ -30,13 +30,13 @@
     "url": "https://github.com/1cgeo/gerenciador_fme/issues"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
     "colors": "^1.4.0",
     "concurrently": "^5.0.2",
-    "inquirer": "^7.0.1",
-    "pg-promise": "^10.3.2",
+    "inquirer": "^7.0.4",
+    "pg-promise": "^10.3.5",
     "pgtools": "^0.3.0",
     "fs-extra": "^8.1.0",
     "npm-run": "^5.0.1"
