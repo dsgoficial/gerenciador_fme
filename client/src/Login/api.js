@@ -16,6 +16,7 @@ const handleLogin = async (usuario, senha) => {
   }
   auth.setToken(response.data.dados.token)
   auth.setAuthorization(response.data.dados.administrador)
+  auth.setUUID(response.data.dados.uuid)
 
   return true
 }
