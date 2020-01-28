@@ -20,6 +20,8 @@ controller.getExecucaoPagination = async (pagina, totalPagina, colunaOrdem, dire
     } else {
       sort = ` ORDER BY e.${colunaOrdem} ASC`
     }
+  } else {
+    sort = ` ORDER BY e.data_execucao DESC`
   }
 
   let paginacao = ''

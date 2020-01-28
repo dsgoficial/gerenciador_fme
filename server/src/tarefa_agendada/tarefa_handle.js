@@ -9,12 +9,23 @@ const handleTarefas = {}
 
 handleTarefas.tarefasAgendadas = {}
 
+const criaExecucao = async (uuid, versao, rotina, parametros) => {
+  await db.conn.none(
+    `
+      INSERT INTO fme.execucao(uuid, status_id, versao_rotina_id, rotina_id, data_execucao, parametros)
+      VALUES($<uuid>,1,$<versao>,$<rotina>, CURRENT_TIMESTAMP, $<parametros:json>)
+      `,
+    { uuid, versao, rotina, parametros }
+  )
+}
+
 const loadTarefaData = tarefas => {
   tarefas.forEach(t => {
-    const job = schedule.scheduleJob(t.configuracao, () => {
+    const job = schedule.scheduleJob(t.configuracao, async () => {
       const jobUuid = uuidv4()
       const taskId = `${jobUuid}|${t.uuid}`
-      jobQueue.push({ id: taskId, rotinaPath: t.path, parameteros: t.parametros })
+      await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros)
+      jobQueue.push({ id: taskId, rotinaPath: t.path, parametros: t.parametros })
     })
     handleTarefas.tarefasAgendadas[t.uuid] = job
   })
@@ -22,10 +33,11 @@ const loadTarefaData = tarefas => {
 
 const loadTarefaCron = tarefas => {
   tarefas.forEach(t => {
-    const job = schedule.scheduleJob({ start: t.data_inicio, end: t.data_fim, rule: t.configuracao }, () => {
+    const job = schedule.scheduleJob({ start: t.data_inicio, end: t.data_fim, rule: t.configuracao }, async () => {
       const jobUuid = uuidv4()
       const taskId = `${jobUuid}|${t.uuid}`
-      jobQueue.push({ id: taskId, rotinaPath: t.path, parameteros: t.parametros })
+      await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros)
+      jobQueue.push({ id: taskId, rotinaPath: t.path, parametros: t.parametros })
     })
     handleTarefas.tarefasAgendadas[t.uuid] = job
   })
@@ -35,18 +47,18 @@ handleTarefas.cancel = uuid => {
   handleTarefas.tarefasAgendadas[uuid].cancel()
 }
 
-handleTarefas.loadData = (uuid, path, configuracao, parametros) => {
-  loadTarefaData([{ uuid, path, configuracao, parametros }])
+handleTarefas.loadData = (uuid, path, configuracao, parametros, versao, rotina) => {
+  loadTarefaData([{ uuid, path, configuracao, parametros, versao, rotina }])
 }
 
-handleTarefas.loadCron = (uuid, path, configuracao, parametros, dataInicio, dataFim) => {
-  loadTarefaCron([{ uuid, path, configuracao, parametros, data_inicio: dataInicio, data_fim: dataFim }])
+handleTarefas.loadCron = (uuid, path, configuracao, parametros, dataInicio, dataFim, versao, rotina) => {
+  loadTarefaCron([{ uuid, path, configuracao, parametros, data_inicio: dataInicio, data_fim: dataFim, versao, rotina }])
 }
 
 handleTarefas.carregaTarefasAgendadas = async () => {
   const tarefasData = await db.conn.any(
     `
-    SELECT ta.uuid, ta.data_execucao AS configuracao, ta.parametros, vr.path
+    SELECT ta.uuid, ta.data_execucao AS configuracao, ta.parametros, vr.path, vr.id AS versao, vr.rotina_id AS rotina
     FROM fme.tarefa_agendada_data AS ta
     INNER JOIN (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
     ON vr.rotina_id = ta.rotina_id
@@ -59,7 +71,7 @@ handleTarefas.carregaTarefasAgendadas = async () => {
 
   const tarefasCron = await db.conn.any(
     `
-    SELECT ta.uuid, ta.configuracao_cron AS configuracao, ta.parametros, vr.path,
+    SELECT ta.uuid, ta.configuracao_cron AS configuracao, ta.parametros, vr.path, vr.id AS versao, vr.rotina_id AS rotina,
     ta.data_inicio, ta.data_fim
     FROM fme.tarefa_agendada_cron AS ta
     INNER JOIN (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr

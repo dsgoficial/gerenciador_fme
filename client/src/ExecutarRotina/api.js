@@ -16,7 +16,6 @@ const acompanhaExec = async uuid => {
             return resolve(response)
           }
         } catch (e) {
-          console.log(e)
           completed = true
           return reject(new Error('Erro no servidor'))
         }

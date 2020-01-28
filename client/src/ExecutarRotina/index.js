@@ -8,9 +8,11 @@ import Paper from '@material-ui/core/Paper'
 import ReactLoading from 'react-loading'
 import MenuItem from '@material-ui/core/MenuItem'
 import LinkMui from '@material-ui/core/Link'
-import Modal from '@material-ui/core/Modal'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Button from '@material-ui/core/Button'
 
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
@@ -30,7 +32,7 @@ export default withRouter(props => {
   const [resultDialog, setResultDialog] = useState({
     open: false,
     log: '',
-    sumario: {}
+    sumario: []
   })
   const [snackbar, setSnackbar] = useState('')
   const [loaded, setLoaded] = useState(false)
@@ -64,11 +66,14 @@ export default withRouter(props => {
       )
       if (result) {
         resetForm(initialValues)
+        if(result.status === 'Erro'){
+          return setSnackbar({ status: 'error', msg: 'Erro na execução da rotina', date: new Date() })
+        }
+        console.log(result)
         setSnackbar({ status: 'success', msg: 'Rotina executada com sucesso', date: new Date() })
         setResultDialog({ open: true, log: result.log, sumario: result.sumario })
       }
     } catch (err) {
-      console.log(err)
       resetForm(initialValues)
       handleApiError(err, setSnackbar)
     }
@@ -78,7 +83,7 @@ export default withRouter(props => {
     setResultDialog({
       open: false,
       log: '',
-      sumario: {}
+      sumario: []
     })
   }
 
@@ -175,25 +180,26 @@ export default withRouter(props => {
             <ReactLoading type='bars' color='#F83737' height='5%' width='5%' />
           </div>
         )}
-      <Modal
-        open={resultDialog.open}
-        onClose={closeLogDialog}
-      >
-        <Card>
-          <CardContent>
-            <div style={{ margin: '15px' }}>
-              <Typography variant='h6' gutterBottom>Sumário</Typography>
-              {Object.keys(resultDialog.sumario).map((key, i) => (
-                <p key={i}><b>{key}</b> {resultDialog.sumario[key]}</p>
-              ))}
-            </div>
-            <div style={{ margin: '15px' }}>
-              <Typography variant='h6' gutterBottom>Log de Execução</Typography>
-              <div>{resultDialog.log}</div>
-            </div>
-          </CardContent>
-        </Card>
-      </Modal>
+      <Dialog open={resultDialog.open} onClose={closeLogDialog}>
+        <DialogTitle>Sumário execução</DialogTitle>
+        <DialogContent>
+          <div style={{ margin: '15px' }}>
+                  <Typography variant='h6' gutterBottom>Sumário</Typography>
+                  {resultDialog.sumario.map((s, i) => (
+                    <p key={i}><b>{s.classes}</b> {s.feicoes}</p>
+                  ))}
+                </div>
+          <div style={{ margin: '15px' }}>
+            <Typography variant='h6' gutterBottom>Log de Execução</Typography>
+            <div>{resultDialog.log}</div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeLogDialog} color='primary'>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
       {snackbar ? <MessageSnackBar status={snackbar.status} key={snackbar.date} msg={snackbar.msg} /> : null}
     </>
   )

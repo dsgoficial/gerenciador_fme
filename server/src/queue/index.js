@@ -1,6 +1,5 @@
 const Queue = require('better-queue')
 
-const { errorHandler } = require('../utils')
 const { db } = require('../database')
 
 const { fmeRunner, FMEError } = require('./fme_runner')
@@ -21,18 +20,12 @@ const jobQueue = new Queue(
 )
 
 const updateJob = async (taskId, status, time, log = null, summary = null) => {
-  let uuid
-  let agenda = null
-  if (taskId.includes('|')) {
-    uuid = taskId.split('|')[0]
-    agenda = taskId.split('|')[1]
-  } else {
-    uuid = taskId
-  }
+  const uuid = taskId.includes('|') ? taskId.split('|')[0] : taskId
+  const agenda = taskId.includes('|') ? taskId.split('|')[1] : null
 
   return db.conn.none(
     `
-    UPDATE fme.execucao SET status = $<status>, tempo_execucao = $<time>,
+    UPDATE fme.execucao SET status_id = $<status>, tempo_execucao = $<time>,
     sumario = $<summary:json>, log = $<log>, tarefa_agendada_uuid = $<agenda>
     WHERE uuid = $<uuid>
     `,
@@ -41,16 +34,12 @@ const updateJob = async (taskId, status, time, log = null, summary = null) => {
 }
 
 jobQueue.on('task_finish', (taskId, result, stats) => {
-  updateJob(taskId, 2, stats.elapsed, result.log, result.summary)
+  updateJob(taskId, 2, stats.elapsed/1000, result.log, result.summary)
 })
 
 jobQueue.on('task_failed', function (taskId, err, stats) {
-  errorHandler(err)
-  if (err instanceof FMEError) {
-    updateJob(taskId, 3, stats.elapsed, err.log)
-  } else {
-    updateJob(taskId, 3, stats.elapsed)
-  }
+  const log = (err instanceof FMEError) ? err.log : null
+  updateJob(taskId, 3, stats.elapsed/1000, log)
 })
 
 module.exports = jobQueue

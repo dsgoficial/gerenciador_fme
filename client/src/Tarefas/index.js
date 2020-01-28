@@ -137,7 +137,7 @@ export default withRouter(props => {
         columns={[
           { title: 'Nome', field: 'nome' },
           { title: 'Rotina', field: 'rotina' },
-          { title: 'Data execução', field: 'configuracao' },
+          { title: 'Data execução', field: 'data_execucao' },
           { title: 'Usuário', field: 'usuario' },
           { title: 'Data agendamento', field: 'data_agendamento' }
         ]}

@@ -82,7 +82,7 @@ const fmeRunner = async (workspacePath, parameters) => {
   const executeCmd = executeCmdArray.join(' ')
 
   try {
-    const { stderr } = await exec(executeCmd, { maxBuffer: Infinity })
+    const { stderr } = await exec(executeCmd)
     if (stderr.trim().indexOf('Translation was SUCCESSFUL') === -1) {
       throw new Error()
     }

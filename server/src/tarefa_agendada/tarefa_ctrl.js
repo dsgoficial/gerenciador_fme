@@ -74,15 +74,15 @@ controller.insertCron = async (usuarioUuid, nome, rotinaId, configuracao, parame
       dataFim
     })
 
-    const rotina = await t.oneOrNone(`SELECT vr.path
+    const versao = await t.oneOrNone(`SELECT vr.id, vr.path
     FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
     WHERE vr.rn = 1 AND vr.rotina_id = $<rotinaId>`, { rotinaId })
 
-    if (!rotina) {
+    if (!versao) {
       throw new AppError('Rotina inválida', httpCode.BadRequest)
     }
 
-    loadCron(tarefaUuid, rotina.path, configuracao, parametros, dataInicio, dataFim)
+    loadCron(tarefaUuid, versao.path, configuracao, parametros, dataInicio, dataFim, versao.id, rotinaId)
   })
 }
 
@@ -101,7 +101,7 @@ controller.deleteCron = async uuid => {
 
 controller.getData = async () => {
   const tarefaData = await db.conn.any(`
-    SELECT ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.data_execucao,
+    SELECT ta.nome, ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.data_execucao,
     ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM fme.tarefa_agendada_data AS ta
     INNER JOIN fme.rotina AS r ON r.id = ta.rotina_id
@@ -133,15 +133,15 @@ controller.insertData = async (usuarioUuid, nome, rotinaId, configuracao, parame
       parametros
     })
 
-    const rotina = await t.oneOrNone(`SELECT vr.path
+    const versao = await t.oneOrNone(`SELECT vr.id, vr.path
     FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
     WHERE vr.rn = 1 AND vr.rotina_id = $<rotinaId>`, { rotinaId })
 
-    if (!rotina) {
+    if (!versao) {
       throw new AppError('Rotina inválida', httpCode.BadRequest)
     }
 
-    loadData(tarefaUuid, rotina.path, configuracao, parametros)
+    loadData(tarefaUuid, versao.path, configuracao, parametros, versao.id, rotinaId)
   })
 }
 
