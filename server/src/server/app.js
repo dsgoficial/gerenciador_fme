@@ -56,7 +56,8 @@ app.use('/api/js_docs', express.static(path.join(__dirname, '..', 'js_docs')))
 // Serve Client
 app.use(express.static(path.join(__dirname, '..', 'build')))
 
-app.get('/*', function (req, res) {
+app.get('/*', (req, res) => {
+  //FIXME log requests
   res.sendFile(path.join(__dirname, '..', 'build', 'index.html'))
 })
 
