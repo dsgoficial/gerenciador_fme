@@ -52,7 +52,15 @@ controller.deletaUsuario = async uuid => {
     )
 
     await t.none(
-      `UPDATE fme.tarefa_agendada
+      `UPDATE fme.tarefa_agendada_data
+      SET usuario_id = NULL
+      WHERE usuario_id IN
+      (SELECT id FROM dgeo.usuario WHERE uuid = $<uuid>)`,
+      { uuid }
+    )
+
+    await t.none(
+      `UPDATE fme.tarefa_agendada_cron
       SET usuario_id = NULL
       WHERE usuario_id IN
       (SELECT id FROM dgeo.usuario WHERE uuid = $<uuid>)`,
