@@ -13,6 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Button from '@material-ui/core/Button'
+import Backdrop from '@material-ui/core/Backdrop'
 
 import { MessageSnackBar, SubmitButton } from '../helpers'
 import styles from './styles'
@@ -66,10 +67,9 @@ export default withRouter(props => {
       )
       if (result) {
         resetForm(initialValues)
-        if(result.status === 'Erro'){
+        if (result.status === 'Erro') {
           return setSnackbar({ status: 'error', msg: 'Erro na execução da rotina', date: new Date() })
         }
-        console.log(result)
         setSnackbar({ status: 'success', msg: 'Rotina executada com sucesso', date: new Date() })
         setResultDialog({ open: true, log: result.log, sumario: result.sumario })
       }
@@ -104,59 +104,66 @@ export default withRouter(props => {
                     onSubmit={handleForm}
                   >
                     {({ values, isValid, isSubmitting, isValidating, setFieldValue }) => (
-                      <Form className={classes.form}>
-                        <div>
-                          <Field
-                            name='rotinaId'
-                            label='Rotina'
-                            variant='outlined'
-                            component={Select}
-                            displayEmpty
-                            className={classes.select}
-                          >
-                            <MenuItem value='' disabled>
-                              Selecione a rotina que deseja executar
-                            </MenuItem>
-                            {rotinas.map(option => (
-                              <MenuItem key={option.id} value={option.id}>
-                                {option.rotina}
+                      <>
+                        <Backdrop className={classes.backdrop} open={isSubmitting}>
+                          <div className={classes.loading}>
+                            <ReactLoading type='spin' color='#F83737' height='5%' width='5%' />
+                          </div>
+                        </Backdrop>
+                        <Form className={classes.form}>
+                          <div>
+                            <Field
+                              name='rotinaId'
+                              label='Rotina'
+                              variant='outlined'
+                              component={Select}
+                              displayEmpty
+                              className={classes.select}
+                            >
+                              <MenuItem value='' disabled>
+                                Selecione a rotina que deseja executar
                               </MenuItem>
-                            ))}
-                          </Field>
-                        </div>
-                        {rotinas.filter(r => {
-                          return r.id === values.rotinaId
-                        }).map(r => {
-                          if (r.parametros && r.parametros.length > 0) {
-                            return r.parametros.map((p, i) => {
-                              values.parametros[p] = values.parametros[p] || ''
-                              if (p !== 'LOG_FILE') {
-                                return (
-                                  <Field
-                                    key={i}
-                                    name={`parametros.${p}`}
-                                    component={TextField}
-                                    variant='outlined'
-                                    margin='normal'
-                                    fullWidth
-                                    label={p}
-                                  />
-                                )
-                              }
-                            })
-                          }
-                          return null
-                        })}
-                        <SubmitButton
-                          type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
-                          fullWidth
-                          variant='contained'
-                          color='primary'
-                          className={classes.submit}
-                        >
-                          Executar
-                        </SubmitButton>
-                      </Form>
+                              {rotinas.map(option => (
+                                <MenuItem key={option.id} value={option.id}>
+                                  {option.rotina}
+                                </MenuItem>
+                              ))}
+                            </Field>
+                          </div>
+                          {rotinas.filter(r => {
+                            return r.id === values.rotinaId
+                          }).map(r => {
+                            if (r.parametros && r.parametros.length > 0) {
+                              return r.parametros.map((p, i) => {
+                                values.parametros[p] = values.parametros[p] || ''
+                                if (p !== 'LOG_FILE') {
+                                  return (
+                                    <Field
+                                      key={i}
+                                      name={`parametros.${p}`}
+                                      component={TextField}
+                                      variant='outlined'
+                                      margin='normal'
+                                      fullWidth
+                                      label={p}
+                                    />
+                                  )
+                                }
+                              })
+                            }
+                            return null
+                          })}
+                          <SubmitButton
+                            type='submit' disabled={isValidating || !isValid} submitting={isSubmitting}
+                            fullWidth
+                            variant='contained'
+                            color='primary'
+                            className={classes.submit}
+                          >
+                            Executar
+                          </SubmitButton>
+                        </Form>
+                      </>
                     )}
                   </Formik>
                 </>
@@ -184,11 +191,11 @@ export default withRouter(props => {
         <DialogTitle>Sumário execução</DialogTitle>
         <DialogContent>
           <div style={{ margin: '15px' }}>
-                  <Typography variant='h6' gutterBottom>Sumário</Typography>
-                  {resultDialog.sumario.map((s, i) => (
-                    <p key={i}><b>{s.classes}</b> {s.feicoes}</p>
-                  ))}
-                </div>
+            <Typography variant='h6' gutterBottom>Sumário</Typography>
+            {resultDialog.sumario.map((s, i) => (
+              <p key={i}><b>{s.classes}</b> {s.feicoes}</p>
+            ))}
+          </div>
           <div style={{ margin: '15px' }}>
             <Typography variant='h6' gutterBottom>Log de Execução</Typography>
             <div>{resultDialog.log}</div>

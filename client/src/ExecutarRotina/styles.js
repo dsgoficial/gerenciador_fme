@@ -46,6 +46,10 @@ const styles = makeStyles(theme => ({
     width: '100%',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1)
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }))
 
