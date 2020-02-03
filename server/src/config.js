@@ -14,7 +14,7 @@ const configFile =
 const configPath = path.join(__dirname, '..', configFile)
 
 if (!fs.existsSync(configPath)) {
-  errorHandler(
+  errorHandler.critical(
     new AppError(
       'Arquivo de configuração não encontrado. Configure o serviço primeiro.'
     )
@@ -75,7 +75,7 @@ if (error) {
   const { details } = error
   const message = details.map(i => i.message).join(',')
 
-  errorHandler(
+  errorHandler.critical(
     new AppError(
       'Arquivo de configuração inválido. Configure novamente o serviço.',
       null,

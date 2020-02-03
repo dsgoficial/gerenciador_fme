@@ -4,6 +4,8 @@ const { db } = require('../database')
 
 const { fmeRunner, FMEError } = require('./fme_runner')
 
+const { errorHandler, AppError } = require('../utils')
+
 const jobQueue = new Queue(
   async (input, cb) => {
     try {
@@ -34,12 +36,17 @@ const updateJob = async (taskId, status, time, log = null, summary = null) => {
 }
 
 jobQueue.on('task_finish', (taskId, result, stats) => {
-  updateJob(taskId, 2, stats.elapsed/1000, result.log, result.summary)
+  updateJob(taskId, 2, stats.elapsed / 1000, result.log, result.summary)
 })
 
 jobQueue.on('task_failed', function (taskId, err, stats) {
+  errorHandler.log(
+    new AppError(
+      `Falha na execução de ${taskId}`
+    )
+  )
   const log = (err instanceof FMEError) ? err.log : null
-  updateJob(taskId, 3, stats.elapsed/1000, log)
+  updateJob(taskId, 3, stats.elapsed / 1000, log)
 })
 
 module.exports = jobQueue

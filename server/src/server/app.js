@@ -14,6 +14,7 @@ const swaggerOptions = require('./swagger_options')
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
 
 const {
+  logger,
   errorHandler,
   sendJsonAndLogMiddleware
 } = require('../utils')
@@ -57,13 +58,17 @@ app.use('/api/js_docs', express.static(path.join(__dirname, '..', 'js_docs')))
 app.use(express.static(path.join(__dirname, '..', 'build')))
 
 app.get('/*', (req, res) => {
-  //FIXME log requests
+  const url = req.protocol + '://' + req.get('host') + req.originalUrl
+
+  logger.info('GET request', {
+    url
+  })
   res.sendFile(path.join(__dirname, '..', 'build', 'index.html'))
 })
 
 // Error handling
 app.use((err, req, res, next) => {
-  return errorHandler(err, res)
+  return errorHandler.log(err, res)
 })
 
 module.exports = app
