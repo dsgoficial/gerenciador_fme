@@ -5,6 +5,8 @@ const uuidv4 = require('uuid/v4')
 const { db } = require('../database')
 const jobQueue = require('../queue')
 
+const { logger } = require('../utils')
+
 const handleTarefas = {}
 
 handleTarefas.tarefasAgendadas = {}
@@ -25,6 +27,9 @@ const loadTarefaData = tarefas => {
       const jobUuid = uuidv4()
       const taskId = `${jobUuid}|${t.uuid}`
       await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros)
+      logger.info('Inicio execução tarefa data', {
+        uuid: t.uuid
+      })
       jobQueue.push({ id: taskId, rotinaPath: t.path, parametros: t.parametros })
     })
     handleTarefas.tarefasAgendadas[t.uuid] = job
@@ -37,6 +42,9 @@ const loadTarefaCron = tarefas => {
       const jobUuid = uuidv4()
       const taskId = `${jobUuid}|${t.uuid}`
       await criaExecucao(jobUuid, t.versao, t.rotina, t.parametros)
+      logger.info('Inicio execução tarefa cron', {
+        uuid: t.uuid
+      })
       jobQueue.push({ id: taskId, rotinaPath: t.path, parametros: t.parametros })
     })
     handleTarefas.tarefasAgendadas[t.uuid] = job

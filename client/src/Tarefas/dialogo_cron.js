@@ -136,18 +136,21 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
                   }).map(r => {
                     if (r.parametros && r.parametros.length > 0) {
                       return r.parametros.map((p, i) => {
-                        values.parametros[p] = values.parametros[p] || ''
-                        return (
-                          <Field
-                            key={i}
-                            name={`parametros.${p}`}
-                            component={TextField}
-                            variant='outlined'
-                            margin='normal'
-                            fullWidth
-                            label={p}
-                          />
-                        )
+                        if(p !== 'LOG_FILE'){
+                          values.parametros[p] = values.parametros[p] || ''
+                          return (
+                            <Field
+                              key={i}
+                              name={`parametros.${p}`}
+                              component={TextField}
+                              variant='outlined'
+                              margin='normal'
+                              fullWidth
+                              label={p}
+                            />
+                          )
+                        }
+                        return null
                       })
                     }
                     return null
@@ -168,7 +171,7 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
                       margin='normal'
                       fullWidth
                       label='Data/hora de início'
-                      format='dd/MM/yyyy'
+                      format='dd/MM/yyyy HH:mm'
                       autoOk
                       clearable
                       disablePast
@@ -180,7 +183,7 @@ const DialogoAdiciona = ({ open = false, handleDialog }) => {
                       margin='normal'
                       fullWidth
                       label='Data/hora de fim'
-                      format='dd/MM/yyyy'
+                      format='dd/MM/yyyy HH:mm'
                       autoOk
                       clearable
                       disablePast

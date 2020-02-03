@@ -99,6 +99,7 @@ export default withRouter(props => {
                   if(key !== 'LOG_FILE'){
                     return (<p key={i}><b>{key}</b>: {rowData.parametros[key]}</p>)
                   }
+                  return null
                 }
                 )}
               </div>
@@ -145,6 +146,7 @@ export default withRouter(props => {
                   if(key !== 'LOG_FILE'){
                     return (<p key={i}><b>{key}</b>: {rowData.parametros[key]}</p>)
                   }
+                  return null
                 }
                 )}
               </div>
