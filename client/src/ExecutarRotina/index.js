@@ -106,9 +106,7 @@ export default withRouter(props => {
                     {({ values, isValid, isSubmitting, isValidating, setFieldValue }) => (
                       <>
                         <Backdrop className={classes.backdrop} open={isSubmitting}>
-                          <div className={classes.loading}>
-                            <ReactLoading type='spin' color='#F83737' height='5%' width='5%' />
-                          </div>
+                            <ReactLoading type='spin' color='#147814' height='7%' width='7%' />
                         </Backdrop>
                         <Form className={classes.form}>
                           <div>
