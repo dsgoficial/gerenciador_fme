@@ -208,7 +208,8 @@ controller.deletaRotina = async id => {
 controller.getRotinas = async (ids, categoria) => {
   let rotinas = await db.conn.any(
     `
-      SELECT vr.nome AS versao, vr.data, r.id, r.nome AS rotina, r.descricao, c.nome AS categoria,
+      SELECT vr.id AS versao_id, vr.path, vr.nome AS versao, vr.usuario_id, COALESCE(tpg.nome_abrev || ' ' || u.nome_guerra, 'Usuário deletado') AS usuario,
+      vr.data, r.id, r.nome AS rotina, r.descricao, c.id AS categoria_id, c.nome AS categoria,
       array_agg(p.nome ORDER BY p.nome) AS parametros
       FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
       INNER JOIN fme.rotina AS r ON vr.rotina_id = r.id
@@ -217,7 +218,7 @@ controller.getRotinas = async (ids, categoria) => {
       LEFT JOIN dgeo.usuario AS u ON u.id = vr.usuario_id
       LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
       WHERE vr.rn = 1 AND r.ativa IS TRUE
-      GROUP BY vr.nome, vr.data, r.id, r.nome, r.descricao, c.nome
+      GROUP BY r.id, c.id, c.nome, vr.id, vr.path, vr.nome, vr.usuario_id, vr.data, r.nome, c.nome, u.nome_guerra, tpg.nome_abrev
       `
   )
 

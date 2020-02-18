@@ -121,12 +121,10 @@ router.delete(
 )
 
 router.get(
-  '/',
-  schemaValidation({
-    query: rotinaSchema.rotinaQuery
-  }),
+  '/completo',
+  verifyLogin,
   asyncHandler(async (req, res, next) => {
-    const dados = await rotinaCtrl.getRotinas(req.query.ids, req.query.categoria)
+    const dados = await rotinaCtrl.getRotinasCompleto()
 
     const msg = 'Rotinas retornadas'
 
@@ -135,10 +133,12 @@ router.get(
 )
 
 router.get(
-  '/completo',
-  verifyLogin,
+  '/',
+  schemaValidation({
+    query: rotinaSchema.rotinaQuery
+  }),
   asyncHandler(async (req, res, next) => {
-    const dados = await rotinaCtrl.getRotinasCompleto()
+    const dados = await rotinaCtrl.getRotinas(req.query.ids, req.query.categoria)
 
     const msg = 'Rotinas retornadas'
 
