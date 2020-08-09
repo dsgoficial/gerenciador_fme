@@ -1,19 +1,19 @@
-'use strict'
+"use strict";
 
-const express = require('express')
+const express = require("express");
 
-const { schemaValidation, asyncHandler, httpCode } = require('../utils')
+const { schemaValidation, asyncHandler, httpCode } = require("../utils");
 
-const { verifyAdmin, verifyLogin } = require('../login')
+const { verifyAdmin, verifyLogin } = require("../login");
 
-const execucaoCtrl = require('./execucao_ctrl')
-const execucaoSchema = require('./execucao_schema')
+const execucaoCtrl = require("./execucao_ctrl");
+const execucaoSchema = require("./execucao_schema");
 
-const router = express.Router()
+const router = express.Router();
 
 router.get(
-  '/',
-  verifyAdmin,
+  "/",
+  verifyLogin,
   schemaValidation({ query: execucaoSchema.paginacaoQuery }),
   asyncHandler(async (req, res, next) => {
     const { execucoes, total } = await execucaoCtrl.getExecucaoPagination(
@@ -22,50 +22,50 @@ router.get(
       req.query.coluna_ordem,
       req.query.direcao_ordem,
       req.query.filtro
-    )
+    );
 
-    const msg = 'Lista de execuções retornadas'
+    const msg = "Lista de execuções retornadas";
 
-    return res.sendJsonAndLog(true, msg, httpCode.OK, execucoes, null, { total })
+    return res.sendJsonAndLog(true, msg, httpCode.OK, execucoes, null, {
+      total,
+    });
   })
-)
+);
 
 router.get(
-  '/:uuid',
+  "/:uuid",
   schemaValidation({ params: execucaoSchema.uuidParams }),
   asyncHandler(async (req, res, next) => {
-    const dados = await execucaoCtrl.getExecucaoStatus(req.params.uuid)
+    const dados = await execucaoCtrl.getExecucaoStatus(req.params.uuid);
 
-    const msg = 'Informação sobre o execução retornada'
+    const msg = "Informação sobre o execução retornada";
 
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados);
   })
-)
+);
 
 router.get(
-  '/agendada/cron',
+  "/agendada/cron",
   verifyLogin,
   asyncHandler(async (req, res, next) => {
-    const dados = await execucaoCtrl.getExecucaoAgendadaCron(
-    )
+    const dados = await execucaoCtrl.getExecucaoAgendadaCron();
 
-    const msg = 'Lista de execuções retornadas'
+    const msg = "Lista de execuções retornadas";
 
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados);
   })
-)
+);
 
 router.get(
-  '/agendada/data',
+  "/agendada/data",
   verifyLogin,
   asyncHandler(async (req, res, next) => {
-    const dados = await execucaoCtrl.getExecucaoAgendadaData(
-    )
+    const dados = await execucaoCtrl.getExecucaoAgendadaData();
 
-    const msg = 'Lista de execuções retornadas'
+    const msg = "Lista de execuções retornadas";
 
-    return res.sendJsonAndLog(true, msg, httpCode.OK, dados)
+    return res.sendJsonAndLog(true, msg, httpCode.OK, dados);
   })
-)
+);
 
-module.exports = router
+module.exports = router;
