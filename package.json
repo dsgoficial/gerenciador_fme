@@ -30,15 +30,14 @@
     "url": "https://github.com/1cgeo/gerenciador_fme/issues"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
     "colors": "^1.4.0",
-    "concurrently": "^5.3.0",
-    "inquirer": "^7.3.3",
-    "pg-promise": "^10.5.8",
-    "pgtools": "^0.3.0",
-    "fs-extra": "^9.0.1",
+    "concurrently": "^6.0.0",
+    "inquirer": "^8.0.0",
+    "pg-promise": "^10.9.4",
+    "fs-extra": "^9.1.0",
     "npm-run": "^5.0.1"
   }
 }
