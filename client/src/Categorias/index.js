@@ -7,7 +7,7 @@ import { MessageSnackBar, MaterialTable } from '../helpers'
 import styles from './styles'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const Categorias = withRouter(props => {
   const classes = styles()
 
   const [categorias, setCategorias] = useState([])
@@ -117,3 +117,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default Categorias

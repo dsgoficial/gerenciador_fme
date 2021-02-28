@@ -9,7 +9,7 @@ import DialogoAdicionaCron from './dialogo_cron'
 import DialogoAdicionaData from './dialogo_data'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const Tarefas = withRouter(props => {
   const [tarefasCron, setTarefasCron] = useState([])
   const [tarefasData, setTarefasData] = useState([])
   const [snackbar, setSnackbar] = useState('')
@@ -185,3 +185,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default Tarefas

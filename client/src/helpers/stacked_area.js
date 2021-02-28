@@ -60,7 +60,7 @@ const prepareData = (series, dataKey) => {
   return Object.keys(series[0]).filter(v => v !== dataKey)
 }
 
-export default ({ title, series, dataKey }) => {
+const StackedArea = ({ title, series, dataKey }) => {
   const classes = styles()
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
 
@@ -92,3 +92,5 @@ export default ({ title, series, dataKey }) => {
     </Card>
   )
 }
+
+export default StackedArea

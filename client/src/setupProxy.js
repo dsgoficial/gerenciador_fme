@@ -1,9 +1,9 @@
-const proxy = require('http-proxy-middleware')
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
   app.use(
     '/fme',
-    proxy({
+    createProxyMiddleware({
       target: 'http://localhost:3014',
       changeOrigin: true
     })

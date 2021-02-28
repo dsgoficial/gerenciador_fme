@@ -17,7 +17,7 @@ import validationSchema from './validation_schema'
 import { handleUpload, getRotinas } from './api'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const AtualizarRotina = withRouter(props => {
   const classes = styles()
 
   const initialValues = {
@@ -163,3 +163,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default AtualizarRotina

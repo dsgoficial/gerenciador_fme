@@ -10,7 +10,7 @@ import styles from './styles'
 import { deleteFiles, getFilesSize } from './api'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const ArquivosTemporarios = withRouter(props => {
   const classes = styles()
 
   const [logInfo, setLogInfo] = useState([])
@@ -87,3 +87,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default ArquivosTemporarios

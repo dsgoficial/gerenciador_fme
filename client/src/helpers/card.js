@@ -14,7 +14,7 @@ const styles = makeStyles(theme => ({
   }
 }))
 
-export default ({ label, currentValue }) => {
+const CustomCard = ({ label, currentValue }) => {
   const classes = styles()
 
   return (
@@ -26,3 +26,5 @@ export default ({ label, currentValue }) => {
     </Card>
   )
 }
+
+export default CustomCard

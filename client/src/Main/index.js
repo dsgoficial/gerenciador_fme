@@ -29,7 +29,7 @@ import Tarefas from "../Tarefas";
 import ExecucaoAgendada from "../ExecucaoAgendada";
 import ExecutarRotina from "../ExecutarRotina";
 
-export default withRouter((props) => {
+const Main = withRouter((props) => {
   const classes = styles();
 
   const [open, setOpen] = useState(false);
@@ -152,3 +152,5 @@ export default withRouter((props) => {
     </div>
   );
 });
+
+export default Main

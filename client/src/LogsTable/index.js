@@ -12,7 +12,7 @@ import { getExecucao } from './api'
 import { MessageSnackBar, MaterialTable } from '../helpers'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const LogsTable = withRouter(props => {
   const [logs, setLogs] = useState([])
   const [openLogDialog, setOpenLogDialog] = useState({
     open: false,
@@ -119,3 +119,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default LogsTable

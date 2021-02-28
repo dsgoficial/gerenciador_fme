@@ -10,7 +10,7 @@ import { handleApiError } from '../services'
 import { getDashboardData } from './api'
 import { MessageSnackBar, CardGraph, Card, StackedArea, Bar } from '../helpers'
 
-export default withRouter(props => {
+const Dashboard = withRouter(props => {
   const classes = styles()
 
   const [snackbar, setSnackbar] = useState('')
@@ -91,3 +91,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default Dashboard

@@ -1,10 +1,8 @@
 import React from 'react'
 import { MaterialTable } from '../helpers'
-import DateFnsUtils from '@date-io/date-fns'
+import { format } from 'date-fns'
 
-const dateFns = new DateFnsUtils()
-
-export default ({ data }) => {
+const UltimasExecucoes = ({ data }) => {
   return (
     <>
       <MaterialTable
@@ -14,10 +12,12 @@ export default ({ data }) => {
           { title: 'Rotina', field: 'rotina' },
           { title: 'Versão', field: 'versao_rotina' },
           { title: 'Status', field: 'status' },
-          { title: 'Data Execução', field: 'data_execucao', render: rowData => { return dateFns.format(dateFns.date(rowData.data_execucao), 'kk:mm dd/MM/yyyy') } }
+          { title: 'Data Execução', field: 'data_execucao', render: rowData => format(new Date(rowData.ultimo_login), "yyyy-MM-dd -- HH:mm:ss") }
         ]}
         data={data}
       />
     </>
   )
 }
+
+export default UltimasExecucoes

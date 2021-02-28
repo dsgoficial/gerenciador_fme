@@ -17,7 +17,7 @@ import validationSchema from './validation_schema'
 import { handleUpload, getCategorias } from './api'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const AdicionarRotina = withRouter(props => {
   const classes = styles()
 
   const initialValues = {
@@ -186,3 +186,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default AdicionarRotina

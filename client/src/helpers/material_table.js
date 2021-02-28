@@ -49,7 +49,7 @@ const styles = makeStyles(theme => ({
   }
 }))
 
-export default props => {
+const CustomMaterialTable = props => {
   const classes = styles()
 
   return (
@@ -114,3 +114,5 @@ export default props => {
       )
   )
 }
+
+export default CustomMaterialTable

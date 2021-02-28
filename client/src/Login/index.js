@@ -14,7 +14,7 @@ import { handleApiError } from '../services'
 
 import { MessageSnackBar, BackgroundImages } from '../helpers'
 
-export default withRouter(props => {
+const Login = withRouter(props => {
   const classes = styles()
   const values = { usuario: '', senha: '' }
 
@@ -52,3 +52,5 @@ export default withRouter(props => {
     </BackgroundImages>
   )
 })
+
+export default Login

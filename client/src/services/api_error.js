@@ -1,4 +1,4 @@
-export default (err, setSnackbar) => {
+const APIError = (err, setSnackbar) => {
   if (
     'response' in err &&
     'data' in err.response &&
@@ -9,3 +9,5 @@ export default (err, setSnackbar) => {
     setSnackbar({ status: 'error', msg: 'Ocorreu um erro ao se comunicar com o servidor.', date: new Date() })
   }
 }
+
+export default APIError

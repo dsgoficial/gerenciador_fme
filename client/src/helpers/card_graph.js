@@ -42,7 +42,7 @@ const calcVariation = (series, seriesKey) => {
   return Math.round(percent * 10) / 10
 }
 
-export default ({ label, series, seriesKey, fill }) => {
+const CardGraph = ({ label, series, seriesKey, fill }) => {
   const classes = styles()
   return (
     <Card>
@@ -86,3 +86,5 @@ export default ({ label, series, seriesKey, fill }) => {
     </Card>
   )
 }
+
+export default CardGraph

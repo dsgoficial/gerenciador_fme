@@ -59,7 +59,7 @@ const paginationOptions = {
   rangeSeparatorText: 'de'
 }
 
-export default ({ title, columns, fetchData, defaultPerPage = 10, ...rest }) => {
+const CustomDataTable = ({ title, columns, fetchData, defaultPerPage = 10, ...rest }) => {
   const [filterText, setFilterText] = React.useState('')
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
@@ -163,3 +163,5 @@ export default ({ title, columns, fetchData, defaultPerPage = 10, ...rest }) => 
     </Card>
   )
 }
+
+export default CustomDataTable

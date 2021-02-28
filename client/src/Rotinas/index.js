@@ -8,7 +8,7 @@ import { handleApiError } from '../services'
 
 import styles from './styles'
 
-export default withRouter(props => {
+const Rotinas = withRouter(props => {
   const classes = styles()
 
   const [rotinas, setRotinas] = useState([])
@@ -151,3 +151,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default Rotinas

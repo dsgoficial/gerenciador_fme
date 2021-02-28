@@ -12,7 +12,7 @@ import { getExecucao } from './api'
 import { MessageSnackBar, MaterialTable } from '../helpers'
 import { handleApiError } from '../services'
 
-export default withRouter(props => {
+const ExecucaoAgendada = withRouter(props => {
   const [execucaoCron, setExecucaoCron] = useState([])
   const [execucaoData, setExecucaoData] = useState([])
 
@@ -170,3 +170,5 @@ export default withRouter(props => {
     </>
   )
 })
+
+export default ExecucaoAgendada

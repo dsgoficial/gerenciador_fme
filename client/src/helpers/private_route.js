@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { auth } from '../services'
 
-export default ({ component: Component, exact, path, role, ...rest }) => (
+const PrivateRoute = ({ component: Component, exact, path, role, ...rest }) => (
   <Route
     {...rest}
     exact={exact}
@@ -25,3 +25,5 @@ export default ({ component: Component, exact, path, role, ...rest }) => (
     }}
   />
 )
+
+export default PrivateRoute

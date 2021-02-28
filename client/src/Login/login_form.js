@@ -6,7 +6,7 @@ import styles from './styles'
 
 import { SubmitButton } from '../helpers'
 
-export default ({ initialValues, validationSchema, onSubmit }) => {
+const LoginForm = ({ initialValues, validationSchema, onSubmit }) => {
   const classes = styles()
   return (
     <Formik
@@ -46,3 +46,5 @@ export default ({ initialValues, validationSchema, onSubmit }) => {
     </Formik>
   )
 }
+
+export default LoginForm

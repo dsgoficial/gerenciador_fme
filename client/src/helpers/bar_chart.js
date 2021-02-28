@@ -34,7 +34,7 @@ const CustomizedAxisTick = (props) => {
   )
 }
 
-export default ({ title, series, fill, groupKey, valueKey }) => {
+const CustomBarChart = ({ title, series, fill, groupKey, valueKey }) => {
   const classes = styles()
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight)
 
@@ -65,3 +65,5 @@ export default ({ title, series, fill, groupKey, valueKey }) => {
     </Card>
   )
 }
+
+export default CustomBarChart
