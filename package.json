@@ -35,9 +35,10 @@
     "bluebird": "^3.7.2",
     "colors": "^1.4.0",
     "concurrently": "^6.0.0",
-    "inquirer": "^8.0.0",
-    "pg-promise": "^10.9.4",
     "fs-extra": "^9.1.0",
-    "npm-run": "^5.0.1"
+    "inquirer": "^8.0.0",
+    "npm-run": "^5.0.1",
+    "pg-promise": "^10.9.4",
+    "pm2": "^4.5.5"
   }
 }
