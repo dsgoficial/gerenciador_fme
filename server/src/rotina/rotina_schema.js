@@ -36,7 +36,7 @@ models.versaoRotina = Joi.object().keys({
 });
 
 models.rotinaParametros = Joi.object().keys({
-  parametros: Joi.object(),
+  parametros: Joi.object().required()
 });
 
 module.exports = models;
