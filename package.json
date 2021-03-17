@@ -17,6 +17,7 @@
     "build": "node create_build.js",
     "create-docs": "node server/create_documentation.js",
     "start": "pm2 start server/src/index.js --name gerenciador-fme",
+    "start-https": "pm2 start server/src/index.js --name gerenciador-fme-https -- --https ",
     "start-dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run start\""
   },
   "keywords": [
