@@ -4,7 +4,7 @@ var major = +version[0]
 var minor = +version[1]
 
 if (major < 8 || (major === 8 && minor < 7)) {
-  throw new Error('Versão mínima do Node.js suportada pelo Serviço é 8.7')
+  throw new Error('Versão mínima do Node.js suportada pelo Serviço é 14.15')
 }
 
 module.exports = require('./main')
