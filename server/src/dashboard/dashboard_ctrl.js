@@ -109,7 +109,7 @@ const getExecRotinaByStatus = async (status, total, max) => {
     if (rotinasFixed.indexOf(d.rotina) !== -1) {
       resultDict[d.data_execucao][d.rotina] = +d.execucoes
     } else {
-      resultDict[d.data_execucao].outros += d.execucoes
+      resultDict[d.data_execucao].outros += +d.execucoes
     }
   })
 

@@ -40,7 +40,7 @@ const CustomTooltip = ({ type, payload, label, active }) => {
         {payload.map((p, i) => (
           <Typography key={i} variant='body2' component='p' color='textSecondary'>{`${payload[i].name} : ${payload[i].value}`}</Typography>
         ))}
-        <Typography variant='subtitle2' component='p' className={classes.total}>{`Total: ${payload.reduce((a, b) => a + b.value, 0)}`}</Typography>
+        <Typography variant='subtitle2' component='p' className={classes.total}>{`Total: ${payload.reduce((a, b) => +a + +b.value, 0)}`}</Typography>
       </Paper>
     ) : null
   )
