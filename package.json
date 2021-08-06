@@ -37,9 +37,9 @@
     "colors": "^1.4.0",
     "concurrently": "^6.2.0",
     "fs-extra": "^10.0.0",
-    "inquirer": "^8.1.1",
+    "inquirer": "^8.1.2",
     "npm-run": "^5.0.1",
-    "pg-promise": "^10.10.2",
+    "pg-promise": "^10.11.0",
     "pm2": "^5.1.0"
   }
 }
