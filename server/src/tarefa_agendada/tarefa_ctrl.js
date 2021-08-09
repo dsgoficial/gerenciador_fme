@@ -14,7 +14,7 @@ const controller = {};
 
 controller.getCron = async () => {
   const tarefaCron = await db.conn.any(`
-    SELECT ta.id, ta.uuid, ta.rotina_id, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.configuracao_cron AS configuracao,
+    SELECT ta.id, ta.uuid, ta.rotina_id, ta.nome, r.nome AS rotina, ta.data_agendamento, ta.usuario_id, ta.configuracao_cron AS configuracao,
     ta.data_inicio, ta.data_fim, ta.parametros, tpg.nome_abrev || ' ' || u.nome_guerra AS usuario
     FROM fme.tarefa_agendada_cron AS ta
     INNER JOIN fme.rotina AS r ON r.id = ta.rotina_id
