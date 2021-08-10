@@ -121,7 +121,7 @@ handleTarefas.carregaTarefasAgendadas = async () => {
     FROM fme.tarefa_agendada_cron AS ta
     INNER JOIN (SELECT *, ROW_NUMBER() OVER (PARTITION BY rotina_id ORDER BY data DESC) rn FROM fme.versao_rotina) AS vr
     ON vr.rotina_id = ta.rotina_id
-    WHERE vr.rn = 1 AND (ta.data_fim IS NULL OR ta.data_fim::timestamp with time zone > now())
+    WHERE vr.rn = 1 AND (ta.data_fim IS NULL OR ta.data_fim > now())
     `
   );
   if (tarefasCron.length > 0) {

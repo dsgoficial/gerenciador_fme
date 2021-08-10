@@ -20,7 +20,7 @@ controller.getCron = async () => {
     INNER JOIN fme.rotina AS r ON r.id = ta.rotina_id
     LEFT JOIN dgeo.usuario AS u ON u.id = ta.usuario_id
     LEFT JOIN dominio.tipo_posto_grad AS tpg ON tpg.code = u.tipo_posto_grad_id
-    WHERE ta.data_fim IS NULL OR ta.data_fim::timestamp with time zone > now()
+    WHERE ta.data_fim IS NULL OR ta.data_fim > now()
   `);
   tarefaCron.forEach((t) => {
     let cronInstance;
