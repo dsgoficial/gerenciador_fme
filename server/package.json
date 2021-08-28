@@ -19,7 +19,6 @@
     "bcryptjs": "^2.4.3",
     "better-queue": "^3.8.10",
     "bluebird": "^3.7.2",
-    "body-parser": "^1.19.0",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
     "cron-converter": "^1.0.1",

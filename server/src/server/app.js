@@ -2,7 +2,6 @@
 
 const express = require("express");
 const path = require("path");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 //const helmet = require("helmet");
 const hpp = require("hpp");
@@ -29,7 +28,7 @@ const app = express();
 // Add sendJsonAndLog to res object
 app.use(sendJsonAndLogMiddleware);
 
-app.use(bodyParser.json()); // parsear POST em JSON
+app.use(express.json()); // parsear POST em JSON
 app.use(hpp()); // protection against parameter polution
 
 // CORS middleware
